@@ -32,7 +32,7 @@ export const ChartComponent = props => {
         });
         chart.timeScale().fitContent();
 
-        const newSeries = chart.addAreaSeries({
+        const newSeries = chart.addCandlestickSeries({
             lineColor,
             topColor: areaTopColor,
             bottomColor: areaBottomColor,
