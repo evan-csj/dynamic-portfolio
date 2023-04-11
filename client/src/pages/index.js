@@ -43,7 +43,7 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                <Box bg="light.navy" color="light.white">
+                <Box bg="light.navy" color="light.white" className='futura-light'>
                     Hello World
                 </Box>
                 <ChartComponent data={candlestickData}></ChartComponent>
