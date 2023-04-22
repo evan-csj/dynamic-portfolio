@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/user', userRoute)
-// app.use('/trade', tradeRoute)
+app.use('/trade', tradeRoute)
 // app.use('/holding', holdingRoute)
 // app.use('/fund', fundRoute)
 

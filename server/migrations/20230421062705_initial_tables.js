@@ -27,7 +27,7 @@ exports.up = function (knex) {
             table.boolean('buy').notNullable();
             table.string('order_status').notNullable();
             table.string('currency').notNullable();
-            table.timestamps(true, false);
+            table.timestamps(true, true);
         })
         .createTable('holding', table => {
             table.uuid('id').primary();
@@ -44,7 +44,7 @@ exports.up = function (knex) {
             table.decimal('amount').notNullable();
             table.string('type').notNullable();
             table.string('currency').notNullable();
-            table.timestamps(true, false);
+            table.timestamps(true, true);
         });
 };
 

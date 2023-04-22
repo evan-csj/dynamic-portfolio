@@ -5,6 +5,7 @@ const dayjs = require('dayjs');
 const singleUser = (req, res) => {
     knex('user')
         .select(
+            'id',
             'user_name',
             'user_email',
             'first_name',
