@@ -10,7 +10,6 @@ const tradeHistory = (req, res) => {
         .where('user_id', req.params.userId)
         .then(data => {
             if (data.length === 0) {
-                console.log(data);
                 return res
                     .status(404)
                     .json(
@@ -154,6 +153,7 @@ const addTrade = (req, res) => {
                         });
                 } else if(data.length === 0) {
                     const newHolding = {
+                        id: uuid(),
                         user_id: newTrade.user_id,
                         ticker: newTrade.ticker,
                         avg_price: newTrade.price,
