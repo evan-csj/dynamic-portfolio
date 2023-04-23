@@ -9,7 +9,5 @@ module.exports = [
         sin: '000-000-000',
         cash_usd: 100,
         cash_cad: 50,
-        total_deposit: 1000,
-        total_withdraw: 0,
     },
 ];

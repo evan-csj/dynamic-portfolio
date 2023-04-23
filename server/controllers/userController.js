@@ -14,8 +14,6 @@ const singleUser = (req, res) => {
             'sin',
             'cash_usd',
             'cash_cad',
-            'total_deposit',
-            'total_withdraw'
         )
         .where('user_name', req.params.username)
         .then(data => {
@@ -37,7 +35,7 @@ const singleUser = (req, res) => {
         });
 };
 
-const newUser = (req, res) => {
+const addUser = (req, res) => {
     const newUser = { id: uuid(), ...req.body };
     knex('user')
         .insert(newUser)
@@ -49,4 +47,4 @@ const newUser = (req, res) => {
         });
 };
 
-module.exports = { singleUser, newUser };
+module.exports = { singleUser, addUser };

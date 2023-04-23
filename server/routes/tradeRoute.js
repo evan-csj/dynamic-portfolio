@@ -1,8 +1,10 @@
 const router = require('express').Router();
 const tradeController = require('../controllers/tradeController');
 
-router.route('/:userid').get(tradeController.tradeHistory);
-// .post(tradeController.newTrade)
+router.route('/').post(tradeController.addTrade);
+
+router.route('/user/:userId').get(tradeController.tradeHistory);
+
 // .delete(tradeController.deleteTrade);
 
 module.exports = router;
