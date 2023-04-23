@@ -41,7 +41,7 @@ const addTrade = (req, res) => {
     if (newTrade.type === 'buy') {
         knex('user')
             .select('cash_cad', 'cash_usd')
-            .where('user_id', newTrade.user_id)
+            .where('id', newTrade.user_id)
             .then(data => {
                 if (data.length === 0) {
                     return res
@@ -67,7 +67,15 @@ const addTrade = (req, res) => {
                         enoughCash = true;
                         cashCAD -= amountRequired;
                     } else {
-                        return res.json('Cash is not enough for buy');
+                        if (newTrade.currency === 'usd')
+                            return res.json(
+                                `${cashUSD} USD is not enough for buy ${amountRequired}`
+                            );
+
+                        if (newTrade.currency === 'cad')
+                            return res.json(
+                                `${cashCAD} CAD is not enough for buy ${amountRequired}`
+                            );
                     }
 
                     knex('user')
@@ -86,7 +94,7 @@ const addTrade = (req, res) => {
     // check if enough share for sell
     if (newTrade.type === 'sell') {
         knex('holding')
-            .select('sell_shares')
+            .select('buy_shares', 'sell_shares')
             .where('ticker', newTrade.ticker)
             .andWhere('user_id', newTrade.user_id)
             .then(data => {
@@ -95,13 +103,14 @@ const addTrade = (req, res) => {
                         .status(404)
                         .json(`The stock with ticker ${ticker} is not found!`);
                 } else {
-                    if (
-                        data[0].buy_shares - data[0].sell_shares >=
-                        newTrade.shares
-                    ) {
+                    console.log(data);
+                    const sharesHold = data[0].buy_shares - data[0].sell_shares;
+                    if (sharesHold >= newTrade.shares) {
                         enoughShares = true;
                     } else {
-                        return res.json('Share is not enough for sell');
+                        return res.json(
+                            `${sharesHold} shares in holding is not enough for sell ${newTrade.shares} shares`
+                        );
                     }
                 }
             });
@@ -113,9 +122,10 @@ const addTrade = (req, res) => {
         knex('trade')
             .insert(newTrade)
             .then(data => {
-                console.log(data)
+                console.log(data);
             });
 
+        console.log('debug');
         knex('holding')
             .select('avg_price', 'buy_shares', 'sell_shares')
             .where('ticker', newTrade.ticker)
@@ -151,7 +161,7 @@ const addTrade = (req, res) => {
                         .then(data => {
                             console.log(data);
                         });
-                } else if(data.length === 0) {
+                } else if (data.length === 0) {
                     const newHolding = {
                         id: uuid(),
                         user_id: newTrade.user_id,
@@ -159,15 +169,15 @@ const addTrade = (req, res) => {
                         avg_price: newTrade.price,
                         buy_shares: newTrade.shares,
                         sell_shares: 0,
-                        currency: newTrade.currency
-                    }
+                        currency: newTrade.currency,
+                    };
                     knex('holding')
-                    .insert(newHolding)
-                    .then(data => {
-                        console.log(data);
-                    })
+                        .insert(newHolding)
+                        .then(data => {
+                            console.log(data);
+                        });
                 } else {
-                    return res.status(400).json('Fail to find the holding')
+                    return res.status(400).json('Fail to find the holding');
                 }
             });
     }
