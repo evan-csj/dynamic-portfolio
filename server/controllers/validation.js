@@ -6,4 +6,12 @@ const tradeTypeValidate = type => {
     }
 };
 
-module.exports = { tradeTypeValidate };
+const fundTypeValidate = type => {
+    if (type === 'deposit' || type === 'withdraw') {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+module.exports = { tradeTypeValidate, fundTypeValidate };

@@ -1,6 +1,6 @@
 const knex = require('knex')(require('../knexfile'));
 
-const getHolding = (req, res) => [
+const getHolding = (req, res) => {
     knex('holding')
         .select(
             'id',
@@ -27,7 +27,7 @@ const getHolding = (req, res) => [
             res.status(400).json(
                 `Error retrieving user id ${req.params.userId} ${err}`
             );
-        }),
-];
+        });
+};
 
 module.exports = { getHolding };

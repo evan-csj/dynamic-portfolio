@@ -1,6 +1,5 @@
 const { v4: uuid } = require('uuid');
 const knex = require('knex')(require('../knexfile'));
-const dayjs = require('dayjs');
 const validation = require('./validation');
 const update = require('./update');
 
