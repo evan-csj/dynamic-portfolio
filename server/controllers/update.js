@@ -1,6 +1,9 @@
 const averagePrice = (price, shares, prevAvgPrice, prevShares) => {
     const newAvgPrice =
-        (prevAvgPrice * prevShares + price * shares) / (shares + prevShares);
+        prevShares > 0
+            ? (prevAvgPrice * prevShares + price * shares) /
+              (shares + prevShares)
+            : price;
     return newAvgPrice;
 };
 
