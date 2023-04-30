@@ -5,7 +5,7 @@
 exports.up = function (knex) {
     return knex.schema
         .createTable('user', table => {
-            table.string('id').unique().notNullable();
+            table.string('id').primary().unique().notNullable();
             table.string('user_email').unique().notNullable();
             table.string('first_name').notNullable();
             table.string('last_name').notNullable();
@@ -16,7 +16,7 @@ exports.up = function (knex) {
             table.timestamps(true, true);
         })
         .createTable('trade', table => {
-            table.uuid('id').unique().primary();
+            table.uuid('id').primary().unique().notNullable();
             table
                 .string('user_id')
                 .references('id')
@@ -32,7 +32,7 @@ exports.up = function (knex) {
             table.timestamps(true, true);
         })
         .createTable('holding', table => {
-            table.string('id').unique().primary();
+            table.string('id').primary().unique().notNullable();
             table
                 .string('user_id')
                 .references('id')
@@ -48,7 +48,7 @@ exports.up = function (knex) {
             table.timestamps(true, true);
         })
         .createTable('fund', table => {
-            table.uuid('id').unique().primary();
+            table.uuid('id').primary().unique().notNullable();
             table
                 .string('user_id')
                 .references('id')
