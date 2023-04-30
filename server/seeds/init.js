@@ -7,8 +7,18 @@ const userData = require('../seed_data/user');
 const tradeData = require('../seed_data/trade');
 const holdingData = require('../seed_data/holding');
 const fundData = require('../seed_data/fund');
+const { v1 } = require('uuid');
 
 exports.seed = async function (knex) {
+    tradeData.map(item => {
+        item['id'] = v1();
+    });
+    fundData.map(item => {
+        item['id'] = v1();
+    });
+    holdingData.map(item => {
+        item['id'] = item.user_id + '-' + item.ticker;
+    })
     await knex('user').del();
     await knex('trade').del();
     await knex('holding').del();

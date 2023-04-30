@@ -68,7 +68,7 @@ const addTrade = async (req, res) => {
                 .json({ error: `Ticker ${ticker} not found` });
         } else if (!holdingData && type === 'buy') {
             const newHolding = {
-                id: v1(),
+                id: userId + '-' + ticker,
                 user_id: userId,
                 ticker: ticker,
                 avg_price: 0,

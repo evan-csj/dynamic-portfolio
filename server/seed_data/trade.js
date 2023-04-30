@@ -1,6 +1,5 @@
 module.exports = [
     {
-        id: '8bb46038-e3fc-4b46-afa0-47ecaa1cf672',
         user_id: 'evancheng',
         ticker: 'AAPL',
         price: 160,
@@ -10,7 +9,6 @@ module.exports = [
         currency: 'usd',
     },
     {
-        id: '17efecdd-ed54-4208-9a2b-696bacac2eab',
         user_id: 'evancheng',
         ticker: 'NVDA',
         price: 200,
@@ -20,7 +18,6 @@ module.exports = [
         currency: 'usd',
     },
     {
-        id: '47403e83-c2e8-41c0-9bd9-980af5ba9ab8',
         user_id: 'evancheng',
         ticker: 'BMO',
         price: 120,

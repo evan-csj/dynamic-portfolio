@@ -16,7 +16,7 @@ exports.up = function (knex) {
             table.timestamps(true, true);
         })
         .createTable('trade', table => {
-            table.uuid('id').primary();
+            table.uuid('id').unique().primary();
             table
                 .string('user_id')
                 .references('id')
@@ -32,7 +32,7 @@ exports.up = function (knex) {
             table.timestamps(true, true);
         })
         .createTable('holding', table => {
-            table.uuid('id').primary();
+            table.string('id').unique().primary();
             table
                 .string('user_id')
                 .references('id')
@@ -44,10 +44,11 @@ exports.up = function (knex) {
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
             table.string('currency').notNullable();
+            table.unique(['user_id', 'ticker']);
             table.timestamps(true, true);
         })
         .createTable('fund', table => {
-            table.uuid('id').primary();
+            table.uuid('id').unique().primary();
             table
                 .string('user_id')
                 .references('id')
