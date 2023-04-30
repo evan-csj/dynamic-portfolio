@@ -1,22 +1,19 @@
-const { v4: uuid } = require('uuid');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
 
 const singleUser = (req, res) => {
     knex('user')
         .select(
-            'user_name',
+            'id',
             'user_email',
             'first_name',
             'last_name',
             'dob',
             'sin',
             'cash_usd',
-            'cash_cad',
-            'total_deposit',
-            'total_withdraw'
+            'cash_cad'
         )
-        .where('user_name', req.params.username)
+        .where('id', req.params.username)
         .then(data => {
             if (data.length === 0) {
                 return res
@@ -36,8 +33,8 @@ const singleUser = (req, res) => {
         });
 };
 
-const newUser = (req, res) => {
-    const newUser = { id: uuid(), ...req.body };
+const addUser = (req, res) => {
+    const newUser = req.body;
     knex('user')
         .insert(newUser)
         .then(_data => {
@@ -48,4 +45,4 @@ const newUser = (req, res) => {
         });
 };
 
-module.exports = { singleUser, newUser };
+module.exports = { singleUser, addUser };

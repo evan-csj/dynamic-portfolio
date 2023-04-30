@@ -14,9 +14,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/user', userRoute)
-// app.use('/trade', tradeRoute)
-// app.use('/holding', holdingRoute)
-// app.use('/fund', fundRoute)
+app.use('/trade', tradeRoute)
+app.use('/holding', holdingRoute)
+app.use('/fund', fundRoute)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
