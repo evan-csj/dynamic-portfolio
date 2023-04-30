@@ -1,4 +1,3 @@
-const { v4: uuid } = require('uuid');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
 
@@ -35,7 +34,7 @@ const singleUser = (req, res) => {
 };
 
 const addUser = (req, res) => {
-    const newUser = { id: uuid(), ...req.body };
+    const newUser = req.body;
     knex('user')
         .insert(newUser)
         .then(_data => {

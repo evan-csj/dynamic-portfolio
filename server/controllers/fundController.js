@@ -1,6 +1,5 @@
 const knex = require('knex')(require('../knexfile'));
-const { v4: uuid } = require('uuid');
-const validation = require('./validation');
+const { v1 } = require('uuid');
 
 const getFundHistory = (req, res) => {
     knex('fund')
@@ -71,7 +70,7 @@ const changeFund = async (req, res) => {
         await knex('user')
             .update({ cash_usd: cashUSD, cash_cad: cashCAD })
             .where({ id: userId });
-        const newFund = { id: uuid(), ...req.body };
+        const newFund = { id: v1(), ...req.body };
         await knex('fund').insert(newFund);
 
         return res.status(200).json({ cash_usd: cashUSD, cash_cad: cashCAD });

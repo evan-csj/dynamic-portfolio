@@ -1,4 +1,4 @@
-const { v4: uuid } = require('uuid');
+const { v1 } = require('uuid');
 const knex = require('knex')(require('../knexfile'));
 const update = require('./update');
 
@@ -68,7 +68,7 @@ const addTrade = async (req, res) => {
                 .json({ error: `Ticker ${ticker} not found` });
         } else if (!holdingData && type === 'buy') {
             const newHolding = {
-                id: uuid(),
+                id: v1(),
                 user_id: userId,
                 ticker: ticker,
                 avg_price: 0,
@@ -127,8 +127,8 @@ const addTrade = async (req, res) => {
             .where({ user_id: userId })
             .andWhere({ ticker: ticker });
 
-        const newTrade = { id: uuid(), ...req.body };
-        req.body.order_status = 'Approve';
+        const newTrade = { id: v1(), ...req.body };
+        newTrade.order_status = 'approve';
         await knex('trade').insert(newTrade);
 
         return res.status(200).json({
