@@ -46,7 +46,7 @@ export default function Home() {
                 <Box bg="light.navy" color="light.white" className='futura-light'>
                     Hello World
                 </Box>
-                <ChartComponent data={candlestickData}></ChartComponent>
+                {/* <ChartComponent data={candlestickData}></ChartComponent> */}
                 {/* <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
