@@ -6,16 +6,15 @@ const singleUser = (req, res) => {
     knex('user')
         .select(
             'id',
-            'user_name',
             'user_email',
             'first_name',
             'last_name',
             'dob',
             'sin',
             'cash_usd',
-            'cash_cad',
+            'cash_cad'
         )
-        .where('user_name', req.params.username)
+        .where('id', req.params.username)
         .then(data => {
             if (data.length === 0) {
                 return res

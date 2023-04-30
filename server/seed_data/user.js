@@ -1,7 +1,6 @@
 module.exports = [
     {
-        id: '3ed8209c-8d12-4f13-92e8-7e878319439f',
-        user_name: 'evancheng',
+        id: 'evancheng',
         user_email: 'evancheng2014@gmail.com',
         first_name: 'Evan',
         last_name: 'Cheng',

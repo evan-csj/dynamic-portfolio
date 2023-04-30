@@ -5,8 +5,7 @@
 exports.up = function (knex) {
     return knex.schema
         .createTable('user', table => {
-            table.uuid('id').primary();
-            table.string('user_name').unique().notNullable();
+            table.string('id').unique().notNullable();
             table.string('user_email').unique().notNullable();
             table.string('first_name').notNullable();
             table.string('last_name').notNullable();
@@ -19,7 +18,7 @@ exports.up = function (knex) {
         .createTable('trade', table => {
             table.uuid('id').primary();
             table
-                .uuid('user_id')
+                .string('user_id')
                 .references('id')
                 .inTable('user')
                 .onUpdate('CASCADE')
@@ -35,7 +34,7 @@ exports.up = function (knex) {
         .createTable('holding', table => {
             table.uuid('id').primary();
             table
-                .uuid('user_id')
+                .string('user_id')
                 .references('id')
                 .inTable('user')
                 .onUpdate('CASCADE')
@@ -50,7 +49,7 @@ exports.up = function (knex) {
         .createTable('fund', table => {
             table.uuid('id').primary();
             table
-                .uuid('user_id')
+                .string('user_id')
                 .references('id')
                 .inTable('user')
                 .onUpdate('CASCADE')
