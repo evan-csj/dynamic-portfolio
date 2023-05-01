@@ -18,6 +18,17 @@ const theme = extendTheme({
                 },
             },
         },
+        Heading: {
+            baseStyle: {
+                fontFamily: 'Jost',
+            },
+            size: {
+                sm: {
+                    fontSize: 'sm',
+                    fontWeight: '300',
+                },
+            },
+        },
     },
     styles: {
         global: {

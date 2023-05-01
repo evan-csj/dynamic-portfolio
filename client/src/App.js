@@ -11,10 +11,9 @@ function App() {
     return (
         <div className="App">
             <BrowserRouter>
-                <Box>Hello WOrld</Box>
                 <Routes>
-                    <Route path="/" element={<Profile />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/" element={<Profile userId={'evancheng'}/>} />
+                    <Route path="/profile" element={<Profile userId={'evancheng'}/>} />
                     <Route path="/candlestick" element={<CandleStick />} />
                     <Route path="/history" element={<History />} />
                 </Routes>
