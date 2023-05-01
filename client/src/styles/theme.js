@@ -9,10 +9,6 @@ const theme = extendTheme({
             white: '#F2F7FF',
         },
     },
-    fonts: {
-        heading: `'Jost Bold', sans-serif`,
-        body: `'Jost Regular', sans-serif`,
-    },
     components: {
         Icon: {
             variants: {
@@ -20,6 +16,13 @@ const theme = extendTheme({
                     w: '12',
                     h: '12',
                 },
+            },
+        },
+    },
+    styles: {
+        global: {
+            body: {
+                fontFamily: 'Jost',
             },
         },
     },

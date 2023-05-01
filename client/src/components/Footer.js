@@ -1,13 +1,20 @@
-import React, { Profiler } from 'react';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { Flex } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Login } from '../styles/icons';
 
 function Footer() {
     return (
         <Flex justifyContent="space-between">
-            <Profile variant="btn" />
-            <CandleStick variant="btn" />
-            <History variant="btn" />
+            <NavLink to="/profile">
+                <Profile variant="btn" />
+            </NavLink>
+            <NavLink to="/candlestick">
+                <CandleStick variant="btn" />
+            </NavLink>
+            <NavLink to="/history">
+                <History variant="btn" />
+            </NavLink>
             <Login variant="btn" />
         </Flex>
     );
