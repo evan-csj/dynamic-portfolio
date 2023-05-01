@@ -9,6 +9,10 @@ const theme = extendTheme({
             white: '#F2F7FF',
         },
     },
+    fonts: {
+        heading: `'Jost Bold', sans-serif`,
+        body: `'Jost Regular', sans-serif`,
+    },
 });
 
 export default theme;
