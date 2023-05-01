@@ -13,6 +13,16 @@ const theme = extendTheme({
         heading: `'Jost Bold', sans-serif`,
         body: `'Jost Regular', sans-serif`,
     },
+    components: {
+        Icon: {
+            variants: {
+                btn: {
+                    w: '12',
+                    h: '12',
+                },
+            },
+        },
+    },
 });
 
 export default theme;
