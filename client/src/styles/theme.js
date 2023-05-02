@@ -6,7 +6,9 @@ const theme = extendTheme({
             navy: '#10316B',
             blue: '#0B409C',
             yellow: '#FFCE63',
-            white: '#F2F7FF',
+            white: '#FFFFFF',
+            black: '#212A3E',
+            grey: '#9BA4B5',
         },
     },
     components: {
@@ -43,7 +45,9 @@ const theme = extendTheme({
     styles: {
         global: {
             body: {
+                color: 'light.black',
                 fontFamily: 'Jost',
+                // bg: 'light.white',
             },
             '.money': {
                 textAlign: 'right',

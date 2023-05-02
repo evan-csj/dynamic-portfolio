@@ -11,7 +11,13 @@ import {
     Th,
     Td,
     TableContainer,
+    Tabs,
+    TabList,
+    TabPanels,
+    Tab,
+    TabPanel,
 } from '@chakra-ui/react';
+import HoldingList from './HoldingList';
 import { getUser } from '../global/axios';
 import '../styles/global.scss';
 
@@ -26,18 +32,18 @@ function Profile(props) {
 
     if (userData !== undefined) {
         return (
-            <Flex direction="column">
+            <Flex className="flex-col">
                 {/* Profile Header in Mobile */}
                 <Flex
                     bg="light.navy"
                     px={4}
                     pt={8}
                     pb={4}
-                    borderColor="light.yellow"
+                    borderBottomColor="light.yellow"
                     borderBottomWidth="4px"
                     gap={4}
                     justifyContent="space-between"
-                    direction="column"
+                    className="flex-col"
                 >
                     <Box>
                         <Heading color="light.white" size="xl">
@@ -48,7 +54,7 @@ function Profile(props) {
                         </Heading>
                     </Box>
 
-                    <Flex direction="column">
+                    <Flex className="flex-col">
                         <Text color="light.white">
                             "Be fearful when others are greedy and be greed when
                             others are fearful."
@@ -60,25 +66,29 @@ function Profile(props) {
                 </Flex>
 
                 {/* Account Details */}
-                <Flex direction="column">
+                <Flex className="flex-col">
                     <Heading px={4} py={4}>
                         Account Details
                     </Heading>
-                    <TableContainer px={{ base: '4' }}>
+                    <TableContainer
+                        px={{ base: '4' }}
+                        borderColor="light.yellow"
+                    >
                         <Table
                             size="sm"
                             variant="simple"
                             className="table-user"
+                            borderColor="light.yellow"
                         >
-                            <Thead>
-                                <Tr>
+                            <Thead borderColor="light.yellow">
+                                <Tr borderColor="light.yellow">
                                     <Th></Th>
                                     <Th isNumeric>CAD</Th>
                                     <Th isNumeric>USD</Th>
                                     <Th isNumeric>Total</Th>
                                 </Tr>
                             </Thead>
-                            <Tbody>
+                            <Tbody borderColor="light.yellow">
                                 <Tr>
                                     <Th>Assets</Th>
                                     <Td isNumeric>CAD</Td>
@@ -109,9 +119,41 @@ function Profile(props) {
                 </Flex>
 
                 {/* Holdings */}
-                <Flex>
-                    
-                </Flex>
+                <Tabs
+                    isFitted
+                    variant="enclosed"
+                    px={4}
+                    pt={8}
+                    borderColor="light.yellow"
+                >
+                    <TabList>
+                        <Tab
+                            _selected={{
+                                color: 'light.blue',
+                                borderColor: 'light.yellow',
+                                borderBottomColor: 'light.white',
+                            }}
+                        >
+                            Portfolio
+                        </Tab>
+                        <Tab
+                            _selected={{
+                                color: 'light.blue',
+                                borderColor: 'light.yellow',
+                                borderBottomColor: 'light.white',
+                            }}
+                        >
+                            Holdings
+                        </Tab>
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel p={0}>one</TabPanel>
+                        <TabPanel p={0}>
+                            <HoldingList userId={props.userId} />
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
+                <Box h={20}></Box>
             </Flex>
         );
     }

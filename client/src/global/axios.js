@@ -14,3 +14,10 @@ export const getUser = async id => {
         return user;
     } catch (err) {}
 };
+
+export const getHoldings = async id => {
+    try {
+        const holdings = await axios.get(`${API_ADDRESS}/holding/user/${id}`);
+        return holdings;
+    } catch (err) {}
+};
