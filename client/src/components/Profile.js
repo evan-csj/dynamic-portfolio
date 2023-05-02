@@ -124,10 +124,11 @@ function Profile(props) {
                     variant="enclosed"
                     px={4}
                     pt={8}
-                    borderColor="light.yellow"
+                    borderBottomColor="rgba(0,0,0,0)"
                 >
                     <TabList>
                         <Tab
+                            borderBottomColor="light.yellow"
                             _selected={{
                                 color: 'light.blue',
                                 borderColor: 'light.yellow',
@@ -137,6 +138,7 @@ function Profile(props) {
                             Portfolio
                         </Tab>
                         <Tab
+                            borderBottomColor="light.yellow"
                             _selected={{
                                 color: 'light.blue',
                                 borderColor: 'light.yellow',
