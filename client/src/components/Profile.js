@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Box, Heading, Text, Grid, GridItem } from '@chakra-ui/react';
+import {
+    Flex,
+    Box,
+    Heading,
+    Text,
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
+    TableContainer,
+} from '@chakra-ui/react';
 import { getUser } from '../global/axios';
+import '../styles/global.scss';
 
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);
@@ -48,39 +61,56 @@ function Profile(props) {
 
                 {/* Account Details */}
                 <Flex direction="column">
-                    <Heading>Account Details</Heading>
-                    <Grid
-                        templateAreas={`"Empty CAD USD Total" 
-                                        "Assets A1 B1 C1" 
-                                        "Equity A2 B2 C2" 
-                                        "Cash A3 B3 C3"
-                                        "GL A4 B4 C4"`}
-                        gridTemplateRows={'repeat(5, 1fr)'}
-                        gridTemplateColumns={'repeat(4, 1fr)'}
-                    >
-                        <GridItem area={'Empty'}></GridItem>
-                        <GridItem area={'CAD'}>CAD</GridItem>
-                        <GridItem area={'USD'}>USD</GridItem>
-                        <GridItem area={'Total'}>Total</GridItem>
-                        <GridItem area={'Assets'}>Assets</GridItem>
-                        <GridItem area={'Equity'}>Equity</GridItem>
-                        <GridItem area={'Cash'}>Cash</GridItem>
-                        <GridItem area={'GL'}>Gain/Loss</GridItem>
-                        <GridItem area={'A1'}>$A1</GridItem>
-                        <GridItem area={'B1'}>$B1</GridItem>
-                        <GridItem area={'C1'}>$C1</GridItem>
-                        <GridItem area={'A2'}>$A2</GridItem>
-                        <GridItem area={'B2'}>$B2</GridItem>
-                        <GridItem area={'C2'}>$C2</GridItem>
-                        <GridItem area={'A3'}>$A3</GridItem>
-                        <GridItem area={'B3'}>$B3</GridItem>
-                        <GridItem area={'C3'}>$C3</GridItem>
-                        <GridItem area={'A4'}>$A4</GridItem>
-                        <GridItem area={'B4'}>$B4</GridItem>
-                        <GridItem area={'C4'} className='right'>
-                            $C4
-                        </GridItem>
-                    </Grid>
+                    <Heading px={4} py={4}>
+                        Account Details
+                    </Heading>
+                    <TableContainer px={{ base: '4' }}>
+                        <Table
+                            size="sm"
+                            variant="simple"
+                            className="table-user"
+                        >
+                            <Thead>
+                                <Tr>
+                                    <Th></Th>
+                                    <Th isNumeric>CAD</Th>
+                                    <Th isNumeric>USD</Th>
+                                    <Th isNumeric>Total</Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                <Tr>
+                                    <Th>Assets</Th>
+                                    <Td isNumeric>CAD</Td>
+                                    <Td isNumeric>USD</Td>
+                                    <Td isNumeric>Total</Td>
+                                </Tr>
+                                <Tr>
+                                    <Th>Equity</Th>
+                                    <Td isNumeric>CAD</Td>
+                                    <Td isNumeric>USD</Td>
+                                    <Td isNumeric>Total</Td>
+                                </Tr>
+                                <Tr>
+                                    <Th>Cash</Th>
+                                    <Td isNumeric>${userData.cash_cad}</Td>
+                                    <Td isNumeric>${userData.cash_usd}</Td>
+                                    <Td isNumeric>Total</Td>
+                                </Tr>
+                                <Tr>
+                                    <Th>Gain/Loss</Th>
+                                    <Td isNumeric>CAD</Td>
+                                    <Td isNumeric>USD</Td>
+                                    <Td isNumeric>Total</Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
+                </Flex>
+
+                {/* Holdings */}
+                <Flex>
+                    
                 </Flex>
             </Flex>
         );

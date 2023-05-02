@@ -1,0 +1,17 @@
+@import './partials/variables';
+@import './partials/mixins';
+
+.table-user {
+    td,
+    th {
+        padding: $unit;
+    }
+
+    tbody {
+        tr {
+            &:hover {
+                background-color: $light-yellow;
+            }
+        }
+    }
+}
