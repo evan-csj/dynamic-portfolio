@@ -29,11 +29,24 @@ const theme = extendTheme({
                 },
             },
         },
+        Flex: {
+            variants: {
+                col: {
+                    flexDirection: 'column',
+                },
+            },
+        },
+    },
+    shadows: {
+        mainTab: '0 0 10px 1px rgba(33, 42, 62, 0.3)',
     },
     styles: {
         global: {
             body: {
                 fontFamily: 'Jost',
+            },
+            '.money': {
+                textAlign: 'right',
             },
         },
     },

@@ -3,13 +3,18 @@ import { NavLink } from 'react-router-dom';
 import { Flex } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Login, Fund } from '../styles/icons';
 
-function Footer() {
+function MainTab() {
     return (
         <Flex
-            justifyContent="space-between"
-            pos="fixed"
+            bg="light.white"
+            shadow="mainTab"
             w="100%"
-            bottom="0"
+            px={4}
+            py={2}
+            borderTopRadius={20}
+            pos="fixed"
+            bottom={0}
+            justifyContent="space-between"
             display={{ base: 'flex', md: 'none' }}
         >
             <NavLink to="/profile">
@@ -27,4 +32,4 @@ function Footer() {
     );
 }
 
-export default Footer;
+export default MainTab;
