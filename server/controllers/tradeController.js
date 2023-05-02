@@ -6,6 +6,7 @@ const tradeHistory = (req, res) => {
     knex('trade')
         .select('*')
         .where('user_id', req.params.userId)
+        .orderBy('created_at', 'desc')
         .then(data => {
             if (data.length === 0) {
                 return res

@@ -153,7 +153,6 @@ function Profile(props) {
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
-                <Box h={20}></Box>
             </Flex>
         );
     }
