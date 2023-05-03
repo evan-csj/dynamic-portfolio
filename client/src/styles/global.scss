@@ -6,6 +6,7 @@
     th {
         padding: 2 * $unit $unit;
         border-color: $light-yellow;
+        color: $light-black;
     }
 
     tbody {
@@ -19,4 +20,12 @@
 
 .flex-col {
     flex-direction: column;
+}
+
+.grid4 {
+    border-color: $light-grey;
+    border-width: 0 0 1px;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    padding: 4 * $unit;
 }

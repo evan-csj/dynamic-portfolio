@@ -10,6 +10,8 @@ const theme = extendTheme({
             white: '#FFFFFF',
             black: '#212A3E',
             grey: '#9BA4B5',
+            green: '#0B8457',
+            red: '#FF5F5F',
         },
     },
     components: {

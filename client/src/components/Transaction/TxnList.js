@@ -10,6 +10,7 @@ function TxnList(props) {
     if (props.type !== 'trading' && props.type !== 'funding') {
         return <></>;
     }
+
     if (list !== []) {
         return (
             <Flex className="flex-col">

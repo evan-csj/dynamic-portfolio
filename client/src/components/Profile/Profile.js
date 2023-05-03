@@ -67,7 +67,7 @@ function Profile(props) {
 
                 {/* Account Details */}
                 <Flex className="flex-col">
-                    <Heading px={4} py={4}>
+                    <Heading px={4} py={4} color="light.black">
                         Account Details
                     </Heading>
                     <TableContainer
