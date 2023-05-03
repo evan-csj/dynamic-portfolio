@@ -3,7 +3,7 @@
 import { Box } from '@chakra-ui/react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainTab from './components/MainTab';
-import Profile from './components/Profile';
+import Profile from './components/Profile/Profile';
 import CandleStick from './components/CandleStick';
 import History from './components/History';
 

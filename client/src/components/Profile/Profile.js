@@ -18,8 +18,8 @@ import {
     TabPanel,
 } from '@chakra-ui/react';
 import HoldingList from './HoldingList';
-import { getUser } from '../global/axios';
-import '../styles/global.scss';
+import { getUser } from '../../global/axios';
+import '../../styles/global.scss';
 
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);

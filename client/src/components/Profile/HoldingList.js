@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { getHoldings } from '../global/axios';
+import { getHoldings } from '../../global/axios';
 import Holding from './Holding';
 import { Flex, Box } from '@chakra-ui/react';
-import '../styles/global.scss';
+import '../../styles/global.scss';
 
 function HoldingList(props) {
     const [holdingList, setHoldingList] = useState([]);

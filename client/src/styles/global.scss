@@ -4,7 +4,8 @@
 .table-user {
     td,
     th {
-        padding: $unit;
+        padding: 2 * $unit $unit;
+        border-color: $light-yellow;
     }
 
     tbody {
