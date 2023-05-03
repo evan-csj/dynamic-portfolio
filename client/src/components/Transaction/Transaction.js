@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Heading,
     Flex,
@@ -10,9 +10,23 @@ import {
     Tab,
     TabPanel,
 } from '@chakra-ui/react';
-import '../styles/global.scss';
+import { getTrading, getFunding } from '../../global/axios';
+import TxnList from './TxnList';
+import '../../styles/global.scss';
 
-function History() {
+function Transaction(props) {
+    const [tradingList, setTradingList] = useState([]);
+    const [fundingList, setFundingList] = useState([]);
+
+    useEffect(() => {
+        getTrading(props.userId).then(response => {
+            setTradingList(response.data);
+        });
+        getFunding(props.userId).then(response => {
+            setFundingList(response.data);
+        });
+    }, []);
+
     return (
         <Flex className="flex-col">
             <Center
@@ -39,7 +53,7 @@ function History() {
                             borderBottomColor: 'light.white',
                         }}
                     >
-                        Trades
+                        Trading
                     </Tab>
                     <Tab
                         _selected={{
@@ -52,12 +66,16 @@ function History() {
                     </Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel p={0}>one</TabPanel>
-                    <TabPanel p={0}></TabPanel>
+                    <TabPanel p={0}>
+                        <TxnList key={0} type={'trading'} list={tradingList} />
+                    </TabPanel>
+                    <TabPanel p={0}>
+                        <TxnList key={1} type={'funding'} list={fundingList} />
+                    </TabPanel>
                 </TabPanels>
             </Tabs>
         </Flex>
     );
 }
 
-export default History;
+export default Transaction;

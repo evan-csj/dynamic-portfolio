@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainTab from './components/MainTab';
 import Profile from './components/Profile/Profile';
 import CandleStick from './components/CandleStick';
-import History from './components/History';
+import Txn from './components/Transaction/Transaction';
 
 function App() {
     return (
@@ -17,7 +17,10 @@ function App() {
                     element={<Profile userId={'evancheng'} />}
                 />
                 <Route path="/candlestick" element={<CandleStick />} />
-                <Route path="/history" element={<History />} />
+                <Route
+                    path="/history"
+                    element={<Txn userId={'evancheng'} />}
+                />
             </Routes>
             <MainTab />
         </BrowserRouter>

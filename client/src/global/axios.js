@@ -22,7 +22,7 @@ const getHoldings = async id => {
     } catch (err) {}
 };
 
-const getTrades = async id => {
+const getTrading = async id => {
     try {
         const trades = await axios.get(`${API_ADDRESS}/trade/user/${id}`);
         return trades;
@@ -36,4 +36,4 @@ const getFunding = async id => {
     } catch (err) {}
 };
 
-export { getUser, getHoldings, getTrades, getFunding };
+export { getUser, getHoldings, getTrading, getFunding };
