@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, forwardRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
     Flex,
@@ -8,6 +8,8 @@ import {
     FormControl,
     FormLabel,
     Input,
+    RadioGroup,
+    Radio,
     Stack,
     Popover,
     PopoverTrigger,
@@ -21,9 +23,8 @@ import {
     FocusLock,
 } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Login, Fund } from '../styles/icons';
-import { color } from 'framer-motion';
 
-const TextInput = React.forwardRef((props, ref) => {
+const AmountInput = forwardRef((props, ref) => {
     return (
         <FormControl>
             <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
@@ -32,18 +33,33 @@ const TextInput = React.forwardRef((props, ref) => {
     );
 });
 
-const Form = ({ amountRef }) => {
+const Form = ({ amountRef, currency, currencyChange, onFunding }) => {
     return (
-        <Stack spacing={8}>
-            <TextInput
+        <Stack spacing={4}>
+            <AmountInput
                 label="Amount"
                 id="amount"
                 ref={amountRef}
                 defaultValue="0"
             />
+
+            <RadioGroup onChange={currencyChange} value={currency}>
+                <Stack spacing={5} direction="row">
+                    <Radio value="cad">CAD</Radio>
+                    <Radio value="usd">USD</Radio>
+                </Stack>
+            </RadioGroup>
+
             <ButtonGroup display="flex" justifyContent="space-between">
-                <Button color="light.red">Withdraw</Button>
-                <Button color="light.green">Deposit</Button>
+                <Button color="light.red" onClick={() => onFunding('withdraw')}>
+                    Withdraw
+                </Button>
+                <Button
+                    color="light.green"
+                    onClick={() => onFunding('deposit')}
+                >
+                    Deposit
+                </Button>
             </ButtonGroup>
         </Stack>
     );
@@ -51,11 +67,16 @@ const Form = ({ amountRef }) => {
 
 function MainTab() {
     const { onOpen, onClose, isOpen } = useDisclosure();
-    const amountRef = React.useRef(null);
+    const amountRef = useRef(null);
+    const [currency, setCurrency] = useState('');
+    const sendFunding = type => {
+        console.log(amountRef.current.value);
+        console.log(currency);
+        console.log(type);
+    };
 
     return (
         <>
-            <Box h={20}></Box>
             <Flex
                 bg="light.white"
                 shadow="mainTab"
@@ -81,7 +102,7 @@ function MainTab() {
                     onOpen={onOpen}
                     onClose={onClose}
                     placement="top"
-                    closeOnBlur={false}
+                    closeOnBlur={true}
                 >
                     <PopoverTrigger>
                         <Fund variant="btn" />
@@ -89,7 +110,12 @@ function MainTab() {
                     <PopoverContent p={4} mb={2}>
                         <FocusLock returnFocus persistentFocus={false}>
                             <PopoverArrow />
-                            <Form amountRef={amountRef} />
+                            <Form
+                                amountRef={amountRef}
+                                currency={currency}
+                                currencyChange={setCurrency}
+                                onFunding={sendFunding}
+                            />
                         </FocusLock>
                     </PopoverContent>
                 </Popover>

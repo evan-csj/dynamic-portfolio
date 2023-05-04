@@ -19,8 +19,9 @@ function Trading(props) {
         <Grid className="grid4">
             <GridItem>
                 <Text as="span" fontWeight="bold">
-                    {ticker}{' '}
+                    {ticker}
                 </Text>
+                {' \u2022 '}
                 <Text
                     as="span"
                     color={
