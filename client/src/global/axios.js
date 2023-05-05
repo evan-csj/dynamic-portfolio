@@ -36,4 +36,15 @@ const getFunding = async id => {
     } catch (err) {}
 };
 
-export { getUser, getHoldings, getTrading, getFunding };
+const postFunding = async funding => {
+    try {
+        const newFunding = axios.post(
+            `${API_ADDRESS}/fund`,
+            funding,
+            newHeader
+        );
+        return newFunding;
+    } catch (err) {}
+};
+
+export { getUser, getHoldings, getTrading, getFunding, postFunding };

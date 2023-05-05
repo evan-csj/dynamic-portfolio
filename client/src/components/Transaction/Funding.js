@@ -8,7 +8,7 @@ function Funding(props) {
     const { amount, type, currency, created_at: timestamp } = props.detail;
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: currency,
+        currency: 'usd',
     });
 
     return (

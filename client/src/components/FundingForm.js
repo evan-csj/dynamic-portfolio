@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import {
     Heading,
     Box,
@@ -7,7 +8,7 @@ import {
     Select,
     FormControl,
     FormLabel,
-    FormErrorMessage,
+    // FormErrorMessage,
     FormHelperText,
     Input,
     InputGroup,
@@ -19,10 +20,11 @@ import {
     StatNumber,
 } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
-import { getUser } from '../global/axios';
+import { getUser, postFunding } from '../global/axios';
 import '../styles/global.scss';
 
 function FundingForm(props) {
+    const navigate = useNavigate();
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
     const [amount, setAmount] = useState('');
@@ -77,8 +79,15 @@ function FundingForm(props) {
     }, [props.userId]);
 
     const handleSubmit = () => {
-        if(type !== '' && account !== '' && numberValue > 0){
-            
+        if (type !== '' && account !== '' && notZero && enoughFund()) {
+            const newFunding = {
+                user_id: props.userId,
+                amount: numberValue,
+                type: type,
+                currency: account,
+            };
+            postFunding(newFunding);
+            navigate("/profile");
         }
     };
 
