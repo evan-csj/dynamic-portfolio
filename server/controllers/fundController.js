@@ -3,8 +3,9 @@ const { v1 } = require('uuid');
 
 const getFundHistory = (req, res) => {
     knex('fund')
-        .select('id', 'user_id', 'amount', 'type', 'currency')
+        .select('*')
         .where('user_id', req.params.userId)
+        .orderBy('created_at', 'desc')
         .then(data => {
             if (data.length === 0) {
                 return res

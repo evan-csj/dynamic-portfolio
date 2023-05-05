@@ -6,6 +6,7 @@ const tradeHistory = (req, res) => {
     knex('trade')
         .select('*')
         .where('user_id', req.params.userId)
+        .orderBy('created_at', 'desc')
         .then(data => {
             if (data.length === 0) {
                 return res
@@ -128,7 +129,7 @@ const addTrade = async (req, res) => {
             .andWhere({ ticker: ticker });
 
         const newTrade = { id: v1(), ...req.body };
-        newTrade.order_status = 'approve';
+        newTrade.order_status = 'approved';
         await knex('trade').insert(newTrade);
 
         return res.status(200).json({

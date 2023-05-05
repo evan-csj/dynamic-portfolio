@@ -1,0 +1,35 @@
+@import './partials/variables';
+@import './partials/mixins';
+
+.table-user {
+    td,
+    th {
+        padding: 2 * $unit $unit;
+        border-color: $light-yellow;
+        color: $light-black;
+    }
+
+    tbody {
+        tr {
+            &:hover {
+                background-color: $light-yellow;
+            }
+        }
+    }
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.grid4 {
+    border-color: $light-grey;
+    border-width: 0 0 1px;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    padding: 4 * $unit;
+}
+
+.nav-link:focus {
+    outline: none;
+}
