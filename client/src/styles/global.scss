@@ -29,3 +29,7 @@
     grid-template-columns: repeat(2, 1fr);
     padding: 4 * $unit;
 }
+
+.nav-link:focus {
+    outline: none;
+}

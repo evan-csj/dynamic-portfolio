@@ -41,6 +41,15 @@ const theme = extendTheme({
                 },
             },
         },
+        Button: {
+            variants: {
+                submit: {
+                    color: 'light.white',
+                    background: 'light.black',
+                    borderRadius: 20,
+                },
+            },
+        },
     },
     shadows: {
         mainTab: '0 0 10px 1px rgba(33, 42, 62, 0.3)',
@@ -50,7 +59,6 @@ const theme = extendTheme({
             body: {
                 color: 'light.black',
                 fontFamily: 'Jost',
-                // bg: 'light.white',
             },
             '.money': {
                 textAlign: 'right',

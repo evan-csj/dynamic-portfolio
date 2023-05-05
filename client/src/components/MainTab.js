@@ -1,85 +1,26 @@
-import React, { useRef, useState, forwardRef } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
+    Text,
     Flex,
     Box,
-    Button,
-    ButtonGroup,
-    FormControl,
-    FormLabel,
-    Input,
-    RadioGroup,
-    Radio,
-    Stack,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverFooter,
-    PopoverArrow,
-    PopoverAnchor,
     useDisclosure,
-    FocusLock,
+    Drawer,
+    DrawerBody,
+    DrawerOverlay,
+    DrawerContent,
 } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Login, Fund } from '../styles/icons';
-
-const AmountInput = forwardRef((props, ref) => {
-    return (
-        <FormControl>
-            <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
-            <Input ref={ref} id={props.id} {...props} />
-        </FormControl>
-    );
-});
-
-const Form = ({ amountRef, currency, currencyChange, onFunding }) => {
-    return (
-        <Stack spacing={4}>
-            <AmountInput
-                label="Amount"
-                id="amount"
-                ref={amountRef}
-                defaultValue="0"
-            />
-
-            <RadioGroup onChange={currencyChange} value={currency}>
-                <Stack spacing={5} direction="row">
-                    <Radio value="cad">CAD</Radio>
-                    <Radio value="usd">USD</Radio>
-                </Stack>
-            </RadioGroup>
-
-            <ButtonGroup display="flex" justifyContent="space-between">
-                <Button color="light.red" onClick={() => onFunding('withdraw')}>
-                    Withdraw
-                </Button>
-                <Button
-                    color="light.green"
-                    onClick={() => onFunding('deposit')}
-                >
-                    Deposit
-                </Button>
-            </ButtonGroup>
-        </Stack>
-    );
-};
+import '../styles/global.scss';
 
 function MainTab() {
-    const { onOpen, onClose, isOpen } = useDisclosure();
-    const amountRef = useRef(null);
-    const [currency, setCurrency] = useState('');
-    const sendFunding = type => {
-        console.log(amountRef.current.value);
-        console.log(currency);
-        console.log(type);
-    };
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
         <>
             <Flex
                 bg="light.white"
-                shadow="mainTab"
+                shadow={isOpen ? '' : 'mainTab'}
                 w="100%"
                 px={4}
                 py={2}
@@ -88,43 +29,50 @@ function MainTab() {
                 bottom={0}
                 justifyContent="space-between"
                 display={{ base: 'flex', md: 'none' }}
+                zIndex={2}
             >
-                <NavLink to="/profile">
+                <NavLink to="/profile" onClick={onClose}>
                     <Profile variant="btn" />
                 </NavLink>
                 <NavLink to="/candlestick">
-                    <CandleStick variant="btn" />
+                    <CandleStick variant="btn" onClick={onClose}/>
                 </NavLink>
 
-                <Popover
-                    isOpen={isOpen}
-                    initialFocusRef={amountRef}
-                    onOpen={onOpen}
-                    onClose={onClose}
-                    placement="top"
-                    closeOnBlur={true}
-                >
-                    <PopoverTrigger>
-                        <Fund variant="btn" />
-                    </PopoverTrigger>
-                    <PopoverContent p={4} mb={2}>
-                        <FocusLock returnFocus persistentFocus={false}>
-                            <PopoverArrow />
-                            <Form
-                                amountRef={amountRef}
-                                currency={currency}
-                                currencyChange={setCurrency}
-                                onFunding={sendFunding}
-                            />
-                        </FocusLock>
-                    </PopoverContent>
-                </Popover>
+                <Fund variant="btn" onClick={onOpen} />
 
                 <NavLink to="/history">
-                    <History variant="btn" />
+                    <History variant="btn" onClick={onClose}/>
                 </NavLink>
-                <Login variant="btn" />
+                <Login variant="btn" onClick={onClose}/>
             </Flex>
+            <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
+                <DrawerOverlay zIndex={0} />
+                <DrawerContent shadow="none" borderTopRadius={20}>
+                    <DrawerBody>
+                        <Flex className="flex-col" pt={4}>
+                            <NavLink
+                                to="/funding"
+                                className="nav-link"
+                                onClick={onClose}
+                            >
+                                <Flex className="flex-col">
+                                    <Text>Funding</Text>
+                                    <Text>Deposit or withdraw funds</Text>
+                                </Flex>
+                            </NavLink>
+                            <NavLink
+                                to="trading"
+                                className="nav-link"
+                                onClick={onClose}
+                            >
+                                <Text>Trading</Text>
+                                <Text>Buy or sell stocks and ETFs</Text>
+                            </NavLink>
+                        </Flex>
+                        <Box h={16}/>
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
         </>
     );
 }
