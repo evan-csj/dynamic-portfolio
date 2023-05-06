@@ -1,23 +1,39 @@
 const axios = require('axios');
 const FUNCTION = 'TIME_SERIES_DAILY_ADJUSTED';
 require('dotenv').config();
-const { REALSTONKS_KEY, ALPHA_KEY } = process.env;
+const { RAPIDAPI_KEY, ALPHA_KEY } = process.env;
 
-const getPriceCurrent = async (req, res) => {
-    const options = {
+const getOptions = tickers => {
+    return {
         method: 'GET',
-        url: `https://realstonks.p.rapidapi.com/${req.params.ticker}`,
+        url: 'https://twelve-data1.p.rapidapi.com/price',
+        params: {
+            symbol: `${tickers}`,
+            format: 'json',
+            outputsize: '30',
+        },
         headers: {
-            'X-RapidAPI-Key': `${REALSTONKS_KEY}`,
-            'X-RapidAPI-Host': 'realstonks.p.rapidapi.com',
+            'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
+            'X-RapidAPI-Host': 'twelve-data1.p.rapidapi.com',
         },
     };
+};
 
+const getPriceRealTimeAPI = async (req, res) => {
     try {
-        const response = await axios.request(options);
+        const response = await axios.request(getOptions(req.query.tickers));
         return res.status(200).json(response.data);
     } catch (error) {
         return res.status(404).json(error);
+    }
+};
+
+const getPriceRealTime = async tickers => {
+    try {
+        const response = await axios.request(getOptions(tickers));
+        return response.data;
+    } catch (error) {
+        return error;
     }
 };
 
@@ -31,4 +47,4 @@ const getPriceHistory = async (req, res) => {
         });
 };
 
-module.exports = { getPriceCurrent, getPriceHistory };
+module.exports = { getPriceRealTimeAPI, getPriceRealTime, getPriceHistory };
