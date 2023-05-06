@@ -1,19 +1,34 @@
 const axios = require('axios');
-const ALPHA_ADDRESS = 'https://www.alphavantage.co';
 const FUNCTION = 'TIME_SERIES_DAILY_ADJUSTED';
 require('dotenv').config();
-const { API_KEY } = process.env;
+const { REALSTONKS_KEY, ALPHA_KEY } = process.env;
 
-const getPrice = async (req, res) => {
+const getPriceCurrent = async (req, res) => {
+    const options = {
+        method: 'GET',
+        url: `https://realstonks.p.rapidapi.com/${req.params.ticker}`,
+        headers: {
+            'X-RapidAPI-Key': `${REALSTONKS_KEY}`,
+            'X-RapidAPI-Host': 'realstonks.p.rapidapi.com',
+        },
+    };
+
+    try {
+        const response = await axios.request(options);
+        return res.status(200).json(response.data);
+    } catch (error) {
+        return res.status(404).json(error);
+    }
+};
+
+const getPriceHistory = async (req, res) => {
     axios
         .get(
-            `${ALPHA_ADDRESS}/query?function=${FUNCTION}&symbol=${req.params.ticker}&apikey=${API_KEY}`
+            `https://www.alphavantage.co/query?function=${FUNCTION}&symbol=${req.params.ticker}&apikey=${ALPHA_KEY}`
         )
         .then(response => {
-            const data = response.data['Time Series (Daily)'];
-            console.log(data["2023-05-04"]["1. open"]);
             return res.status(200).json(response.data);
         });
 };
 
-module.exports = { getPrice };
+module.exports = { getPriceCurrent, getPriceHistory };
