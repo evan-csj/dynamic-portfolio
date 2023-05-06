@@ -18,19 +18,25 @@ import {
     TabPanel,
 } from '@chakra-ui/react';
 import HoldingList from './HoldingList';
-import { getUser } from '../../global/axios';
+import { getUser, getTotalValue } from '../../global/axios';
 import '../../styles/global.scss';
 
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);
+    const [totalValue, setTotalValue] = useState(undefined);
 
     useEffect(() => {
         getUser(props.userId).then(response => {
             setUserData(response.data);
         });
+        if (totalValue === undefined) {
+            getTotalValue(props.userId).then(response => {
+                setTotalValue(response.data);
+            });
+        }
     }, [props.userId]);
 
-    if (userData !== undefined) {
+    if (userData !== undefined && totalValue !== undefined) {
         return (
             <Flex className="flex-col">
                 {/* Profile Header in Mobile */}
@@ -91,20 +97,38 @@ function Profile(props) {
                             <Tbody borderColor="light.yellow">
                                 <Tr>
                                     <Th>Assets</Th>
-                                    <Td isNumeric>CAD</Td>
-                                    <Td isNumeric>USD</Td>
+                                    <Td isNumeric>
+                                        $
+                                        {(
+                                            totalValue.cad + userData.cash_cad
+                                        ).toFixed(2)}
+                                    </Td>
+                                    <Td isNumeric>
+                                        $
+                                        {(
+                                            totalValue.usd + userData.cash_usd
+                                        ).toFixed(2)}
+                                    </Td>
                                     <Td isNumeric>Total</Td>
                                 </Tr>
                                 <Tr>
                                     <Th>Equity</Th>
-                                    <Td isNumeric>CAD</Td>
-                                    <Td isNumeric>USD</Td>
+                                    <Td isNumeric>
+                                        ${totalValue.cad.toFixed(2)}
+                                    </Td>
+                                    <Td isNumeric>
+                                        ${totalValue.usd.toFixed(2)}
+                                    </Td>
                                     <Td isNumeric>Total</Td>
                                 </Tr>
                                 <Tr>
                                     <Th>Cash</Th>
-                                    <Td isNumeric>${userData.cash_cad}</Td>
-                                    <Td isNumeric>${userData.cash_usd}</Td>
+                                    <Td isNumeric>
+                                        ${userData.cash_cad.toFixed(2)}
+                                    </Td>
+                                    <Td isNumeric>
+                                        ${userData.cash_usd.toFixed(2)}
+                                    </Td>
                                     <Td isNumeric>Total</Td>
                                 </Tr>
                                 <Tr>
