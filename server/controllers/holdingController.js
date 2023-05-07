@@ -8,6 +8,7 @@ const selectHolding = userId =>
             'user_id',
             'ticker',
             'avg_price',
+            'last_price',
             'buy_shares',
             'sell_shares',
             'currency'
@@ -43,10 +44,16 @@ const getHoldingRTPrice = async (req, res) => {
 
         const tickerArray =
             holdingList.map(item => item.ticker).join(',') + ',USD/CAD';
-        const realTimePrice = await priceController.getRTPrice(
-            tickerArray
-        );
-        return res.status(200).json(realTimePrice);
+
+        const realTimePrice = await priceController.getRTPrice(tickerArray);
+        if (realTimePrice.data.status === 'error') {
+            let lastPriceList = {};
+            holdingList.forEach(item => {
+                lastPriceList[item.ticker] = { price: item.last_price };
+            });
+            return res.status(200).json(lastPriceList);
+        }
+        return res.status(200).json(realTimePrice.data);
     } catch (error) {
         return res.status(500).json({ error: 'Something went wrong' });
     }

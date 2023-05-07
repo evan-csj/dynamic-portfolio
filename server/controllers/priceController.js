@@ -22,7 +22,7 @@ const getOptions = tickers => {
 const getRTPriceAPI = async (req, res) => {
     try {
         const response = await axios.request(getOptions(req.query.tickers));
-        return res.status(200).json(response.data);
+        return res.status(200).json(response);
     } catch (error) {
         return res.status(404).json(error);
     }
@@ -31,7 +31,7 @@ const getRTPriceAPI = async (req, res) => {
 const getRTPrice = async tickers => {
     try {
         const response = await axios.request(getOptions(tickers));
-        return response.data;
+        return response;
     } catch (error) {
         return error;
     }

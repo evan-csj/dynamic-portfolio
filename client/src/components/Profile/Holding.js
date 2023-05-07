@@ -9,13 +9,14 @@ function Holding(props) {
         buy_shares: buyShares,
         sell_shares: sellShares,
         avg_price: avgPrice,
+        last_price: lastPrice,
     } = props.detail;
 
     return (
         <Grid className="grid4">
             <GridItem fontWeight="bold">{ticker}</GridItem>
             <GridItem fontWeight="bold" textAlign="right">
-                $Price {currency.toUpperCase()}
+                ${lastPrice} {currency.toUpperCase()}
             </GridItem>
             <GridItem>{buyShares - sellShares} shares</GridItem>
             <GridItem textAlign="right">Avg price: ${avgPrice}</GridItem>
