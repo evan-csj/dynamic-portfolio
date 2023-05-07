@@ -36,9 +36,9 @@ const getFunding = async id => {
     } catch (err) {}
 };
 
-const getTotalValue = async id => {
+const getHoldingRTPrice = async id => {
     try {
-        const totalValue = await axios.get(`${API_ADDRESS}/holding/user/${id}/totalvalue`);
+        const totalValue = await axios.get(`${API_ADDRESS}/holding/user/${id}/rtprice`);
         return totalValue;
     } catch (err) {}
 }
@@ -54,4 +54,4 @@ const postFunding = async funding => {
     } catch (err) {}
 };
 
-export { getUser, getHoldings, getTrading, getFunding, getTotalValue, postFunding };
+export { getUser, getHoldings, getTrading, getFunding, getHoldingRTPrice, postFunding };

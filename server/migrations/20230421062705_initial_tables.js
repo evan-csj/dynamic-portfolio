@@ -41,6 +41,7 @@ exports.up = function (knex) {
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
             table.float('avg_price', 20, 7).notNullable();
+            table.float('last_price', 12, 2);
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
             table.string('currency').notNullable();

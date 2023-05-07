@@ -18,25 +18,60 @@ import {
     TabPanel,
 } from '@chakra-ui/react';
 import HoldingList from './HoldingList';
-import { getUser, getTotalValue } from '../../global/axios';
+import { getUser, getHoldingRTPrice, getHoldings } from '../../global/axios';
 import '../../styles/global.scss';
 
 function Profile(props) {
-    const [userData, setUserData] = useState(undefined);
-    const [totalValue, setTotalValue] = useState(undefined);
+    const [accountDetail, setAccountDetail] = useState(undefined);
 
     useEffect(() => {
-        getUser(props.userId).then(response => {
-            setUserData(response.data);
-        });
-        if (totalValue === undefined) {
-            getTotalValue(props.userId).then(response => {
-                setTotalValue(response.data);
-            });
-        }
+        const userData = getUser(props.userId);
+        const userHoldings = getHoldings(props.userId);
+        const holdingRTPrice = getHoldingRTPrice(props.userId);
+
+        Promise.allSettled([userData, userHoldings, holdingRTPrice]).then(
+            response => {
+                const userDataRes = response[0].value.data;
+                const userHoldingRes = response[1].value.data;
+                const holdingRTPriceRes = response[2].value.data;
+
+                const ratio = holdingRTPriceRes['USD/CAD'].price;
+                
+                const cashTotal =
+                    userDataRes.cash_cad + userDataRes.cash_usd / ratio;
+
+                let equityCAD = 0;
+                let equityUSD = 0;
+                let equityTotal = 0;
+                userHoldingRes.forEach(item => {
+                    const value =
+                        holdingRTPriceRes[item.ticker].price *
+                        (item.buy_shares - item.sell_shares);
+                    if (item.currency === 'cad') {
+                        equityCAD += value;
+                    } else if (item.currency === 'usd') {
+                        equityUSD += value;
+                    }
+                    equityTotal += value;
+                });
+
+                const result = {
+                    firstName: userDataRes.first_name,
+                    lastName: userDataRes.last_name,
+                    cashCAD: userDataRes.cash_cad,
+                    cashUSD: userDataRes.cash_usd,
+                    cashTotal: cashTotal,
+                    equityCAD: equityCAD * ratio,
+                    equityUSD: equityUSD,
+                    equityTotal: equityTotal * ratio,
+                };
+
+                setAccountDetail(result);
+            }
+        );
     }, [props.userId]);
 
-    if (userData !== undefined && totalValue !== undefined) {
+    if (accountDetail !== undefined) {
         return (
             <Flex className="flex-col">
                 {/* Profile Header in Mobile */}
@@ -56,7 +91,7 @@ function Profile(props) {
                             Welcome!
                         </Heading>
                         <Heading color="light.yellow" size="lg">
-                            {userData.first_name} {userData.last_name}
+                            {accountDetail.firstName} {accountDetail.lastName}
                         </Heading>
                     </Box>
 
@@ -100,36 +135,48 @@ function Profile(props) {
                                     <Td isNumeric>
                                         $
                                         {(
-                                            totalValue.cad + userData.cash_cad
+                                            accountDetail.equityCAD +
+                                            accountDetail.cashCAD
                                         ).toFixed(2)}
                                     </Td>
                                     <Td isNumeric>
                                         $
                                         {(
-                                            totalValue.usd + userData.cash_usd
+                                            accountDetail.equityUSD +
+                                            accountDetail.cashUSD
                                         ).toFixed(2)}
                                     </Td>
-                                    <Td isNumeric>Total</Td>
+                                    <Td isNumeric>
+                                        $
+                                        {(
+                                            accountDetail.equityTotal +
+                                            accountDetail.cashTotal
+                                        ).toFixed(2)}
+                                    </Td>
                                 </Tr>
                                 <Tr>
                                     <Th>Equity</Th>
                                     <Td isNumeric>
-                                        ${totalValue.cad.toFixed(2)}
+                                        ${accountDetail.equityCAD.toFixed(2)}
                                     </Td>
                                     <Td isNumeric>
-                                        ${totalValue.usd.toFixed(2)}
+                                        ${accountDetail.equityUSD.toFixed(2)}
                                     </Td>
-                                    <Td isNumeric>Total</Td>
+                                    <Td isNumeric>
+                                        ${accountDetail.equityTotal.toFixed(2)}
+                                    </Td>
                                 </Tr>
                                 <Tr>
                                     <Th>Cash</Th>
                                     <Td isNumeric>
-                                        ${userData.cash_cad.toFixed(2)}
+                                        ${accountDetail.cashCAD.toFixed(2)}
                                     </Td>
                                     <Td isNumeric>
-                                        ${userData.cash_usd.toFixed(2)}
+                                        ${accountDetail.cashUSD.toFixed(2)}
                                     </Td>
-                                    <Td isNumeric>Total</Td>
+                                    <Td isNumeric>
+                                        ${accountDetail.cashTotal.toFixed(2)}
+                                    </Td>
                                 </Tr>
                                 <Tr>
                                     <Th>Gain/Loss</Th>
