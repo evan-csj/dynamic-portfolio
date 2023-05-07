@@ -19,7 +19,7 @@ const getOptions = tickers => {
     };
 };
 
-const getPriceRealTimeAPI = async (req, res) => {
+const getRTPriceAPI = async (req, res) => {
     try {
         const response = await axios.request(getOptions(req.query.tickers));
         return res.status(200).json(response.data);
@@ -28,7 +28,7 @@ const getPriceRealTimeAPI = async (req, res) => {
     }
 };
 
-const getPriceRealTime = async tickers => {
+const getRTPrice = async tickers => {
     try {
         const response = await axios.request(getOptions(tickers));
         return response.data;
@@ -47,4 +47,4 @@ const getPriceHistory = async (req, res) => {
         });
 };
 
-module.exports = { getPriceRealTimeAPI, getPriceRealTime, getPriceHistory };
+module.exports = { getRTPriceAPI, getRTPrice, getPriceHistory };
