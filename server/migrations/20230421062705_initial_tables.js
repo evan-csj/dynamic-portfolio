@@ -17,8 +17,7 @@ exports.up = function (knex) {
         })
         .createTable('symbol', table => {
             table.string('ticker').primary().unique().notNullable();
-            table.float('last_price', 12, 2).notNullable();
-            table.string('currency').notNullable();
+            table.float('last_price', 12, 4).notNullable();
             table.timestamps(true, true);
         })
         .createTable('trade', table => {

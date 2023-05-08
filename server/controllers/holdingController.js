@@ -6,13 +6,14 @@ const selectHolding = userId =>
         .select(
             'id',
             'user_id',
-            'ticker',
+            'holding.ticker',
             'avg_price',
             'last_price',
             'buy_shares',
             'sell_shares',
             'currency'
         )
+        .join('symbol', { 'symbol.ticker': 'holding.ticker' })
         .where('user_id', userId);
 
 const getHolding = (req, res) => {
@@ -42,18 +43,20 @@ const getHoldingRTPrice = async (req, res) => {
                 .status(404)
                 .json({ error: `User with id ${userId} not found` });
 
-        const tickerArray =
-            holdingList.map(item => item.ticker).join(',') + ',USD/CAD';
+        const promises = holdingList.map(item => {
+            return priceController.getRTPrice(item.ticker);
+        });
 
-        const realTimePrice = await priceController.getRTPrice(tickerArray);
-        if (realTimePrice.data.status === 'error') {
-            let lastPriceList = {};
-            holdingList.forEach(item => {
-                lastPriceList[item.ticker] = { price: item.last_price };
+        Promise.allSettled(promises).then(response => {
+            const holdingListWithRTPrice = holdingList.map((item, index) => {
+                item['last_price'] = response[index].value.price;
+                return item;
             });
-            return res.status(200).json(lastPriceList);
-        }
-        return res.status(200).json(realTimePrice.data);
+            return res.status(200).json(holdingListWithRTPrice);
+        }).catch(err => {
+            return res.status(429).json({ error: 'Some promises fail' });
+        })
+
     } catch (error) {
         return res.status(500).json({ error: 'Something went wrong' });
     }
