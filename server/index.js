@@ -7,6 +7,7 @@ const tradeRoute = require('./routes/tradeRoute');
 const holdingRoute = require('./routes/holdingRoute');
 const fundRoute = require('./routes/fundRoute');
 const priceRoute = require('./routes/priceRoute');
+const watchlistRoute = require('./routes/watchlistRoute');
 
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
@@ -19,6 +20,7 @@ app.use('/trade', tradeRoute);
 app.use('/holding', holdingRoute);
 app.use('/fund', fundRoute);
 app.use('/price', priceRoute);
+app.use('/watchlist', watchlistRoute);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

@@ -12,7 +12,12 @@ module.exports = [
         last_price: 0,
     },
     {
-        ticker: 'USD/CAD',
+        ticker: 'TSLA',
         last_price: 0,
-    }
+    },
+    ,
+    {
+        ticker: 'USD/CAD',
+        last_price: 1.33,
+    },
 ];
