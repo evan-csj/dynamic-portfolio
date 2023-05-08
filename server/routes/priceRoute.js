@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const priceController = require('../controllers/priceController');
 
-router.route('/realtime').get(priceController.getPriceRealTimeAPI);
-router.route('/history/:tickers').get(priceController.getPriceHistory);
+router.route('/realtime/:ticker').get(priceController.getRTPriceAPI);
+router.route('/forex').get(priceController.getForex);
+router.route('/history/:ticker').get(priceController.getPriceHistory);
 
 module.exports = router;

@@ -15,6 +15,11 @@ exports.up = function (knex) {
             table.float('cash_cad', 20, 7).unsigned().defaultTo(0);
             table.timestamps(true, true);
         })
+        .createTable('symbol', table => {
+            table.string('ticker').primary().unique().notNullable();
+            table.float('last_price', 12, 4).notNullable();
+            table.timestamps(true, true);
+        })
         .createTable('trade', table => {
             table.uuid('id').primary().unique().notNullable();
             table
@@ -24,6 +29,7 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
+
             table.float('price', 10, 3).notNullable();
             table.float('shares', 15, 5).notNullable();
             table.string('type').notNullable();
@@ -39,7 +45,12 @@ exports.up = function (knex) {
                 .inTable('user')
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
-            table.string('ticker').notNullable();
+            table
+                .string('ticker')
+                .references('ticker')
+                .inTable('symbol')
+                .onUpdate('CASCADE')
+                .onDelete('CASCADE');
             table.float('avg_price', 20, 7).notNullable();
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
@@ -55,7 +66,7 @@ exports.up = function (knex) {
                 .inTable('user')
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
-            table.float('amount').notNullable();
+            table.float('amount', 20, 7).notNullable();
             table.string('type').notNullable();
             table.string('currency').notNullable();
             table.timestamps(true, true);
@@ -71,5 +82,6 @@ exports.down = function (knex) {
         .dropTable('fund')
         .dropTable('holding')
         .dropTable('trade')
+        .dropTable('symbol')
         .dropTable('user');
 };

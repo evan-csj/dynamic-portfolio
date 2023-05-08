@@ -6,12 +6,14 @@ const selectHolding = userId =>
         .select(
             'id',
             'user_id',
-            'ticker',
+            'holding.ticker',
             'avg_price',
+            'last_price',
             'buy_shares',
             'sell_shares',
             'currency'
         )
+        .join('symbol', { 'symbol.ticker': 'holding.ticker' })
         .where('user_id', userId);
 
 const getHolding = (req, res) => {
@@ -31,9 +33,8 @@ const getHolding = (req, res) => {
         });
 };
 
-const getTotalValue = async (req, res) => {
+const getHoldingRTPrice = async (req, res) => {
     const userId = req.params.userId;
-    let totalValue = { usd: 0, cad: 0 };
 
     try {
         const holdingList = await selectHolding(userId);
@@ -41,26 +42,24 @@ const getTotalValue = async (req, res) => {
             return res
                 .status(404)
                 .json({ error: `User with id ${userId} not found` });
-        const tickerArray =
-            holdingList.map(item => item.ticker).join(',') + ',USD/CAD';
-        const realTimePrice = await priceController.getPriceRealTime(
-            tickerArray
-        );
-        holdingList.map(item => {
-            const shares = item.buy_shares - item.sell_shares;
-            if (item.currency === 'cad') {
-                totalValue.cad +=
-                    shares *
-                    realTimePrice[item.ticker].price *
-                    realTimePrice['USD/CAD'].price;
-            } else {
-                totalValue.usd += shares * realTimePrice[item.ticker].price;
-            }
+
+        const promises = holdingList.map(item => {
+            return priceController.getRTPrice(item.ticker);
         });
-        return res.status(200).json(totalValue);
+
+        Promise.allSettled(promises).then(response => {
+            const holdingListWithRTPrice = holdingList.map((item, index) => {
+                item['last_price'] = response[index].value.price;
+                return item;
+            });
+            return res.status(200).json(holdingListWithRTPrice);
+        }).catch(err => {
+            return res.status(429).json({ error: 'Some promises fail' });
+        })
+
     } catch (error) {
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
 
-module.exports = { getHolding, getTotalValue };
+module.exports = { getHolding, getHoldingRTPrice };
