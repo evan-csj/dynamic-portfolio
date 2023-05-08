@@ -34,7 +34,7 @@ function MainTab() {
                 <NavLink to="/profile" onClick={onClose}>
                     <Profile variant="btn" />
                 </NavLink>
-                <NavLink to="/candlestick">
+                <NavLink to="/watchlist">
                     <CandleStick variant="btn" onClick={onClose}/>
                 </NavLink>
 
