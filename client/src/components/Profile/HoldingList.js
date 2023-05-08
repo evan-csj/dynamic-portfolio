@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { getHoldings } from '../../global/axios';
+import React from 'react';
 import Holding from './Holding';
-import { Flex, Box } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import '../../styles/global.scss';
 
 function HoldingList(props) {
-    const [holdingList, setHoldingList] = useState([]);
-
-    useEffect(() => {
-        getHoldings(props.userId).then(response => {
-            setHoldingList(response.data);
-        });
-    }, [props.userId]);
-
-    if (holdingList !== []) {
+    if (props.list !== []) {
         return (
             <Flex className="flex-col">
-                {holdingList.map((item, index) => {
-                    return <Holding key={index} detail={item} />;
+                {props.list.map((item, index) => {
+                    return <Holding key={index} detail={item} usd2cad={props.usd2cad}/>;
                 })}
             </Flex>
         );

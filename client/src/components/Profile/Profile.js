@@ -18,11 +18,12 @@ import {
     TabPanel,
 } from '@chakra-ui/react';
 import HoldingList from './HoldingList';
-import { getUser, getHoldingRTPrice, getCurrency } from '../../global/axios';
+import { getUser, getHoldingRTPrice, getCurrency, getHoldings } from '../../global/axios';
 import '../../styles/global.scss';
 
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);
+    const [holdingList, setHoldingList] = useState([]);
     const [accountDetail, setAccountDetail] = useState(undefined);
 
     useEffect(() => {
@@ -35,6 +36,9 @@ function Profile(props) {
                 cashUSD: cash_usd,
             };
             setUserData(user);
+        });
+        getHoldings(props.userId).then(response => {
+            setHoldingList(response.data);
         });
         const holdingRTPrice = getHoldingRTPrice(props.userId);
         const exchangeRate = getCurrency();
@@ -61,6 +65,7 @@ function Profile(props) {
                 equityUSD: equityUSD,
                 equityTotal: equityTotal * USD2CAD,
                 usd2cad: USD2CAD,
+                holdingList: holdingRTPriceRes,
             };
 
             setAccountDetail(result);
@@ -229,7 +234,10 @@ function Profile(props) {
                     </TabList>
                     <TabPanels>
                         <TabPanel p={0}>
-                            <HoldingList userId={props.userId} />
+                            <HoldingList
+                                list={accountDetail ? accountDetail.holdingList : holdingList}
+                                usd2cad={accountDetail ? accountDetail.usd2cad : 1}
+                            />
                         </TabPanel>
                         <TabPanel p={0}></TabPanel>
                     </TabPanels>
