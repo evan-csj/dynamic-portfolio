@@ -21,9 +21,7 @@ const getHolding = (req, res) => {
     selectHolding(userId)
         .then(data => {
             if (data.length === 0) {
-                return res
-                    .status(404)
-                    .json(`The holding with user id ${userId} is not found!`);
+                return res.status(404).json(`The holding with user id ${userId} is not found!`);
             } else {
                 res.status(200).json(data);
             }
@@ -39,24 +37,23 @@ const getHoldingRTPrice = async (req, res) => {
     try {
         const holdingList = await selectHolding(userId);
         if (!holdingList)
-            return res
-                .status(404)
-                .json({ error: `User with id ${userId} not found` });
+            return res.status(404).json({ error: `User with id ${userId} not found` });
 
         const promises = holdingList.map(item => {
             return priceController.getRTPrice(item.ticker);
         });
 
-        Promise.allSettled(promises).then(response => {
-            const holdingListWithRTPrice = holdingList.map((item, index) => {
-                item['last_price'] = response[index].value.price;
-                return item;
+        Promise.allSettled(promises)
+            .then(response => {
+                const holdingListWithRTPrice = holdingList.map((item, index) => {
+                    item['last_price'] = response[index].value.price;
+                    return item;
+                });
+                return res.status(200).json(holdingListWithRTPrice);
+            })
+            .catch(err => {
+                return res.status(429).json({ error: 'Some promises fail' });
             });
-            return res.status(200).json(holdingListWithRTPrice);
-        }).catch(err => {
-            return res.status(429).json({ error: 'Some promises fail' });
-        })
-
     } catch (error) {
         return res.status(500).json({ error: 'Something went wrong' });
     }

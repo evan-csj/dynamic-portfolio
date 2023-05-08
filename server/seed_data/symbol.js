@@ -15,7 +15,6 @@ module.exports = [
         ticker: 'TSLA',
         last_price: 0,
     },
-    ,
     {
         ticker: 'USD/CAD',
         last_price: 1.33,

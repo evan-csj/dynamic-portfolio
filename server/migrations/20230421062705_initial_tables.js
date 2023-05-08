@@ -77,12 +77,7 @@ exports.up = function (knex) {
                 .inTable('user')
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
-            table
-                .string('ticker')
-                .references('ticker')
-                .inTable('symbol')
-                .onUpdate('CASCADE')
-                .onDelete('CASCADE');
+            table.string('ticker').unique().notNullable();
             table.float('price', 12, 2).notNullable();
             table.string('currency').notNullable();
             table.timestamps(true, true);
@@ -95,6 +90,7 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
     return knex.schema
+        .dropTable('watchlist')
         .dropTable('fund')
         .dropTable('holding')
         .dropTable('trade')
