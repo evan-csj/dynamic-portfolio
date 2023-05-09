@@ -1,5 +1,3 @@
-const watchlist = require('../seed_data/watchlist');
-
 const knex = require('knex')(require('../knexfile'));
 
 const getWatchlist = async (req, res) => {
