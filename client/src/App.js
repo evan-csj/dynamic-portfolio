@@ -14,7 +14,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Profile userId={'evancheng'} />} />
                 <Route path="/profile" element={<Profile userId={'evancheng'} />} />
-                <Route path="/watchlist" element={<Watchlist />} />
+                <Route path="/watchlist" element={<Watchlist userId={'evancheng'} />} />
                 <Route path="/history" element={<Txn userId={'evancheng'} />} />
                 <Route path="/funding" element={<FundingForm userId={'evancheng'} />} />
                 <Route path="/trading" element={<TradingForm userId={'evancheng'} />} />
