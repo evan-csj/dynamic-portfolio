@@ -11,7 +11,7 @@ import {
     TabPanel,
 } from '@chakra-ui/react';
 import { getTrading, getFunding } from '../../global/axios';
-import TxnList from './TxnList';
+import List from '../List';
 import '../../styles/global.scss';
 
 function Transaction(props) {
@@ -67,10 +67,10 @@ function Transaction(props) {
                 </TabList>
                 <TabPanels>
                     <TabPanel p={0}>
-                        <TxnList key={0} type={'trading'} list={tradingList} />
+                        <List key={0} type={'trading'} list={tradingList} />
                     </TabPanel>
                     <TabPanel p={0}>
-                        <TxnList key={1} type={'funding'} list={fundingList} />
+                        <List key={1} type={'funding'} list={fundingList} />
                     </TabPanel>
                 </TabPanels>
             </Tabs>

@@ -3,12 +3,12 @@ const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
 const FUNCTION = 'TIME_SERIES_DAILY_ADJUSTED';
 require('dotenv').config();
-const { RAPIDAPI_KEY, ALPHA_KEY, EX_KEY } = process.env;
+const { RAPIDAPI_KEY, ALPHA_KEY, EX_KEY, FINNHUB_KEY } = process.env;
 
-const realstonks = ticker => {
+const realstonks = symbol => {
     return {
         method: 'GET',
-        url: `https://realstonks.p.rapidapi.com/${ticker}`,
+        url: `https://realstonks.p.rapidapi.com/${symbol}`,
         headers: {
             'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
         },
@@ -28,6 +28,33 @@ const twelveData = symbol => {
             'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
         },
     };
+};
+
+const finnHub = (symbol, resolution, from, to) => {
+    return {
+        method: 'GET',
+        url: 'https://finnhub.io/api/v1/stock/candle',
+        params: {
+            symbol: symbol,
+            resolution: resolution,
+            from: from,
+            to: to,
+        },
+        headers: {
+            'X-Finnhub-Token': FINNHUB_KEY,
+        },
+    };
+};
+
+const getPriceHistory = async (req, res) => {
+    const { ticker, resolution, from, to } = req.query;
+
+    try {
+        const response = await axios.request(finnHub(ticker, resolution, from, to));
+        return res.status(200).json(response.data);
+    } catch (error) {
+        return res.status(404).json(error);
+    }
 };
 
 const getRTPriceAPI = async (req, res) => {
@@ -79,14 +106,14 @@ const getForex = async (_req, res) => {
     }
 };
 
-const getPriceHistory = async (req, res) => {
-    axios
-        .get(
-            `https://www.alphavantage.co/query?function=${FUNCTION}&symbol=${req.params.ticker}&apikey=${ALPHA_KEY}`
-        )
-        .then(response => {
-            return res.status(200).json(response.data);
-        });
-};
+// const getPriceHistory = async (req, res) => {
+//     axios
+//         .get(
+//             `https://www.alphavantage.co/query?function=${FUNCTION}&symbol=${req.params.ticker}&apikey=${ALPHA_KEY}`
+//         )
+//         .then(response => {
+//             return res.status(200).json(response.data);
+//         });
+// };
 
 module.exports = { getRTPriceAPI, getRTPrice, getPriceHistory, getForex };

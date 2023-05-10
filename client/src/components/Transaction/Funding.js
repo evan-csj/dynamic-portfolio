@@ -25,12 +25,7 @@ function Funding(props) {
             >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
             </GridItem>
-            <GridItem
-                fontWeight="bold"
-                textAlign="right"
-                rowSpan={2}
-                alignSelf="center"
-            >
+            <GridItem fontWeight="bold" textAlign="right" rowSpan={2} alignSelf="center">
                 {formatter.format(amount)} {currency.toUpperCase()}
             </GridItem>
             <GridItem>{dayjs(timestamp).format('MMM DD, YYYY')}</GridItem>

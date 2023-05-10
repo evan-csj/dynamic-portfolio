@@ -29,7 +29,6 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
-
             table.float('price', 10, 3).notNullable();
             table.float('shares', 15, 5).notNullable();
             table.string('type').notNullable();
@@ -55,7 +54,6 @@ exports.up = function (knex) {
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
             table.string('currency').notNullable();
-            table.unique(['user_id', 'ticker']);
             table.timestamps(true, true);
         })
         .createTable('fund', table => {
@@ -70,6 +68,19 @@ exports.up = function (knex) {
             table.string('type').notNullable();
             table.string('currency').notNullable();
             table.timestamps(true, true);
+        })
+        .createTable('watchlist', table => {
+            table.string('id').primary().unique().notNullable();
+            table
+                .string('user_id')
+                .references('id')
+                .inTable('user')
+                .onUpdate('CASCADE')
+                .onDelete('CASCADE');
+            table.string('ticker').unique().notNullable();
+            table.float('price', 12, 2).notNullable();
+            table.string('currency').notNullable();
+            table.timestamps(true, true);
         });
 };
 
@@ -79,6 +90,7 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
     return knex.schema
+        .dropTable('watchlist')
         .dropTable('fund')
         .dropTable('holding')
         .dropTable('trade')
