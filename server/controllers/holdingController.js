@@ -51,7 +51,7 @@ const getHoldingRTPrice = async (req, res) => {
                 });
                 return res.status(200).json(holdingListWithRTPrice);
             })
-            .catch(err => {
+            .catch(_err => {
                 return res.status(429).json({ error: 'Some promises fail' });
             });
     } catch (error) {

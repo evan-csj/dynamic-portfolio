@@ -57,6 +57,13 @@ const getWatchlist = async id => {
     } catch (err) {}
 };
 
+const getRTWatchlist = async id => {
+    try {
+        const watchlist = await axios.get(`${API_ADDRESS}/watchlist/user/${id}/rtprice`);
+        return watchlist;
+    } catch (err) {}
+};
+
 const getPriceHistory = async ticker => {
     const today = dayjs().unix();
     const oneYear = 31536000;
@@ -83,6 +90,7 @@ export {
     getHoldingRTPrice,
     getCurrency,
     getWatchlist,
+    getRTWatchlist,
     getPriceHistory,
     postFunding,
 };

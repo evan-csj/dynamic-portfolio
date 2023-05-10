@@ -7,6 +7,7 @@ import WatchItem from './Watchlist/WatchItem';
 
 function List(props) {
     const list = props.list;
+    const usd2cad = props.usd2cad || 1;
 
     if (props.type !== 'trading' && props.type !== 'funding' && props.type !== 'watchlist') {
         return <></>;
@@ -18,7 +19,15 @@ function List(props) {
                 {list.map((item, index) => {
                     if (props.type === 'trading') return <Trading key={index} detail={item} />;
                     if (props.type === 'funding') return <Funding key={index} detail={item} />;
-                    if (props.type === 'watchlist') return <WatchItem key={index} detail={item} />;
+                    if (props.type === 'watchlist')
+                        return (
+                            <WatchItem
+                                key={index}
+                                detail={item}
+                                usd2cad={usd2cad}
+                                changeTicker={props.changeTicker}
+                            />
+                        );
                 })}
             </Flex>
         );
