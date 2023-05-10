@@ -27,8 +27,6 @@ function Watchlist(props) {
         });
     }, []);
 
-    if (watchlist !== []) console.log(watchlist);
-
     return (
         <Flex className="flex-col">
             <Center
