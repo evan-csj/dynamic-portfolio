@@ -64,12 +64,19 @@ const getRTWatchlist = async id => {
     } catch (err) {}
 };
 
-const getPriceHistory = async ticker => {
+const getPriceHistory = async (ticker, scale) => {
     const today = dayjs().unix();
-    const oneYear = 31536000;
+    const year = 31536000;
+    const factor = scale === '5Y' ? 5 : 1;
+    const resolution = scale === '5Y' ? 'W' : 'D';
     try {
         const priceHistory = await axios.get(`${API_ADDRESS}/price/history`, {
-            params: { ticker: ticker, resolution: 'D', from: today - oneYear, to: today },
+            params: {
+                ticker: ticker,
+                resolution: resolution,
+                from: today - factor * year,
+                to: today,
+            },
         });
         return priceHistory;
     } catch (err) {}

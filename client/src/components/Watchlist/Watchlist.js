@@ -19,6 +19,7 @@ function Watchlist(props) {
     const [watchlist, setWatchlist] = useState([]);
     const [watchlistRT, setWatchlistRT] = useState(undefined);
     const [candlestickData, setCandleStickData] = useState([]);
+    const [chartScale, setChartScale] = useState('1Y');
     const [ticker, setTicker] = useState('');
 
     useEffect(() => {
@@ -43,7 +44,7 @@ function Watchlist(props) {
 
     useEffect(() => {
         if (ticker === '') return;
-        getPriceHistory(ticker).then(response => {
+        getPriceHistory(ticker, chartScale).then(response => {
             if (response.data.s !== 'ok') return;
             const { c: close, h: high, l: low, o: open, t: time, v: volume } = response.data;
             const lengths = [time, close, high, low, open, volume].map(arr => arr.length);
@@ -63,10 +64,14 @@ function Watchlist(props) {
 
             setCandleStickData(formattedData);
         });
-    }, [ticker]);
+    }, [ticker, chartScale]);
 
     const changeTicker = symbol => {
         setTicker(symbol);
+    };
+
+    const changeScale = scale => {
+        setChartScale(scale);
     };
 
     return (
@@ -84,6 +89,30 @@ function Watchlist(props) {
             <Box px={4} pt={4}>
                 <CandleStick data={candlestickData.length > 0 ? candlestickData : []}></CandleStick>
             </Box>
+            <Tabs variant="unstyled" size="md" px={4} w="fit-content" color="light.grey">
+                <TabList>
+                    <Tab
+                        px={0}
+                        mx={4}
+                        borderBottom="2px"
+                        borderBottomColor="light.white"
+                        _selected={{ color: 'light.blue', borderBottomColor: 'light.blue' }}
+                        onClick={() => changeScale('1Y')}
+                    >
+                        1Y
+                    </Tab>
+                    <Tab
+                        px={0}
+                        mx={4}
+                        borderBottom="2px"
+                        borderBottomColor="light.white"
+                        _selected={{ color: 'light.blue', borderBottomColor: 'light.blue' }}
+                        onClick={() => changeScale('5Y')}
+                    >
+                        5Y
+                    </Tab>
+                </TabList>
+            </Tabs>
 
             <Tabs isFitted variant="enclosed" px={4} pt={4} borderColor="light.yellow">
                 <TabList>
