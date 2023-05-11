@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import {
     Heading,
     Box,
@@ -30,12 +30,7 @@ function FundingForm(props) {
     const [amount, setAmount] = useState('');
     const [numberValue, setNumberValue] = useState(-1);
     const [account, setAccount] = useState('');
-    const title =
-        type === 'deposit'
-            ? 'Deposit'
-            : type === 'withdraw'
-            ? 'Withdraw'
-            : 'Funding';
+    const title = type === 'deposit' ? 'Deposit' : type === 'withdraw' ? 'Withdraw' : 'Funding';
     const handleTypeChange = event => setType(event.target.value);
     const handleAccountChange = event => setAccount(event.target.value);
     const handleAmountChange = event => {
@@ -62,10 +57,8 @@ function FundingForm(props) {
 
     const enoughFund = () => {
         if (type === 'withdraw') {
-            if (account === 'usd' && numberValue > userData.cash_usd)
-                return false;
-            if (account === 'cad' && numberValue > userData.cash_cad)
-                return false;
+            if (account === 'usd' && numberValue > userData.cash_usd) return false;
+            if (account === 'cad' && numberValue > userData.cash_cad) return false;
         }
         return true;
     };
@@ -87,7 +80,7 @@ function FundingForm(props) {
                 currency: account,
             };
             postFunding(newFunding);
-            navigate("/profile");
+            navigate('/profile');
         }
     };
 
@@ -96,22 +89,14 @@ function FundingForm(props) {
             <Heading size="3xl">{title}</Heading>
             <FormControl>
                 <FormLabel>Action</FormLabel>
-                <Select
-                    placeholder="Select option"
-                    isRequired
-                    onChange={handleTypeChange}
-                >
+                <Select placeholder="Select option" isRequired onChange={handleTypeChange}>
                     <option value="deposit">Deposit</option>
                     <option value="withdraw">Withdraw</option>
                 </Select>
                 <Box h={8} />
                 <FormLabel>Amount</FormLabel>
                 <InputGroup>
-                    <InputLeftElement
-                        pointerEvents="none"
-                        color="light.grey"
-                        children="$"
-                    />
+                    <InputLeftElement pointerEvents="none" color="light.grey" children="$" />
                     <Input
                         placeholder="Enter amount"
                         name="amount"
@@ -134,29 +119,18 @@ function FundingForm(props) {
                         Fund is not enough to withdraw
                     </FormHelperText>
                 ) : !notZero ? (
-                    <FormHelperText color="light.red">
-                        Don't enter 0
-                    </FormHelperText>
+                    <FormHelperText color="light.red">Don't enter 0</FormHelperText>
                 ) : (
                     <></>
                 )}
                 <Box h={8} />
                 <FormLabel>Account</FormLabel>
-                <Select
-                    placeholder="Select option"
-                    isRequired
-                    onChange={handleAccountChange}
-                >
+                <Select placeholder="Select option" isRequired onChange={handleAccountChange}>
                     <option value="usd">USD</option>
                     <option value="cad">CAD</option>
                 </Select>
                 <Box h={8} />
-                <Button
-                    variant="submit"
-                    type="submit"
-                    w="100%"
-                    onClick={handleSubmit}
-                >
+                <Button variant="submit" type="submit" w="100%" onClick={handleSubmit}>
                     Submit
                 </Button>
             </FormControl>
