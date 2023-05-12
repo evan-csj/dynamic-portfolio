@@ -9,15 +9,14 @@ exports.up = function (knex) {
             table.string('user_email').unique().notNullable();
             table.string('first_name').notNullable();
             table.string('last_name').notNullable();
-            table.date('dob').notNullable();
-            table.string('sin', 11).unique().notNullable();
             table.float('cash_usd', 20, 7).unsigned().defaultTo(0);
             table.float('cash_cad', 20, 7).unsigned().defaultTo(0);
             table.timestamps(true, true);
         })
         .createTable('symbol', table => {
-            table.string('ticker').primary().unique().notNullable();
-            table.float('last_price', 12, 4).notNullable();
+            table.string('symbol').primary().unique().notNullable();
+            table.string('description').notNullable();
+            table.string('currency').notNullable();
             table.timestamps(true, true);
         })
         .createTable('trade', table => {
@@ -44,13 +43,9 @@ exports.up = function (knex) {
                 .inTable('user')
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
-            table
-                .string('ticker')
-                .references('ticker')
-                .inTable('symbol')
-                .onUpdate('CASCADE')
-                .onDelete('CASCADE');
+            table.string('ticker').notNullable();
             table.float('avg_price', 20, 7).notNullable();
+            table.float('last_price', 12, 4).notNullable();
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
             table.string('currency').notNullable();
