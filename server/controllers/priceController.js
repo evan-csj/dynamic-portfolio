@@ -1,9 +1,8 @@
 const axios = require('axios');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
-const FUNCTION = 'TIME_SERIES_DAILY_ADJUSTED';
 require('dotenv').config();
-const { RAPIDAPI_KEY, ALPHA_KEY, EX_KEY, FINNHUB_KEY } = process.env;
+const { RAPIDAPI_KEY, EX_KEY, FINNHUB_KEY } = process.env;
 
 const realstonks = symbol => {
     return {
@@ -77,10 +76,11 @@ const getRTPrice = async ticker => {
 
 const getForex = async (_req, res) => {
     try {
-        const exchangeRate = await knex('symbol')
+        const exchangeRate = await knex('forex')
             .select('updated_at', 'last_price')
-            .where({ ticker: 'USD/CAD' })
+            .where({ symbol: 'USD/CAD' })
             .first();
+
         const lastRate = exchangeRate['last_price'];
         const lastUpdateTimestamp = dayjs(exchangeRate['updated_at']);
         const differece = dayjs().diff(lastUpdateTimestamp, 'hour');
@@ -91,8 +91,8 @@ const getForex = async (_req, res) => {
             );
             const rate = response.data['conversion_rates'].CAD;
             res.status(200).json(rate);
-            await knex('symbol')
-                .where({ ticker: 'USD/CAD' })
+            await knex('forex')
+                .where({ symbol: 'USD/CAD' })
                 .update({
                     last_price: rate,
                     updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
@@ -105,15 +105,5 @@ const getForex = async (_req, res) => {
         return res.status(404).json(error);
     }
 };
-
-// const getPriceHistory = async (req, res) => {
-//     axios
-//         .get(
-//             `https://www.alphavantage.co/query?function=${FUNCTION}&symbol=${req.params.ticker}&apikey=${ALPHA_KEY}`
-//         )
-//         .then(response => {
-//             return res.status(200).json(response.data);
-//         });
-// };
 
 module.exports = { getRTPriceAPI, getRTPrice, getPriceHistory, getForex };

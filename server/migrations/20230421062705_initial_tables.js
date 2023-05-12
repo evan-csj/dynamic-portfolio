@@ -15,9 +15,8 @@ exports.up = function (knex) {
         })
         .createTable('symbol', table => {
             table.string('symbol').primary().unique().notNullable();
-            table.string('description').notNullable();
-            table.string('currency').notNullable();
-            table.timestamps(true, true);
+            table.string('name').notNullable();
+            table.string('sector').notNullable();
         })
         .createTable('trade', table => {
             table.uuid('id').primary().unique().notNullable();
@@ -75,6 +74,10 @@ exports.up = function (knex) {
             table.string('ticker').unique().notNullable();
             table.float('price', 12, 2).notNullable();
             table.string('currency').notNullable();
+        })
+        .createTable('forex', table => {
+            table.string('symbol').primary().unique().notNullable();
+            table.float('last_price', 12, 4).notNullable();
             table.timestamps(true, true);
         });
 };
@@ -85,6 +88,7 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
     return knex.schema
+        .dropTable('forex')
         .dropTable('watchlist')
         .dropTable('fund')
         .dropTable('holding')
