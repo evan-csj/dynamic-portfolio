@@ -63,6 +63,7 @@ const addTrade = async (req, res) => {
                 id: userId + '-' + ticker,
                 user_id: userId,
                 ticker: ticker,
+                last_price: 0,
                 avg_price: 0,
                 buy_shares: 0,
                 sell_shares: 0,

@@ -1,6 +1,10 @@
 @import './partials/variables';
 @import './partials/mixins';
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 .table-user {
     td,
     th {
