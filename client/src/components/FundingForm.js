@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import {
     Heading,
     Box,
     Flex,
     Button,
-    Select,
+    // Select,
     FormControl,
     FormLabel,
-    // FormErrorMessage,
     FormHelperText,
     Input,
     InputGroup,
@@ -24,6 +24,26 @@ import { getUser, postFunding } from '../global/axios';
 import '../styles/global.scss';
 
 function FundingForm(props) {
+    const typeOptions = [
+        {
+            value: 'deposit',
+            label: 'Deposit',
+        },
+        {
+            value: 'withdraw',
+            label: 'Withdraw',
+        },
+    ];
+    const accountOptions = [
+        {
+            value: 'usd',
+            label: 'USD',
+        },
+        {
+            value: 'cad',
+            label: 'CAD',
+        },
+    ];
     const navigate = useNavigate();
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
@@ -31,8 +51,8 @@ function FundingForm(props) {
     const [numberValue, setNumberValue] = useState(-1);
     const [account, setAccount] = useState('');
     const title = type === 'deposit' ? 'Deposit' : type === 'withdraw' ? 'Withdraw' : 'Funding';
-    const handleTypeChange = event => setType(event.target.value);
-    const handleAccountChange = event => setAccount(event.target.value);
+    const handleTypeChange = selected => setType(selected.value);
+    const handleAccountChange = selected => setAccount(selected.value);
     const handleAmountChange = event => {
         const input = event.target.value;
         const pureNumber = input.replace(/\D/g, '');
@@ -89,10 +109,12 @@ function FundingForm(props) {
             <Heading size="3xl">{title}</Heading>
             <FormControl>
                 <FormLabel>Action</FormLabel>
-                <Select placeholder="Select option" isRequired onChange={handleTypeChange}>
-                    <option value="deposit">Deposit</option>
-                    <option value="withdraw">Withdraw</option>
-                </Select>
+                <Select
+                    placeholder="Select Action"
+                    options={typeOptions}
+                    isRequired
+                    onChange={handleTypeChange}
+                ></Select>
                 <Box h={8} />
                 <FormLabel>Amount</FormLabel>
                 <InputGroup>
@@ -125,10 +147,12 @@ function FundingForm(props) {
                 )}
                 <Box h={8} />
                 <FormLabel>Account</FormLabel>
-                <Select placeholder="Select option" isRequired onChange={handleAccountChange}>
-                    <option value="usd">USD</option>
-                    <option value="cad">CAD</option>
-                </Select>
+                <Select
+                    placeholder="Select Account"
+                    options={accountOptions}
+                    isRequired
+                    onChange={handleAccountChange}
+                ></Select>
                 <Box h={8} />
                 <Button variant="submit" type="submit" w="100%" onClick={handleSubmit}>
                     Submit
