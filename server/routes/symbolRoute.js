@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const symbolController = require('../controllers/symbolController');
 
-router.route('/:symbol').get(symbolController.getSymbol);
+router.route('/').get(symbolController.getSymbol);
 
 module.exports = router;

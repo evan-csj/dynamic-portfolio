@@ -22,7 +22,7 @@ app.use('/holding', holdingRoute);
 app.use('/fund', fundRoute);
 app.use('/price', priceRoute);
 app.use('/watchlist', watchlistRoute);
-app.use('/symbol', symbolRoute);
+app.use('/symbols', symbolRoute);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
