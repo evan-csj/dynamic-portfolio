@@ -162,12 +162,12 @@ function FundingForm(props) {
             <StatGroup>
                 <Stat>
                     <StatLabel>USD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_usd : 0}</StatNumber>
+                    <StatNumber>${userData ? userData.cash_usd.toFixed(2) : 0}</StatNumber>
                 </Stat>
 
                 <Stat>
                     <StatLabel>CAD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_cad : 0}</StatNumber>
+                    <StatNumber>${userData ? userData.cash_cad.toFixed(2) : 0}</StatNumber>
                 </Stat>
             </StatGroup>
         </Flex>

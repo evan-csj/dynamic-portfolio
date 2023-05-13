@@ -103,6 +103,13 @@ const postFunding = async funding => {
     } catch (err) {}
 };
 
+const postTrading = async trading => {
+    try {
+        const newTrading = axios.post(`${API_ADDRESS}/trade`, trading, newHeader);
+        return newTrading;
+    } catch (err) {}
+};
+
 export {
     getUser,
     getHoldings,
@@ -116,4 +123,5 @@ export {
     getPriceHistory,
     getSymbols,
     postFunding,
+    postTrading,
 };

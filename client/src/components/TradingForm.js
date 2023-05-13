@@ -16,7 +16,7 @@ import {
     Stat,
     StatNumber,
 } from '@chakra-ui/react';
-import { getUser, getSymbols, getRTPrice, getHoldings } from '../global/axios';
+import { getUser, getSymbols, getRTPrice, getHoldings, postTrading } from '../global/axios';
 import '../styles/global.scss';
 
 function TradingForm(props) {
@@ -58,17 +58,26 @@ function TradingForm(props) {
         setQuantity(pureNumber);
     };
     const handleSubmit = () => {
-        const newTrade = {
-            user_id: props.userId,
-            ticker: symbol,
-            price: 0,
-            shares: Number(quantity),
-            type: type,
-            order_status: 'pending',
-            currency: 'usd',
-        };
-        console.log(newTrade);
-        console.log(holdings.current);
+        if (
+            enoughFund() &&
+            enoughShares() &&
+            notZero &&
+            type !== '' &&
+            symbol !== '' &&
+            quantity !== ''
+        ) {
+            const newTrade = {
+                user_id: props.userId,
+                ticker: symbol,
+                price: currentPrice,
+                shares: Number(quantity),
+                type: type,
+                order_status: 'pending',
+                currency: 'usd',
+            };
+            postTrading(newTrade);
+            navigate('/profile');
+        }
     };
 
     useEffect(() => {
@@ -200,12 +209,12 @@ function TradingForm(props) {
             <StatGroup>
                 <Stat>
                     <StatLabel>USD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_usd : 0}</StatNumber>
+                    <StatNumber>${userData ? userData.cash_usd.toFixed(2) : 0}</StatNumber>
                 </Stat>
 
                 <Stat>
                     <StatLabel>CAD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_cad : 0}</StatNumber>
+                    <StatNumber>${userData ? userData.cash_cad.toFixed(2) : 0}</StatNumber>
                 </Stat>
             </StatGroup>
         </Flex>
