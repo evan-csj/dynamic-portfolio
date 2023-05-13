@@ -71,9 +71,20 @@ exports.up = function (knex) {
                 .inTable('user')
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
-            table.string('ticker').unique().notNullable();
+            table.string('ticker').notNullable();
             table.float('price', 12, 2).notNullable();
             table.string('currency').notNullable();
+        })
+        .createTable('portfolio', table => {
+            table.string('id').primary().unique().notNullable();
+            table
+                .string('user_id')
+                .references('id')
+                .inTable('user')
+                .onUpdate('CASCADE')
+                .onDelete('CASCADE');
+            table.string('ticker').notNullable();
+            table.integer('percentage').notNullable();
         })
         .createTable('forex', table => {
             table.string('symbol').primary().unique().notNullable();
