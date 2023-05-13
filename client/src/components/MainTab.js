@@ -28,7 +28,7 @@ function MainTab() {
                 pos="fixed"
                 bottom={0}
                 justifyContent="space-between"
-                display={{ base: 'flex', md: 'none' }}
+                display={{ base: 'flex', xl: 'none' }}
                 zIndex={2}
             >
                 <NavLink to="/profile" onClick={onClose}>
