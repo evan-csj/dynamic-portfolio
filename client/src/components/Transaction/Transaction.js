@@ -38,15 +38,10 @@ function Transaction(props) {
             >
                 <Heading size="md">Transaction History</Heading>
             </Center>
-            <Tabs
-                isFitted
-                variant="enclosed"
-                px={4}
-                pt={4}
-                borderColor="light.yellow"
-            >
+            <Tabs isFitted variant="enclosed" px={4} pt={4} borderBottomColor="light.white">
                 <TabList>
                     <Tab
+                        borderBottomColor="light.yellow"
                         _selected={{
                             color: 'light.blue',
                             borderColor: 'light.yellow',
@@ -56,6 +51,7 @@ function Transaction(props) {
                         Trading
                     </Tab>
                     <Tab
+                        borderBottomColor="light.yellow"
                         _selected={{
                             color: 'light.blue',
                             borderColor: 'light.yellow',

@@ -8,8 +8,6 @@ const singleUser = (req, res) => {
             'user_email',
             'first_name',
             'last_name',
-            'dob',
-            'sin',
             'cash_usd',
             'cash_cad'
         )

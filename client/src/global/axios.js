@@ -36,6 +36,13 @@ const getFunding = async id => {
     } catch (err) {}
 };
 
+const getRTPrice = async ticker => {
+    try {
+        const priceRT = await axios.get(`${API_ADDRESS}/price/realtime/${ticker}`);
+        return priceRT;
+    } catch (err) {}
+};
+
 const getHoldingRTPrice = async id => {
     try {
         const totalValue = await axios.get(`${API_ADDRESS}/holding/user/${id}/rtprice`);
@@ -82,10 +89,24 @@ const getPriceHistory = async (ticker, scale) => {
     } catch (err) {}
 };
 
+const getSymbols = () => {
+    try {
+        const symbols = axios.get(`${API_ADDRESS}/symbols`);
+        return symbols;
+    } catch (err) {}
+};
+
 const postFunding = async funding => {
     try {
         const newFunding = axios.post(`${API_ADDRESS}/fund`, funding, newHeader);
         return newFunding;
+    } catch (err) {}
+};
+
+const postTrading = async trading => {
+    try {
+        const newTrading = axios.post(`${API_ADDRESS}/trade`, trading, newHeader);
+        return newTrading;
     } catch (err) {}
 };
 
@@ -94,10 +115,13 @@ export {
     getHoldings,
     getTrading,
     getFunding,
+    getRTPrice,
     getHoldingRTPrice,
     getCurrency,
     getWatchlist,
     getRTWatchlist,
     getPriceHistory,
+    getSymbols,
     postFunding,
+    postTrading,
 };

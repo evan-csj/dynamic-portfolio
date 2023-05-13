@@ -209,7 +209,7 @@ function Profile(props) {
                 </Flex>
 
                 {/* Holdings */}
-                <Tabs isFitted variant="enclosed" px={4} pt={8} borderBottomColor="rgba(0,0,0,0)">
+                <Tabs isFitted variant="enclosed" px={4} pt={8} borderBottomColor="light.white">
                     <TabList>
                         <Tab
                             borderBottomColor="light.yellow"

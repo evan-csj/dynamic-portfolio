@@ -25,7 +25,7 @@ function Watchlist(props) {
     useEffect(() => {
         getWatchlist(props.userId).then(response => {
             setWatchlist(response.data);
-            setTicker(response.data[0].ticker)
+            setTicker(response.data[0].ticker);
         });
 
         const watchlist = getRTWatchlist(props.userId);
@@ -114,9 +114,10 @@ function Watchlist(props) {
                 </TabList>
             </Tabs>
 
-            <Tabs isFitted variant="enclosed" px={4} pt={4} borderColor="light.yellow">
+            <Tabs isFitted variant="enclosed" px={4} pt={4} borderBottomColor="light.white">
                 <TabList>
                     <Tab
+                        borderBottomColor="light.yellow"
                         _selected={{
                             color: 'light.blue',
                             borderColor: 'light.yellow',
@@ -126,6 +127,7 @@ function Watchlist(props) {
                         Watchlist
                     </Tab>
                     <Tab
+                        borderBottomColor="light.yellow"
                         _selected={{
                             color: 'light.blue',
                             borderColor: 'light.yellow',

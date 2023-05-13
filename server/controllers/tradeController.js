@@ -11,17 +11,13 @@ const tradeHistory = (req, res) => {
             if (data.length === 0) {
                 return res
                     .status(404)
-                    .json(
-                        `The trade history with user id ${req.params.userId} is not found!`
-                    );
+                    .json(`The trade history with user id ${req.params.userId} is not found!`);
             } else {
                 res.status(200).json(data);
             }
         })
         .catch(err => {
-            res.status(400).json(
-                `Error retrieving user ${req.params.username} ${err}`
-            );
+            res.status(400).json(`Error retrieving user ${req.params.username} ${err}`);
         });
 };
 
@@ -52,10 +48,7 @@ const addTrade = async (req, res) => {
             .where({ id: userId })
             .first();
 
-        if (!userData)
-            return res
-                .status(404)
-                .json({ error: `User with id ${userId} not found` });
+        if (!userData) return res.status(404).json({ error: `User with id ${userId} not found` });
 
         const holdingData = await knex('holding')
             .select('buy_shares', 'sell_shares', 'avg_price')
@@ -64,14 +57,13 @@ const addTrade = async (req, res) => {
             .first();
 
         if (!holdingData && type === 'sell') {
-            return res
-                .status(404)
-                .json({ error: `Ticker ${ticker} not found` });
+            return res.status(404).json({ error: `Ticker ${ticker} not found` });
         } else if (!holdingData && type === 'buy') {
             const newHolding = {
                 id: userId + '-' + ticker,
                 user_id: userId,
                 ticker: ticker,
+                last_price: 0,
                 avg_price: 0,
                 buy_shares: 0,
                 sell_shares: 0,
@@ -115,9 +107,7 @@ const addTrade = async (req, res) => {
             if (currency === 'cad') cashCAD += amountRequired;
         }
 
-        await knex('user')
-            .update({ cash_usd: cashUSD, cash_cad: cashCAD })
-            .where({ id: userId });
+        await knex('user').update({ cash_usd: cashUSD, cash_cad: cashCAD }).where({ id: userId });
 
         await knex('holding')
             .update({

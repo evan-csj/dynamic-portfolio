@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import {
     Heading,
     Box,
     Flex,
     Button,
-    Select,
+    // Select,
     FormControl,
     FormLabel,
-    // FormErrorMessage,
     FormHelperText,
     Input,
     InputGroup,
@@ -24,20 +24,35 @@ import { getUser, postFunding } from '../global/axios';
 import '../styles/global.scss';
 
 function FundingForm(props) {
+    const typeOptions = [
+        {
+            value: 'deposit',
+            label: 'Deposit',
+        },
+        {
+            value: 'withdraw',
+            label: 'Withdraw',
+        },
+    ];
+    const accountOptions = [
+        {
+            value: 'usd',
+            label: 'USD',
+        },
+        {
+            value: 'cad',
+            label: 'CAD',
+        },
+    ];
     const navigate = useNavigate();
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
     const [amount, setAmount] = useState('');
     const [numberValue, setNumberValue] = useState(-1);
     const [account, setAccount] = useState('');
-    const title =
-        type === 'deposit'
-            ? 'Deposit'
-            : type === 'withdraw'
-            ? 'Withdraw'
-            : 'Funding';
-    const handleTypeChange = event => setType(event.target.value);
-    const handleAccountChange = event => setAccount(event.target.value);
+    const title = type === 'deposit' ? 'Deposit' : type === 'withdraw' ? 'Withdraw' : 'Funding';
+    const handleTypeChange = selected => setType(selected.value);
+    const handleAccountChange = selected => setAccount(selected.value);
     const handleAmountChange = event => {
         const input = event.target.value;
         const pureNumber = input.replace(/\D/g, '');
@@ -62,10 +77,8 @@ function FundingForm(props) {
 
     const enoughFund = () => {
         if (type === 'withdraw') {
-            if (account === 'usd' && numberValue > userData.cash_usd)
-                return false;
-            if (account === 'cad' && numberValue > userData.cash_cad)
-                return false;
+            if (account === 'usd' && numberValue > userData.cash_usd) return false;
+            if (account === 'cad' && numberValue > userData.cash_cad) return false;
         }
         return true;
     };
@@ -87,7 +100,7 @@ function FundingForm(props) {
                 currency: account,
             };
             postFunding(newFunding);
-            navigate("/profile");
+            navigate('/profile');
         }
     };
 
@@ -97,21 +110,15 @@ function FundingForm(props) {
             <FormControl>
                 <FormLabel>Action</FormLabel>
                 <Select
-                    placeholder="Select option"
+                    placeholder="Select Action"
+                    options={typeOptions}
                     isRequired
                     onChange={handleTypeChange}
-                >
-                    <option value="deposit">Deposit</option>
-                    <option value="withdraw">Withdraw</option>
-                </Select>
+                ></Select>
                 <Box h={8} />
                 <FormLabel>Amount</FormLabel>
                 <InputGroup>
-                    <InputLeftElement
-                        pointerEvents="none"
-                        color="light.grey"
-                        children="$"
-                    />
+                    <InputLeftElement pointerEvents="none" color="light.grey" children="$" />
                     <Input
                         placeholder="Enter amount"
                         name="amount"
@@ -134,29 +141,20 @@ function FundingForm(props) {
                         Fund is not enough to withdraw
                     </FormHelperText>
                 ) : !notZero ? (
-                    <FormHelperText color="light.red">
-                        Don't enter 0
-                    </FormHelperText>
+                    <FormHelperText color="light.red">Don't enter 0</FormHelperText>
                 ) : (
                     <></>
                 )}
                 <Box h={8} />
                 <FormLabel>Account</FormLabel>
                 <Select
-                    placeholder="Select option"
+                    placeholder="Select Account"
+                    options={accountOptions}
                     isRequired
                     onChange={handleAccountChange}
-                >
-                    <option value="usd">USD</option>
-                    <option value="cad">CAD</option>
-                </Select>
+                ></Select>
                 <Box h={8} />
-                <Button
-                    variant="submit"
-                    type="submit"
-                    w="100%"
-                    onClick={handleSubmit}
-                >
+                <Button variant="submit" type="submit" w="100%" onClick={handleSubmit}>
                     Submit
                 </Button>
             </FormControl>
@@ -164,12 +162,12 @@ function FundingForm(props) {
             <StatGroup>
                 <Stat>
                     <StatLabel>USD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_usd : 0}</StatNumber>
+                    <StatNumber>${userData ? userData.cash_usd.toFixed(2) : 0}</StatNumber>
                 </Stat>
 
                 <Stat>
                     <StatLabel>CAD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_cad : 0}</StatNumber>
+                    <StatNumber>${userData ? userData.cash_cad.toFixed(2) : 0}</StatNumber>
                 </Stat>
             </StatGroup>
         </Flex>
