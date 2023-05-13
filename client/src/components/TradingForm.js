@@ -43,11 +43,11 @@ function TradingForm(props) {
     const handleTypeChange = selected => setType(selected.value);
     const handleSymbolChange = selected => {
         getRTPrice(selected.value).then(response => {
-            setCurrentPrice(response.data.price)
-        })
+            setCurrentPrice(response.data.price);
+        });
         setSymbol(selected.value);
-    }
-    
+    };
+
     // const handleSymbolChange = event => {
     //     const input = event.target.value;
     //     setSymbol(input.replace(/[^A-Za-z]/g, '').toUpperCase());
@@ -109,6 +109,19 @@ function TradingForm(props) {
                 }
             }
             return false;
+        } else {
+            return true;
+        }
+    };
+
+    const enoughFund = () => {
+        if (type === 'buy' && symbol !== '' && quantity !== '') {
+            const fundRequired = Number(quantity) * currentPrice;
+            if (userData.cash_usd >= fundRequired) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return true;
         }
@@ -177,6 +190,8 @@ function TradingForm(props) {
                 </Button>
                 {!enoughShares() ? (
                     <FormHelperText color="light.red">Not enough shares to sell</FormHelperText>
+                ) : !enoughFund() ? (
+                    <FormHelperText color="light.red">Not enough fund to buy</FormHelperText>
                 ) : (
                     <></>
                 )}
