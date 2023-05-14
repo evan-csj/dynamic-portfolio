@@ -1,4 +1,5 @@
 import { extendTheme } from '@chakra-ui/react';
+import { sliderTheme } from './slider';
 import './global.scss';
 
 const theme = extendTheme({
@@ -50,6 +51,7 @@ const theme = extendTheme({
                 },
             },
         },
+        Slider: sliderTheme,
     },
     shadows: {
         mainTab: '0 0 10px 1px rgba(33, 42, 62, 0.3)',
