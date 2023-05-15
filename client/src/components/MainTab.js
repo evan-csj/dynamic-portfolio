@@ -29,7 +29,7 @@ function MainTab() {
                 bottom={0}
                 justifyContent="space-between"
                 display={{ base: 'flex', xl: 'none' }}
-                zIndex={2}
+                zIndex={10}
             >
                 <NavLink to="/profile" onClick={onClose}>
                     <Profile variant="btn" />
@@ -46,7 +46,7 @@ function MainTab() {
                 <Login variant="btn" onClick={onClose}/>
             </Flex>
             <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
-                <DrawerOverlay zIndex={0} />
+                <DrawerOverlay zIndex={1} />
                 <DrawerContent shadow="none" borderTopRadius={20}>
                     <DrawerBody>
                         <Flex className="flex-col" pt={4}>

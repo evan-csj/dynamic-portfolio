@@ -155,7 +155,7 @@ function Portfolio(props) {
         <Flex className="flex-col" pt={4}>
             <FormControl key={portfolioList}>
                 <Flex w="100%" gap={4} justifyContent="space-between">
-                    <Box flex="1" zIndex={2}>
+                    <Box flex="1" zIndex={3}>
                         <Select
                             placeholder="Type Symbol"
                             options={symbolOptions.current}
