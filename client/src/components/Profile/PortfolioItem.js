@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CloseIcon } from '@chakra-ui/icons';
 import {
     Grid,
     GridItem,
@@ -55,6 +56,9 @@ function PortfolioItem(props) {
                 </Slider>
             </GridItem>
             <GridItem textAlign="right">{pct}%</GridItem>
+            <GridItem textAlign="right">
+                <CloseIcon cursor="pointer" onClick={() => props.delete(ticker)} />
+            </GridItem>
         </Grid>
     );
 }

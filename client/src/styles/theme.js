@@ -49,6 +49,10 @@ const theme = extendTheme({
                     background: 'light.black',
                     borderRadius: 20,
                 },
+                distribute: {
+                    color: 'light.white',
+                    background: 'light.black',
+                },
             },
         },
         Slider: sliderTheme,

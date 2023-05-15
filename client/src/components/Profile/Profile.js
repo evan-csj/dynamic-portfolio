@@ -242,10 +242,11 @@ function Profile(props) {
                             />
                         </TabPanel>
                         <TabPanel p={0}>
-                            <Portfolio userId={'evancheng'} />
+                            <Portfolio user={userData} userId={props.userId} />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
+                <Box h={20}/>
             </Flex>
         );
     }
