@@ -89,31 +89,45 @@ const getPriceHistory = async (ticker, scale) => {
     } catch (err) {}
 };
 
-const getSymbols = () => {
+const getSymbols = async () => {
     try {
-        const symbols = axios.get(`${API_ADDRESS}/symbols`);
+        const symbols = await axios.get(`${API_ADDRESS}/symbols`);
         return symbols;
     } catch (err) {}
 };
 
-const getPortfolio = id => {
+const getPortfolio = async id => {
     try {
-        const portfolio = axios.get(`${API_ADDRESS}/portfolio/user/${id}`);
+        const portfolio = await axios.get(`${API_ADDRESS}/portfolio/user/${id}`);
         return portfolio;
     } catch (err) {}
 };
 
 const postFunding = async funding => {
     try {
-        const newFunding = axios.post(`${API_ADDRESS}/fund`, funding, newHeader);
+        const newFunding = await axios.post(`${API_ADDRESS}/fund`, funding, newHeader);
         return newFunding;
     } catch (err) {}
 };
 
 const postTrading = async trading => {
     try {
-        const newTrading = axios.post(`${API_ADDRESS}/trade`, trading, newHeader);
+        const newTrading = await axios.post(`${API_ADDRESS}/trade`, trading, newHeader);
         return newTrading;
+    } catch (err) {}
+};
+
+const postWatchItem = async item => {
+    try {
+        const newItem = await axios.post(`${API_ADDRESS}/watchlist`, item, newHeader);
+        return newItem;
+    } catch (err) {}
+};
+
+const deleteWatchItem = async id => {
+    try {
+        const deleteItem = await axios.delete(`${API_ADDRESS}/watchlist/${id}`);
+        return deleteItem;
     } catch (err) {}
 };
 
@@ -132,4 +146,6 @@ export {
     getPortfolio,
     postFunding,
     postTrading,
+    postWatchItem,
+    deleteWatchItem,
 };

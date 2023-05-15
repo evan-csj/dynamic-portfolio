@@ -38,7 +38,7 @@
     border-color: $light-grey;
     border-width: 0 0 1px;
     grid-template-rows: repeat(1, 1fr);
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) 50px;
     padding: 4 * $unit;
 }
 
