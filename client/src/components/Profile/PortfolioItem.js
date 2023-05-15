@@ -25,7 +25,7 @@ function PortfolioItem(props) {
                     w={`${max}%`}
                     id="slider"
                     defaultValue={pct}
-                    min={0}
+                    min={1}
                     max={max}
                     onChange={value => {
                         if (value <= max) {
