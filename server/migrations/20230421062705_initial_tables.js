@@ -105,5 +105,6 @@ exports.down = function (knex) {
         .dropTable('holding')
         .dropTable('trade')
         .dropTable('symbol')
+        .dropTable('portfolio')
         .dropTable('user');
 };
