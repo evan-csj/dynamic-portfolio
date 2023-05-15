@@ -18,6 +18,8 @@ import {
     TabPanel,
 } from '@chakra-ui/react';
 import HoldingList from './HoldingList';
+import List from '../List';
+import Portfolio from './Portfolio';
 import { getUser, getHoldingRTPrice, getCurrency, getHoldings } from '../../global/axios';
 import '../../styles/global.scss';
 
@@ -239,9 +241,12 @@ function Profile(props) {
                                 usd2cad={accountDetail ? accountDetail.usd2cad : 1}
                             />
                         </TabPanel>
-                        <TabPanel p={0}></TabPanel>
+                        <TabPanel p={0}>
+                            <Portfolio user={userData} userId={props.userId} />
+                        </TabPanel>
                     </TabPanels>
                 </Tabs>
+                <Box h={20}/>
             </Flex>
         );
     }

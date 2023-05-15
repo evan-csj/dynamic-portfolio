@@ -17,13 +17,4 @@ module.exports = [
         sell_shares: 0,
         currency: 'usd',
     },
-    {
-        user_id: 'evancheng',
-        ticker: 'BMO',
-        avg_price: 125,
-        last_price: 0,
-        buy_shares: 1,
-        sell_shares: 0,
-        currency: 'cad',
-    },
 ];

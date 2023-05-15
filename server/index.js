@@ -8,7 +8,8 @@ const holdingRoute = require('./routes/holdingRoute');
 const fundRoute = require('./routes/fundRoute');
 const priceRoute = require('./routes/priceRoute');
 const watchlistRoute = require('./routes/watchlistRoute');
-const symbolRoute = require('./routes/symbolRoute')
+const portfolioRoute = require('./routes/portfolioRoute');
+const symbolRoute = require('./routes/symbolRoute');
 
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
@@ -22,6 +23,7 @@ app.use('/holding', holdingRoute);
 app.use('/fund', fundRoute);
 app.use('/price', priceRoute);
 app.use('/watchlist', watchlistRoute);
+app.use('/portfolio', portfolioRoute);
 app.use('/symbols', symbolRoute);
 
 app.listen(PORT, () => {

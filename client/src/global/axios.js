@@ -96,6 +96,13 @@ const getSymbols = () => {
     } catch (err) {}
 };
 
+const getPortfolio = id => {
+    try {
+        const portfolio = axios.get(`${API_ADDRESS}/portfolio/user/${id}`);
+        return portfolio;
+    } catch (err) {}
+};
+
 const postFunding = async funding => {
     try {
         const newFunding = axios.post(`${API_ADDRESS}/fund`, funding, newHeader);
@@ -122,6 +129,7 @@ export {
     getRTWatchlist,
     getPriceHistory,
     getSymbols,
+    getPortfolio,
     postFunding,
     postTrading,
 };

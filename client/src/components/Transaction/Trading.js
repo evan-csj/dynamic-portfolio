@@ -54,7 +54,7 @@ function Trading(props) {
                 >
                     {type.charAt(0).toUpperCase() + type.slice(1)}{' '}
                 </Text>
-                {shares} shares
+                {shares.toFixed(3)} shares
             </GridItem>
         </Grid>
     );
