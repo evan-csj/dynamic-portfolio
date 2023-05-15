@@ -11,6 +11,7 @@ exports.up = function (knex) {
             table.string('last_name').notNullable();
             table.float('cash_usd', 20, 7).unsigned().defaultTo(0);
             table.float('cash_cad', 20, 7).unsigned().defaultTo(0);
+            table.jsonb('dp');
             table.timestamps(true, true);
         })
         .createTable('symbol', table => {

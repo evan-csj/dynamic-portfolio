@@ -30,12 +30,13 @@ function Profile(props) {
 
     useEffect(() => {
         getUser(props.userId).then(response => {
-            const { first_name, last_name, cash_cad, cash_usd } = response.data;
+            const { first_name, last_name, cash_cad, cash_usd, dp } = response.data;
             const user = {
                 firstName: first_name,
                 lastName: last_name,
                 cashCAD: cash_cad,
                 cashUSD: cash_usd,
+                dp: dp,
             };
             setUserData(user);
         });

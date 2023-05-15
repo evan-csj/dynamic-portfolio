@@ -103,6 +103,17 @@ const getPortfolio = async id => {
     } catch (err) {}
 };
 
+const putPortfolio = async (id, dp) => {
+    try {
+        const response = await axios.put(
+            `${API_ADDRESS}/portfolio/user/${IdleDeadline}`,
+            dp,
+            newHeader
+        );
+        return response;
+    } catch (err) {}
+};
+
 const postFunding = async funding => {
     try {
         const newFunding = await axios.post(`${API_ADDRESS}/fund`, funding, newHeader);
@@ -144,6 +155,7 @@ export {
     getPriceHistory,
     getSymbols,
     getPortfolio,
+    putPortfolio,
     postFunding,
     postTrading,
     postWatchItem,

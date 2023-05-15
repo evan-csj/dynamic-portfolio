@@ -16,9 +16,17 @@ import {
     InputRightElement,
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon, CheckIcon } from '@chakra-ui/icons';
-import { getPortfolio, getSymbols, postTrading, getRTPrice } from '../../global/axios';
+import { putPortfolio, getSymbols, postTrading, getRTPrice } from '../../global/axios';
 import PortfolioItem from './PortfolioItem';
 import '../../styles/global.scss';
+
+const jsonObj2Array = jsonObj => {
+    let portfolioList = [];
+    for (let key in jsonObj) {
+        portfolioList.push({ ticker: key, percentage: jsonObj[key] });
+    }
+    return portfolioList;
+};
 
 function Portfolio(props) {
     const userData = props.user;
@@ -31,6 +39,7 @@ function Portfolio(props) {
     const [amount, setAmount] = useState('');
     const [numberValue, setNumberValue] = useState(-1);
     const symbolOptions = useRef([]);
+    let timer;
     const updatePct = (ticker, value) => {
         const newPortfolio = [...portfolioList];
         let newAvailablePct = 100;
@@ -45,6 +54,14 @@ function Portfolio(props) {
         setPortfolioList(newPortfolio);
         setAvailablePct(newAvailablePct);
         setTotalPct(newTotal);
+    };
+
+    const updatePortfolio = () => {
+        let jsonObj = {};
+        for (let i = 0; i < portfolioList.length; i++) {
+            jsonObj[portfolioList[i].ticker] = portfolioList[i].percentage;
+        }
+        console.log(jsonObj);
     };
 
     const findTicker = selected => {
@@ -94,11 +111,16 @@ function Portfolio(props) {
     };
 
     const deleteTicker = ticker => {
+        let newTotal = 0;
         let newPortfolioList = [];
         portfolioList.map(item => {
-            if (item.ticker !== ticker) newPortfolioList.push(item);
+            if (item.ticker !== ticker) {
+                newPortfolioList.push(item);
+                newTotal += item.percentage;
+            }
         });
         setPortfolioList(newPortfolioList);
+        setTotalPct(newTotal);
     };
 
     const enoughFund = () => {
@@ -133,10 +155,11 @@ function Portfolio(props) {
     };
 
     useEffect(() => {
-        getPortfolio(props.userId).then(response => {
-            setPortfolioList(response.data);
-        });
-    }, []);
+        if (userData) {
+            const list = jsonObj2Array(userData.dp);
+            setPortfolioList(list);
+        }
+    }, [userData]);
 
     useEffect(() => {
         getSymbols().then(response => {
