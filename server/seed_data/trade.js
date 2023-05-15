@@ -17,13 +17,4 @@ module.exports = [
         order_status: 'approved',
         currency: 'usd',
     },
-    {
-        user_id: 'evancheng',
-        ticker: 'BMO',
-        price: 120,
-        shares: 1,
-        type: 'buy',
-        order_status: 'approved',
-        currency: 'cad',
-    },
 ];

@@ -13,12 +13,6 @@ module.exports = [
     },
     {
         user_id: 'evancheng',
-        ticker: 'BMO',
-        price: 0,
-        currency: 'cad',
-    },
-    {
-        user_id: 'evancheng',
         ticker: 'TSLA',
         price: 0,
         currency: 'usd',
