@@ -26,6 +26,7 @@ function List(props) {
                                 detail={item}
                                 usd2cad={usd2cad}
                                 changeTicker={props.changeTicker}
+                                deleteTicker={props.deleteTicker}
                             />
                         );
                 })}
