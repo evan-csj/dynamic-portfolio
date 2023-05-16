@@ -32,13 +32,21 @@ function Transaction(props) {
             <Center
                 bg="light.navy"
                 color="light.white"
-                h={{base: '48px', lg: '60px'}}
+                h={{ base: '48px', lg: '60px' }}
                 borderBottomColor="light.yellow"
                 borderBottomWidth={4}
             >
                 <Heading size={{ base: 'md', lg: 'lg' }}>Transaction History</Heading>
             </Center>
-            <Tabs isFitted variant="enclosed" px={{base: '16px', lg: '32px'}} pt={4} borderBottomColor="light.white">
+            <Tabs
+                isFitted
+                variant="enclosed"
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                pt={4}
+                borderBottomColor="light.white"
+            >
                 <TabList>
                     <Tab
                         borderBottomColor="light.yellow"

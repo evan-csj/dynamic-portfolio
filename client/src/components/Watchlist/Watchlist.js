@@ -7,9 +7,7 @@ import {
     Center,
     Tabs,
     TabList,
-    TabPanels,
     Tab,
-    TabPanel,
     FormControl,
     FormHelperText,
 } from '@chakra-ui/react';
@@ -153,10 +151,22 @@ function Watchlist(props) {
                 <Heading size={{ base: 'md', lg: 'lg' }}>{ticker || 'Watchlist'}</Heading>
             </Center>
 
-            <Box px={{base: '16px', lg: '32px'}} pt={4}>
+            <Box
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                pt={4}
+            >
                 <CandleStick data={candlestickData.length > 0 ? candlestickData : []}></CandleStick>
             </Box>
-            <Tabs variant="unstyled" size="md" px={4} w="fit-content" color="light.grey">
+            <Tabs
+                variant="unstyled"
+                size="md"
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                color="light.grey"
+            >
                 <TabList>
                     <Tab
                         px={0}
@@ -181,7 +191,12 @@ function Watchlist(props) {
                 </TabList>
             </Tabs>
 
-            <Flex className="flex-col" px={{base: '16px', lg: '32px'}}>
+            <Flex
+                className="flex-col"
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+            >
                 <FormControl key={watchlistRT} py={4}>
                     <Flex w="100%" gap={4} justifyContent="space-between">
                         <Box flex="1" zIndex={1}>

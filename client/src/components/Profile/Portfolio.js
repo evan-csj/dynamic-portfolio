@@ -238,7 +238,6 @@ function Portfolio(props) {
                 <Box h={4} />
                 <Flex
                     gap={4}
-                    size={{ base: 'sm', md: 'md', lg: 'lg' }}
                     direction={{ base: 'column', md: 'row' }}
                 >
                     <InputGroup>

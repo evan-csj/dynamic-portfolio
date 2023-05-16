@@ -2,6 +2,7 @@
 // import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainTab from './components/MainTab';
+import TopTab from './components/TopTab';
 import FundingForm from './components/FundingForm';
 import TradingForm from './components/TradingForm';
 import Profile from './components/Profile/Profile';
@@ -11,6 +12,7 @@ import Txn from './components/Transaction/Transaction';
 function App() {
     return (
         <BrowserRouter>
+            <TopTab />
             <Routes>
                 <Route path="/" element={<Profile userId={'evancheng'} />} />
                 <Route path="/profile" element={<Profile userId={'evancheng'} />} />

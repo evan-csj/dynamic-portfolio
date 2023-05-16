@@ -84,7 +84,7 @@ function Profile(props) {
                 {/* Profile Header in Mobile */}
                 <Flex
                     bg="light.navy"
-                    px={4}
+                    px={{ base: '16px', lg: '32px', xl: '0' }}
                     pt={8}
                     pb={4}
                     borderBottomColor="light.yellow"
@@ -93,17 +93,16 @@ function Profile(props) {
                     justifyContent="space-between"
                     className="flex-col"
                 >
-                    <Box>
-                        <Heading color="light.white" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
-                            Welcome!
-                        </Heading>
-                        <Heading color="light.yellow" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
-                            {userData ? userData.firstName : 'FirstName'}{' '}
-                            {userData ? userData.lastName : 'LastName'}
-                        </Heading>
-                    </Box>
-
-                    <Flex className="flex-col">
+                    <Flex className="flex-col" gap={4} mx={{ xl: 'auto' }} w={{ xl: '1020px' }}>
+                        <Box>
+                            <Heading color="light.white" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
+                                Welcome!
+                            </Heading>
+                            <Heading color="light.yellow" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
+                                {userData ? userData.firstName : 'FirstName'}{' '}
+                                {userData ? userData.lastName : 'LastName'}
+                            </Heading>
+                        </Box>
                         <Text color="light.white">
                             "Be fearful when others are greedy and be greed when others are
                             fearful."
@@ -115,7 +114,12 @@ function Profile(props) {
                 </Flex>
 
                 {/* Account Details */}
-                <Flex className="flex-col" px={{ base: '16px', lg: '32px' }}>
+                <Flex
+                    className="flex-col"
+                    px={{ base: '16px', lg: '32px', xl: '0' }}
+                    mx={{ xl: 'auto' }}
+                    w={{ xl: '1020px' }}
+                >
                     <Heading py={4} color="light.black" size={{ base: 'sm', md: 'md', lg: 'lg' }}>
                         Account Details
                     </Heading>
@@ -218,7 +222,9 @@ function Profile(props) {
                 <Tabs
                     isFitted
                     variant="enclosed"
-                    px={{ base: '16px', lg: '32px' }}
+                    px={{ base: '16px', lg: '32px', xl: '0' }}
+                    mx={{ xl: 'auto' }}
+                    w={{ xl: '1020px' }}
                     pt={8}
                     borderBottomColor="light.white"
                 >

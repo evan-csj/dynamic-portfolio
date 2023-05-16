@@ -22,7 +22,7 @@ function MainTab() {
                 bg="light.white"
                 shadow={isOpen ? '' : 'mainTab'}
                 w="100%"
-                px={4}
+                px={{ base: '16px', md: '60px', lg: '100px' }}
                 py={2}
                 borderTopRadius={20}
                 pos="fixed"
@@ -40,10 +40,10 @@ function MainTab() {
 
                 <Fund variant="btn" onClick={onOpen} />
 
-                <NavLink to="/history">
-                    <History variant="btn" onClick={onClose} />
+                <NavLink to="/history" onClick={onClose}>
+                    <History variant="btn" />
                 </NavLink>
-                <Login variant="btn" onClick={onClose} />
+                {/* <Login variant="btn" onClick={onClose} /> */}
             </Flex>
             <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay zIndex={1} />
@@ -52,7 +52,7 @@ function MainTab() {
                         <Flex
                             className="flex-col"
                             pt={4}
-                            fontSize={{ base: '12px', md: '14px', lg: '16px'}}
+                            fontSize={{ base: '12px', md: '14px', lg: '16px' }}
                         >
                             <NavLink to="/funding" className="nav-link" onClick={onClose}>
                                 <Flex className="flex-col">
