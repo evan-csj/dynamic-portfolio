@@ -28,17 +28,25 @@ function Transaction(props) {
     }, []);
 
     return (
-        <Flex className="flex-col">
+        <Flex className="flex-col" fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}>
             <Center
                 bg="light.navy"
                 color="light.white"
-                h={12}
+                h={{ base: '48px', lg: '60px' }}
                 borderBottomColor="light.yellow"
                 borderBottomWidth={4}
             >
-                <Heading size="md">Transaction History</Heading>
+                <Heading size={{ base: 'md', lg: 'lg' }}>Transaction History</Heading>
             </Center>
-            <Tabs isFitted variant="enclosed" px={4} pt={4} borderBottomColor="light.white">
+            <Tabs
+                isFitted
+                variant="enclosed"
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                pt={4}
+                borderBottomColor="light.white"
+            >
                 <TabList>
                     <Tab
                         borderBottomColor="light.yellow"

@@ -236,7 +236,10 @@ function Portfolio(props) {
                     <></>
                 )}
                 <Box h={4} />
-                <Flex gap={4}>
+                <Flex
+                    gap={4}
+                    direction={{ base: 'column', md: 'row' }}
+                >
                     <InputGroup>
                         <InputLeftElement pointerEvents="none" color="light.grey" children="$" />
                         <Input
@@ -256,27 +259,29 @@ function Portfolio(props) {
                             }
                         />
                     </InputGroup>
-                    <Button
-                        variant="distribute"
-                        type="submit"
-                        w="200px"
-                        _hover={{}}
-                        isDisabled={
-                            totalPct === 100 && numberValue > 0 && enoughFund() ? false : true
-                        }
-                        onClick={handleSubmitChange}
-                    >
-                        {!processing ? 'Distribute' : <Spinner color="light.white" />}
-                    </Button>
-                    <Button
-                        variant="distribute"
-                        type="submit"
-                        w="200px"
-                        onClick={handleSaveChange}
-                        bg={save ? 'light.green' : 'light.red'}
-                    >
-                        {save ? 'Saved' : 'Save'}
-                    </Button>
+                    <Flex gap={4} justifyContent="space-between">
+                        <Button
+                            variant="distribute"
+                            type="submit"
+                            w={{ base: '100%', md: '100px' }}
+                            _hover={{}}
+                            isDisabled={
+                                totalPct === 100 && numberValue > 0 && enoughFund() ? false : true
+                            }
+                            onClick={handleSubmitChange}
+                        >
+                            {!processing ? 'Distribute' : <Spinner color="light.white" />}
+                        </Button>
+                        <Button
+                            variant="distribute"
+                            type="submit"
+                            w={{ base: '100%', md: '100px' }}
+                            onClick={handleSaveChange}
+                            bg={save ? 'light.green' : 'light.red'}
+                        >
+                            {save ? 'Saved' : 'Save'}
+                        </Button>
+                    </Flex>
                 </Flex>
             </FormControl>
 

@@ -34,10 +34,11 @@ function TradingForm(props) {
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
     const [symbol, setSymbol] = useState('');
+    const [shares, setShares] = useState(0);
     const [quantity, setQuantity] = useState('');
     const [currentPrice, setCurrentPrice] = useState(0);
     const symbolOptions = useRef([]);
-    const holdings = useRef([]);
+    const holdings = useRef(undefined);
 
     const title = type === 'buy' ? 'Buy' : type === 'sell' ? 'Sell' : 'Trading';
     const handleTypeChange = selected => setType(selected.value);
@@ -97,6 +98,21 @@ function TradingForm(props) {
     }, []);
 
     useEffect(() => {
+        if (holdings && symbol !== '') {
+            const holdingArray = holdings.current;
+            for (let i = 0; i < holdingArray.length; i++) {
+                if (holdingArray[i].ticker === symbol) {
+                    const shares = holdingArray[i].buy_shares - holdingArray[i].sell_shares;
+                    setShares(shares);
+                    break;
+                } else {
+                    setShares(0);
+                }
+            }
+        }
+    }, [holdings, symbol]);
+
+    useEffect(() => {
         getUser(props.userId).then(response => {
             setUserData(response.data);
         });
@@ -107,10 +123,8 @@ function TradingForm(props) {
         if (type === 'sell' && symbol !== '' && quantity !== '') {
             for (let i = 0; i < holdingArray.length; i++) {
                 if (holdingArray[i].ticker === symbol) {
-                    if (
-                        holdingArray[i].buy_shares - holdingArray[i].sell_shares >=
-                        Number(quantity)
-                    ) {
+                    const shares = holdingArray[i].buy_shares - holdingArray[i].sell_shares;
+                    if (shares >= Number(quantity)) {
                         return true;
                     } else {
                         return false;
@@ -149,7 +163,14 @@ function TradingForm(props) {
     };
 
     return (
-        <Flex className="flex-col" px={4} pt={12} gap={8}>
+        <Flex
+            className="flex-col"
+            px={{ base: '16px', lg: '32px', xl: '0' }}
+            mx={{ xl: 'auto' }}
+            w={{ xl: '1020px' }}
+            pt={12}
+            gap={8}
+        >
             <Heading size="3xl">{title}</Heading>
             <FormControl>
                 <FormLabel>Type</FormLabel>
@@ -176,7 +197,11 @@ function TradingForm(props) {
                         onChange={handleSymbolChange}
                     />
                 </InputGroup> */}
-                {<FormHelperText>Current price: ${currentPrice} USD</FormHelperText>}
+                {
+                    <FormHelperText>
+                        Current price: ${currentPrice} USD / Position: {shares} shares
+                    </FormHelperText>
+                }
                 <Box h={8} />
                 <FormLabel>Quantity</FormLabel>
                 <InputGroup>

@@ -3,6 +3,12 @@ import { sliderTheme } from './slider';
 import './global.scss';
 
 const theme = extendTheme({
+    breakpoints: {
+        sm: '320px',
+        md: '480px',
+        lg: '768px',
+        xl: '1280px',
+    },
     colors: {
         light: {
             navy: '#10316B',
@@ -27,19 +33,6 @@ const theme = extendTheme({
         Heading: {
             baseStyle: {
                 fontFamily: 'Jost',
-            },
-            size: {
-                sm: {
-                    fontSize: 'sm',
-                    fontWeight: '300',
-                },
-            },
-        },
-        Flex: {
-            variants: {
-                col: {
-                    flexDirection: 'column',
-                },
             },
         },
         Button: {

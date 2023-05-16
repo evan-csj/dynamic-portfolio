@@ -7,9 +7,7 @@ import {
     Center,
     Tabs,
     TabList,
-    TabPanels,
     Tab,
-    TabPanel,
     FormControl,
     FormHelperText,
 } from '@chakra-ui/react';
@@ -142,21 +140,33 @@ function Watchlist(props) {
     };
 
     return (
-        <Flex className="flex-col">
+        <Flex className="flex-col" fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}>
             <Center
                 bg="light.navy"
                 color="light.white"
-                h={12}
+                h={{ base: '48px', lg: '60px' }}
                 borderBottomColor="light.yellow"
                 borderBottomWidth={4}
             >
-                <Heading size="md">{ticker || 'Watchlist'}</Heading>
+                <Heading size={{ base: 'md', lg: 'lg' }}>{ticker || 'Watchlist'}</Heading>
             </Center>
 
-            <Box px={4} pt={4}>
+            <Box
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                pt={4}
+            >
                 <CandleStick data={candlestickData.length > 0 ? candlestickData : []}></CandleStick>
             </Box>
-            <Tabs variant="unstyled" size="md" px={4} w="fit-content" color="light.grey">
+            <Tabs
+                variant="unstyled"
+                size="md"
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                color="light.grey"
+            >
                 <TabList>
                     <Tab
                         px={0}
@@ -181,8 +191,13 @@ function Watchlist(props) {
                 </TabList>
             </Tabs>
 
-            <Flex className="flex-col" px={4} pt={4}>
-                <FormControl key={watchlistRT}>
+            <Flex
+                className="flex-col"
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+            >
+                <FormControl key={watchlistRT} py={4}>
                     <Flex w="100%" gap={4} justifyContent="space-between">
                         <Box flex="1" zIndex={1}>
                             <Select
