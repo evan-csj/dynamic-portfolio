@@ -200,12 +200,12 @@ function Profile(props) {
                                             : '0.00'}
                                     </Td>
                                 </Tr>
-                                <Tr>
+                                {/* <Tr>
                                     <Th>Gain/Loss</Th>
                                     <Td isNumeric>CAD</Td>
                                     <Td isNumeric>USD</Td>
                                     <Td isNumeric>Total</Td>
-                                </Tr>
+                                </Tr> */}
                             </Tbody>
                         </Table>
                     </TableContainer>

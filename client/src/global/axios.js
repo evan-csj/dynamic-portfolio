@@ -106,7 +106,7 @@ const getPortfolio = async id => {
 const putPortfolio = async (id, dp) => {
     try {
         const response = await axios.put(
-            `${API_ADDRESS}/portfolio/user/${IdleDeadline}`,
+            `${API_ADDRESS}/portfolio/user/${id}`,
             dp,
             newHeader
         );
