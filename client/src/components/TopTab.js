@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Box } from '@chakra-ui/react';
 import '../styles/global.scss';
 
 function TopTab() {
+
     return (
         <Flex
             bg="light.white"
@@ -14,13 +15,27 @@ function TopTab() {
             justifyContent="flex-start"
             display={{ base: 'none', xl: 'flex' }}
             zIndex={10}
-            fontSize="22px"
+            fontSize="18px"
         >
-            <NavLink to="/profile">Home</NavLink>
-            <NavLink to="/watchlist">Watchlist</NavLink>
-            <NavLink to="/funding">Funding</NavLink>
-            <NavLink to="/trading">Trading</NavLink>
-            <NavLink to="/history">History</NavLink>
+            <Box _hover={{ color: 'light.yellow' }}>
+                <NavLink to="/profile">Home</NavLink>
+            </Box>
+            <Box _hover={{ color: 'light.yellow' }}>
+                <NavLink to="/watchlist">Watchlist</NavLink>
+            </Box>
+
+            <Box _hover={{ color: 'light.yellow' }}>
+                <NavLink to="/funding">Funding</NavLink>
+            </Box>
+
+            <Box _hover={{ color: 'light.yellow' }}>
+                <NavLink to="/trading">Trading</NavLink>
+            </Box>
+
+            <Box _hover={{ color: 'light.yellow' }}>
+                <NavLink to="/history">History</NavLink>
+            </Box>
+
             {/* <Login variant="btn" onClick={onClose} /> */}
         </Flex>
     );

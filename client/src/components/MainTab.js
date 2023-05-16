@@ -10,7 +10,7 @@ import {
     DrawerOverlay,
     DrawerContent,
 } from '@chakra-ui/react';
-import { Profile, CandleStick, History, Login, Fund } from '../styles/icons';
+import { Profile, CandleStick, History, Login, Fund, Funding, Trading } from '../styles/icons';
 import '../styles/global.scss';
 
 function MainTab() {
@@ -31,38 +31,62 @@ function MainTab() {
                 display={{ base: 'flex', xl: 'none' }}
                 zIndex={10}
             >
-                <NavLink to="/profile" onClick={onClose}>
-                    <Profile variant="btn" />
-                </NavLink>
-                <NavLink to="/watchlist">
-                    <CandleStick variant="btn" onClick={onClose} />
-                </NavLink>
+                <Box _hover={{ color: 'light.yellow' }}>
+                    <NavLink to="/profile" onClick={onClose}>
+                        <Profile variant="btn" />
+                    </NavLink>
+                </Box>
+                <Box _hover={{ color: 'light.yellow' }}>
+                    <NavLink to="/watchlist">
+                        <CandleStick variant="btn" onClick={onClose} />
+                    </NavLink>
+                </Box>
+                <Box _hover={{ color: 'light.yellow' }}>
+                    <Fund variant="btn" onClick={onOpen} />
+                </Box>
 
-                <Fund variant="btn" onClick={onOpen} />
+                <Box _hover={{ color: 'light.yellow' }}>
+                    <NavLink to="/history" onClick={onClose}>
+                        <History variant="btn" />
+                    </NavLink>
+                </Box>
 
-                <NavLink to="/history" onClick={onClose}>
-                    <History variant="btn" />
-                </NavLink>
                 {/* <Login variant="btn" onClick={onClose} /> */}
             </Flex>
             <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
-                <DrawerOverlay zIndex={1} />
+                <DrawerOverlay zIndex={1} display={{ xl: 'none' }} />
                 <DrawerContent shadow="none" borderTopRadius={20}>
-                    <DrawerBody>
+                    <DrawerBody display={{ xl: 'none' }}>
                         <Flex
                             className="flex-col"
                             pt={4}
                             fontSize={{ base: '12px', md: '14px', lg: '16px' }}
                         >
                             <NavLink to="/funding" className="nav-link" onClick={onClose}>
-                                <Flex className="flex-col">
-                                    <Text>Funding</Text>
-                                    <Text>Deposit or withdraw funds</Text>
+                                <Flex
+                                    alignItems="center"
+                                    gap={4}
+                                    _hover={{ color: 'light.yellow' }}
+                                >
+                                    <Funding boxSize={8} />
+                                    <Box>
+                                        <Text>Funding</Text>
+                                        <Text>Deposit or withdraw funds</Text>
+                                    </Box>
                                 </Flex>
                             </NavLink>
                             <NavLink to="trading" className="nav-link" onClick={onClose}>
-                                <Text>Trading</Text>
-                                <Text>Buy or sell stocks and ETFs</Text>
+                                <Flex
+                                    alignItems="center"
+                                    gap={4}
+                                    _hover={{ color: 'light.yellow' }}
+                                >
+                                    <Trading boxSize={8} />
+                                    <Box>
+                                        <Text>Trading</Text>
+                                        <Text>Buy or sell S&P 500 and NASDAQ 100 stocks</Text>
+                                    </Box>
+                                </Flex>
                             </NavLink>
                         </Flex>
                         <Box h={16} />
