@@ -35,41 +35,37 @@ function MainTab() {
                     <Profile variant="btn" />
                 </NavLink>
                 <NavLink to="/watchlist">
-                    <CandleStick variant="btn" onClick={onClose}/>
+                    <CandleStick variant="btn" onClick={onClose} />
                 </NavLink>
 
                 <Fund variant="btn" onClick={onOpen} />
 
                 <NavLink to="/history">
-                    <History variant="btn" onClick={onClose}/>
+                    <History variant="btn" onClick={onClose} />
                 </NavLink>
-                <Login variant="btn" onClick={onClose}/>
+                <Login variant="btn" onClick={onClose} />
             </Flex>
             <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay zIndex={1} />
                 <DrawerContent shadow="none" borderTopRadius={20}>
                     <DrawerBody>
-                        <Flex className="flex-col" pt={4}>
-                            <NavLink
-                                to="/funding"
-                                className="nav-link"
-                                onClick={onClose}
-                            >
+                        <Flex
+                            className="flex-col"
+                            pt={4}
+                            fontSize={{ base: '12px', md: '14px', lg: '16px'}}
+                        >
+                            <NavLink to="/funding" className="nav-link" onClick={onClose}>
                                 <Flex className="flex-col">
                                     <Text>Funding</Text>
                                     <Text>Deposit or withdraw funds</Text>
                                 </Flex>
                             </NavLink>
-                            <NavLink
-                                to="trading"
-                                className="nav-link"
-                                onClick={onClose}
-                            >
+                            <NavLink to="trading" className="nav-link" onClick={onClose}>
                                 <Text>Trading</Text>
                                 <Text>Buy or sell stocks and ETFs</Text>
                             </NavLink>
                         </Flex>
-                        <Box h={16}/>
+                        <Box h={16} />
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>

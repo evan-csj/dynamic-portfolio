@@ -77,7 +77,10 @@ function Profile(props) {
 
     if (true) {
         return (
-            <Flex className="flex-col">
+            <Flex
+                className="flex-col"
+                fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}
+            >
                 {/* Profile Header in Mobile */}
                 <Flex
                     bg="light.navy"
@@ -85,16 +88,16 @@ function Profile(props) {
                     pt={8}
                     pb={4}
                     borderBottomColor="light.yellow"
-                    borderBottomWidth="4px"
+                    borderBottomWidth={{ base: '4px', md: '8px' }}
                     gap={4}
                     justifyContent="space-between"
                     className="flex-col"
                 >
                     <Box>
-                        <Heading color="light.white" size="xl">
+                        <Heading color="light.white" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
                             Welcome!
                         </Heading>
-                        <Heading color="light.yellow" size="lg">
+                        <Heading color="light.yellow" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
                             {userData ? userData.firstName : 'FirstName'}{' '}
                             {userData ? userData.lastName : 'LastName'}
                         </Heading>
@@ -112,11 +115,11 @@ function Profile(props) {
                 </Flex>
 
                 {/* Account Details */}
-                <Flex className="flex-col">
-                    <Heading px={4} py={4} color="light.black">
+                <Flex className="flex-col" px={{ base: '16px', lg: '32px' }}>
+                    <Heading py={4} color="light.black" size={{ base: 'sm', md: 'md', lg: 'lg' }}>
                         Account Details
                     </Heading>
-                    <TableContainer px={{ base: '4' }} borderColor="light.yellow">
+                    <TableContainer borderColor="light.yellow">
                         <Table
                             size="sm"
                             variant="simple"
@@ -212,7 +215,13 @@ function Profile(props) {
                 </Flex>
 
                 {/* Holdings */}
-                <Tabs isFitted variant="enclosed" px={4} pt={8} borderBottomColor="light.white">
+                <Tabs
+                    isFitted
+                    variant="enclosed"
+                    px={{ base: '16px', lg: '32px' }}
+                    pt={8}
+                    borderBottomColor="light.white"
+                >
                     <TabList>
                         <Tab
                             borderBottomColor="light.yellow"
@@ -247,7 +256,7 @@ function Profile(props) {
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
-                <Box h={20}/>
+                <Box h={20} />
             </Flex>
         );
     }

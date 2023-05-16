@@ -104,7 +104,7 @@ function FundingForm(props) {
     };
 
     return (
-        <Flex className="flex-col" px={4} pt={12} gap={8}>
+        <Flex className="flex-col" px={{ base: '16px', lg: '32px' }} pt={12} gap={8}>
             <Heading size="3xl">{title}</Heading>
             <FormControl>
                 <FormLabel>Action</FormLabel>
