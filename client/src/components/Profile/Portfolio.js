@@ -14,11 +14,20 @@ import {
     InputGroup,
     InputLeftElement,
     InputRightElement,
+    Spinner,
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon, CheckIcon } from '@chakra-ui/icons';
-import { getPortfolio, getSymbols, postTrading, getRTPrice } from '../../global/axios';
+import { putPortfolio, getSymbols, postTrading, getRTPrice } from '../../global/axios';
 import PortfolioItem from './PortfolioItem';
 import '../../styles/global.scss';
+
+const jsonObj2Array = jsonObj => {
+    let portfolioList = [];
+    for (let key in jsonObj) {
+        portfolioList.push({ ticker: key, percentage: jsonObj[key] });
+    }
+    return portfolioList;
+};
 
 function Portfolio(props) {
     const userData = props.user;
@@ -30,6 +39,8 @@ function Portfolio(props) {
     const [existing, setExising] = useState(false);
     const [amount, setAmount] = useState('');
     const [numberValue, setNumberValue] = useState(-1);
+    const [save, setSave] = useState(true);
+    const [processing, setProcessing] = useState(false);
     const symbolOptions = useRef([]);
     const updatePct = (ticker, value) => {
         const newPortfolio = [...portfolioList];
@@ -45,6 +56,15 @@ function Portfolio(props) {
         setPortfolioList(newPortfolio);
         setAvailablePct(newAvailablePct);
         setTotalPct(newTotal);
+        setSave(false);
+    };
+
+    const updatePortfolio = list => {
+        let jsonObj = {};
+        for (let i = 0; i < list.length; i++) {
+            jsonObj[list[i].ticker] = list[i].percentage;
+        }
+        putPortfolio(props.userId, jsonObj);
     };
 
     const findTicker = selected => {
@@ -90,15 +110,31 @@ function Portfolio(props) {
             const newPortfolioList = [...portfolioList, newPortfolio];
             setPortfolioList(newPortfolioList);
             setSearchTicker('');
+            setSave(false);
         }
     };
 
     const deleteTicker = ticker => {
+        let newTotal = 0;
+        let newAvailablePct = 100;
         let newPortfolioList = [];
         portfolioList.map(item => {
-            if (item.ticker !== ticker) newPortfolioList.push(item);
+            if (item.ticker !== ticker) {
+                newPortfolioList.push(item);
+                newTotal += item.percentage;
+                newAvailablePct -= item.percentage;
+            }
         });
+
+        setAvailablePct(newAvailablePct);
         setPortfolioList(newPortfolioList);
+        setTotalPct(newTotal);
+        setSave(false);
+    };
+
+    const handleSaveChange = () => {
+        setSave(true);
+        updatePortfolio(portfolioList);
     };
 
     const enoughFund = () => {
@@ -113,8 +149,9 @@ function Portfolio(props) {
     const notZero = numberValue <= 0 ? false : true;
 
     const handleSubmitChange = () => {
-        if (!enoughFund() || !notZero) return;
-        portfolioList.map(async item => {
+        if (!enoughFund() || !notZero || totalPct !== 100) return;
+        setProcessing(true);
+        const promises = portfolioList.map(async item => {
             const response = await getRTPrice(item.ticker);
             const priceRT = response.data.price;
             const shares = (numberValue * item.percentage) / 100 / priceRT;
@@ -127,16 +164,29 @@ function Portfolio(props) {
                 order_status: 'pending',
                 currency: 'usd',
             };
-            await postTrading(newTrade);
+            return postTrading(newTrade);
         });
-        navigate('/history');
+        Promise.allSettled(promises).then(_response => {
+            navigate('/history');
+        });
     };
 
     useEffect(() => {
-        getPortfolio(props.userId).then(response => {
-            setPortfolioList(response.data);
-        });
-    }, []);
+        if (userData) {
+            let newTotal = 0;
+            let newAvailablePct = 100;
+            const list = jsonObj2Array(userData.dp);
+
+            list.map(item => {
+                newTotal += item.percentage;
+                newAvailablePct -= item.percentage;
+            });
+
+            setPortfolioList(list);
+            setAvailablePct(newAvailablePct);
+            setTotalPct(newTotal);
+        }
+    }, [userData]);
 
     useEffect(() => {
         getSymbols().then(response => {
@@ -209,10 +259,23 @@ function Portfolio(props) {
                     <Button
                         variant="distribute"
                         type="submit"
-                        w="100%"
+                        w="200px"
+                        _hover={{}}
+                        isDisabled={
+                            totalPct === 100 && numberValue > 0 && enoughFund() ? false : true
+                        }
                         onClick={handleSubmitChange}
                     >
-                        Distribute
+                        {!processing ? 'Distribute' : <Spinner color="light.white" />}
+                    </Button>
+                    <Button
+                        variant="distribute"
+                        type="submit"
+                        w="200px"
+                        onClick={handleSaveChange}
+                        bg={save ? 'light.green' : 'light.red'}
+                    >
+                        {save ? 'Saved' : 'Save'}
                     </Button>
                 </Flex>
             </FormControl>

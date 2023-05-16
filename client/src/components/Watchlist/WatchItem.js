@@ -8,7 +8,12 @@ function WatchItem(props) {
     const usd2cad = props.usd2cad;
 
     return (
-        <Grid className="grid2" cursor="pointer" onClick={() => props.changeTicker(ticker)}>
+        <Grid
+            className="grid2"
+            cursor="pointer"
+            onClick={() => props.changeTicker(ticker)}
+            _hover={{ bg: 'light.yellow' }}
+        >
             <GridItem as="span" fontWeight="bold">
                 {ticker}
             </GridItem>
