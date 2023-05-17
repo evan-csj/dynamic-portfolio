@@ -273,6 +273,7 @@ function Watchlist(props) {
                     <TabPanel p={0}></TabPanel>
                 </TabPanels>
             </Tabs> */}
+            <Box h={20} />
         </Flex>
     );
 }
