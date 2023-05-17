@@ -1,0 +1,67 @@
+@import './partials/variables';
+@import './partials/mixins';
+@import '@fontsource/jost';
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.table-user {
+    td,
+    th {
+        font-family: 'jost';
+        padding: 2 * $unit $unit;
+        border-color: $light-yellow;
+        color: $light-black;
+        font-size: 12px;
+        @include mobile {
+            font-size: 14px;
+        }
+        @include tablet {
+            font-size: 16px;
+        }
+        @include desktop {
+            font-size: 18px;
+        }
+    }
+
+    tbody {
+        tr {
+            &:hover {
+                background-color: $light-yellow;
+            }
+        }
+    }
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.grid4 {
+    border-color: $light-grey;
+    border-width: 0 0 1px;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    padding: 4 * $unit;
+}
+
+.grid2 {
+    border-color: $light-grey;
+    border-width: 0 0 1px;
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr) 50px;
+    padding: 4 * $unit;
+}
+
+.grid-portfolio {
+    border-color: $light-grey;
+    border-width: 0 0 1px;
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-columns: 2fr 8fr 1fr 1fr;
+    padding: 4 * $unit;
+}
+
+.nav-link:focus {
+    outline: none;
+}
