@@ -7,7 +7,10 @@ const getWatchlist = async (req, res) => {
         .select('id', 'user_id', 'ticker', 'price', 'currency')
         .where({ user_id: userId });
 
-    if (!watchlist) return res.status(400).json({ error: `User with id ${userId} not found` });
+    if (!watchlist)
+        return res
+            .status(400)
+            .json({ error: `User with id ${userId} not found` });
 
     return res.status(200).json(watchlist);
 };
@@ -20,7 +23,10 @@ const getRTWatchlist = async (req, res) => {
             .select('id', 'user_id', 'ticker', 'price', 'currency')
             .where({ user_id: userId });
 
-        if (!watchlist) return res.status(400).json({ error: `User with id ${userId} not found` });
+        if (!watchlist)
+            return res
+                .status(400)
+                .json({ error: `User with id ${userId} not found` });
 
         const promises = watchlist.map(item => {
             return priceController.getRTPrice(item.ticker);
@@ -37,7 +43,6 @@ const getRTWatchlist = async (req, res) => {
             .catch(_err => {
                 return res.status(429).json({ error: 'Some promises fail' });
             });
-
     } catch (error) {
         return res.status(500).json({ error: 'Something went wrong' });
     }
@@ -58,7 +63,9 @@ const addWatchItem = async (req, res) => {
         .andWhere({ ticker: ticker });
 
     if (watchlistItem.length !== 0) {
-        return res.status(400).json({ error: `${ticker} already existed in ${userId} watchlist` });
+        return res.status(400).json({
+            error: `${ticker} already existed in ${userId} watchlist`,
+        });
     } else {
         await knex('watchlist').insert(newWatchItem);
         return res.status(200).json(newWatchItem);
@@ -74,10 +81,15 @@ const deleteWatchItem = async (req, res) => {
     } else {
         const { user_id: userId, ticker } = watchlistItem[0];
         await knex('watchlist').where({ id: itemId }).del();
-        return res
-            .status(200)
-            .json({ message: `${ticker} has been deleted from ${userId} watchlist` });
+        return res.status(200).json({
+            message: `${ticker} has been deleted from ${userId} watchlist`,
+        });
     }
 };
 
-module.exports = { getWatchlist, getRTWatchlist, addWatchItem, deleteWatchItem };
+module.exports = {
+    getWatchlist,
+    getRTWatchlist,
+    addWatchItem,
+    deleteWatchItem,
+};
