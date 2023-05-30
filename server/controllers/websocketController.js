@@ -7,7 +7,7 @@ const getRTPrice = (req, res) => {
     ws.on('error', console.error);
 
     ws.on('open', function open() {
-        ws.send(JSON.stringify({ type: type, symbol: 'BINANCE:BTCUSDT' }));
+        ws.send(JSON.stringify({ type: 'subscribe', symbol: 'BINANCE:BTCUSDT' }));
     });
 
     ws.on('message', function message(data) {

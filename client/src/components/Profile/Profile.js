@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Flex,
     Box,
@@ -20,17 +20,47 @@ import {
 import HoldingList from './HoldingList';
 import List from '../List';
 import Portfolio from './Portfolio';
-import { getUser, getHoldingRTPrice, getCurrency, getHoldings } from '../../global/axios';
+import {
+    getUser,
+    getHoldingRTPrice,
+    getCurrency,
+    getHoldings,
+} from '../../global/axios';
 import '../../styles/global.scss';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);
     const [holdingList, setHoldingList] = useState([]);
     const [accountDetail, setAccountDetail] = useState(undefined);
+    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+
+    const connectionStatus = {
+        [ReadyState.CONNECTING]: 'Connecting',
+        [ReadyState.OPEN]: 'Open',
+        [ReadyState.CLOSING]: 'Closing',
+        [ReadyState.CLOSED]: 'Closed',
+        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+    }[readyState];
+
+    const array = ['BINANCE:BTCUSDT','BINANCE:ETHUSDT']
+
+    const handleClickSendMessage = useCallback(type => {
+        for (const symbol of array) {
+            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+        }
+    }, []);
+
+    useEffect(() => {
+        handleClickSendMessage('subscribe')
+    }, [])
 
     useEffect(() => {
         getUser(props.userId).then(response => {
-            const { first_name, last_name, cash_cad, cash_usd, dp } = response.data;
+            const { first_name, last_name, cash_cad, cash_usd, dp } =
+                response.data;
             const user = {
                 firstName: first_name,
                 lastName: last_name,
@@ -54,7 +84,8 @@ function Profile(props) {
             let equityUSD = 0;
             let equityTotal = 0;
             holdingRTPriceRes.forEach(item => {
-                const value = item.last_price * (item.buy_shares - item.sell_shares);
+                const value =
+                    item.last_price * (item.buy_shares - item.sell_shares);
                 if (item.currency === 'cad') {
                     equityCAD += value;
                 } else if (item.currency === 'usd') {
@@ -93,25 +124,55 @@ function Profile(props) {
                     justifyContent="space-between"
                     className="flex-col"
                 >
-                    <Flex className="flex-col" gap={4} mx={{ xl: 'auto' }} w={{ xl: '1020px' }}>
+                    <Flex
+                        className="flex-col"
+                        gap={4}
+                        mx={{ xl: 'auto' }}
+                        w={{ xl: '1020px' }}
+                    >
                         <Box>
-                            <Heading color="light.white" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
+                            <Heading
+                                color="light.white"
+                                size={{ base: 'md', md: 'lg', lg: 'xl' }}
+                            >
                                 Welcome!
                             </Heading>
-                            <Heading color="light.yellow" size={{ base: 'md', md: 'lg', lg: 'xl' }}>
+                            <Heading
+                                color="light.yellow"
+                                size={{ base: 'md', md: 'lg', lg: 'xl' }}
+                            >
                                 {userData ? userData.firstName : 'FirstName'}{' '}
                                 {userData ? userData.lastName : 'LastName'}
                             </Heading>
                         </Box>
                         <Text color="light.white">
-                            "Be fearful when others are greedy and be greed when others are
-                            fearful."
+                            "Be fearful when others are greedy and be greed when
+                            others are fearful."
                         </Text>
                         <Text color="light.white" alignSelf="end">
                             -- -- Warren Buffett
                         </Text>
                     </Flex>
                 </Flex>
+
+                <Box>Status: {connectionStatus}</Box>
+                <button
+                    onClick={() => handleClickSendMessage('subscribe')}
+                    disabled={readyState !== ReadyState.OPEN}
+                >
+                    START
+                </button>
+                <button
+                    onClick={() => handleClickSendMessage('unsubscribe')}
+                    disabled={readyState !== ReadyState.OPEN}
+                >
+                    STOP
+                </button>
+                <Box>
+                    {lastMessage ? (
+                        <span>Last message: {lastMessage.data}</span>
+                    ) : null}
+                </Box>
 
                 {/* Account Details */}
                 <Flex
@@ -120,7 +181,11 @@ function Profile(props) {
                     mx={{ xl: 'auto' }}
                     w={{ xl: '1020px' }}
                 >
-                    <Heading py={4} color="light.black" size={{ base: 'sm', md: 'md', lg: 'lg' }}>
+                    <Heading
+                        py={4}
+                        color="light.black"
+                        size={{ base: 'sm', md: 'md', lg: 'lg' }}
+                    >
                         Account Details
                     </Heading>
                     <TableContainer borderColor="light.yellow">
@@ -144,17 +209,19 @@ function Profile(props) {
                                     <Td isNumeric>
                                         $
                                         {accountDetail && userData
-                                            ? (accountDetail.equityCAD + userData.cashCAD).toFixed(
-                                                  2
-                                              )
+                                            ? (
+                                                  accountDetail.equityCAD +
+                                                  userData.cashCAD
+                                              ).toFixed(2)
                                             : '0.00'}
                                     </Td>
                                     <Td isNumeric>
                                         $
                                         {accountDetail && userData
-                                            ? (accountDetail.equityUSD + userData.cashUSD).toFixed(
-                                                  2
-                                              )
+                                            ? (
+                                                  accountDetail.equityUSD +
+                                                  userData.cashUSD
+                                              ).toFixed(2)
                                             : '0.00'}
                                     </Td>
                                     <Td isNumeric>
@@ -163,7 +230,8 @@ function Profile(props) {
                                             ? (
                                                   accountDetail.equityTotal +
                                                   userData.cashCAD +
-                                                  userData.cashUSD * accountDetail.usd2cad
+                                                  userData.cashUSD *
+                                                      accountDetail.usd2cad
                                               ).toFixed(2)
                                             : '0.00'}
                                     </Td>
@@ -185,24 +253,33 @@ function Profile(props) {
                                     <Td isNumeric>
                                         $
                                         {accountDetail
-                                            ? accountDetail.equityTotal.toFixed(2)
+                                            ? accountDetail.equityTotal.toFixed(
+                                                  2
+                                              )
                                             : '0.00'}
                                     </Td>
                                 </Tr>
                                 <Tr>
                                     <Th>Cash</Th>
                                     <Td isNumeric>
-                                        ${userData ? userData.cashCAD.toFixed(2) : '0.00'}
+                                        $
+                                        {userData
+                                            ? userData.cashCAD.toFixed(2)
+                                            : '0.00'}
                                     </Td>
                                     <Td isNumeric>
-                                        ${userData ? userData.cashUSD.toFixed(2) : '0.00'}
+                                        $
+                                        {userData
+                                            ? userData.cashUSD.toFixed(2)
+                                            : '0.00'}
                                     </Td>
                                     <Td isNumeric>
                                         $
                                         {accountDetail && userData
                                             ? (
                                                   userData.cashCAD +
-                                                  userData.cashUSD * accountDetail.usd2cad
+                                                  userData.cashUSD *
+                                                      accountDetail.usd2cad
                                               ).toFixed(2)
                                             : '0.00'}
                                     </Td>
@@ -253,8 +330,14 @@ function Profile(props) {
                     <TabPanels>
                         <TabPanel p={0}>
                             <HoldingList
-                                list={accountDetail ? accountDetail.holdingList : holdingList}
-                                usd2cad={accountDetail ? accountDetail.usd2cad : 1}
+                                list={
+                                    accountDetail
+                                        ? accountDetail.holdingList
+                                        : holdingList
+                                }
+                                usd2cad={
+                                    accountDetail ? accountDetail.usd2cad : 1
+                                }
                             />
                         </TabPanel>
                         <TabPanel p={0}>
