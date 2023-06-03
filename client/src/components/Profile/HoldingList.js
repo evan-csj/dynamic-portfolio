@@ -4,7 +4,7 @@ import { Flex, Box } from '@chakra-ui/react';
 import '../../styles/global.scss';
 
 function HoldingList(props) {
-    if (props.list !== []) {
+    if (props.list.length > 0) {
         return (
             <Flex className="flex-col">
                 {props.list.map((item, index) => {

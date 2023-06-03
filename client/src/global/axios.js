@@ -89,6 +89,23 @@ const getPriceHistory = async (ticker, scale) => {
     } catch (err) {}
 };
 
+const getLastPrice = async (ticker) => {
+    const today = dayjs().unix();
+    const day = 86400;
+
+    try {
+        const lastPrice = await axios.get(`${API_ADDRESS}/price/history`, {
+            params: {
+                ticker: ticker,
+                resolution: 'D',
+                from: today - day,
+                to: today,
+            },
+        });
+        return lastPrice;
+    } catch (err) {}
+};
+
 const getSymbols = async () => {
     try {
         const symbols = await axios.get(`${API_ADDRESS}/symbols`);
@@ -153,6 +170,7 @@ export {
     getWatchlist,
     getRTWatchlist,
     getPriceHistory,
+    getLastPrice,
     getSymbols,
     getPortfolio,
     putPortfolio,

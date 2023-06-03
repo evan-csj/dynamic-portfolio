@@ -23,6 +23,7 @@ import Portfolio from './Portfolio';
 import {
     getUser,
     getHoldingRTPrice,
+    getLastPrice,
     getCurrency,
     getHoldings,
 } from '../../global/axios';
@@ -32,10 +33,12 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);
     const [holdingList, setHoldingList] = useState([]);
+    const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
     const [accountDetail, setAccountDetail] = useState(undefined);
     const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
     const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
     const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+    const [priceRT, setPriceRT] = useState({});
 
     const connectionStatus = {
         [ReadyState.CONNECTING]: 'Connecting',
@@ -45,7 +48,7 @@ function Profile(props) {
         [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
     }[readyState];
 
-    const array = ['BINANCE:BTCUSDT','BINANCE:ETHUSDT']
+    const array = ['BINANCE:BTCUSDT', 'BINANCE:ETHUSDT'];
 
     const handleClickSendMessage = useCallback(type => {
         for (const symbol of array) {
@@ -53,9 +56,22 @@ function Profile(props) {
         }
     }, []);
 
+    const updateHoldingList = async () => {
+        if (holdingList.length > 0) {
+            let newHoldingList = [...holdingList];
+            for (let i = 0; i < newHoldingList.length; i++) {
+                const holding = newHoldingList[i];
+                const lastData = await getLastPrice(holding.ticker);
+                const lastPrice = lastData.data.c[0];
+                holding.last_price = lastPrice;
+            }
+            setHoldingList(newHoldingList);
+        }
+    };
+
     useEffect(() => {
-        handleClickSendMessage('subscribe')
-    }, [])
+        // handleClickSendMessage('subscribe');
+    }, []);
 
     useEffect(() => {
         getUser(props.userId).then(response => {
@@ -72,39 +88,78 @@ function Profile(props) {
         });
         getHoldings(props.userId).then(response => {
             setHoldingList(response.data);
-        });
-        const holdingRTPrice = getHoldingRTPrice(props.userId);
-        const exchangeRate = getCurrency();
-
-        Promise.allSettled([holdingRTPrice, exchangeRate]).then(response => {
-            const holdingRTPriceRes = response[0].value.data;
-            const USD2CAD = response[1].value.data;
-
-            let equityCAD = 0;
-            let equityUSD = 0;
-            let equityTotal = 0;
-            holdingRTPriceRes.forEach(item => {
-                const value =
-                    item.last_price * (item.buy_shares - item.sell_shares);
-                if (item.currency === 'cad') {
-                    equityCAD += value;
-                } else if (item.currency === 'usd') {
-                    equityUSD += value;
-                }
-                equityTotal += value;
-            });
-
-            const result = {
-                equityCAD: equityCAD * USD2CAD,
-                equityUSD: equityUSD,
-                equityTotal: equityTotal * USD2CAD,
-                usd2cad: USD2CAD,
-                holdingList: holdingRTPriceRes,
-            };
-
-            setAccountDetail(result);
+            setIsHoldingLoaded(true);
         });
     }, [props.userId]);
+
+    useEffect(() => {
+        updateHoldingList();
+    }, [isHoldingLoaded]);
+
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            if (type === 'trade') {
+                const data = json.data;
+                const price = data[0].p;
+                const symbol = data[0].s;
+                let newPriceRT = priceRT;
+                newPriceRT[symbol] = price;
+
+                setPriceRT(newPriceRT);
+            }
+        }
+    }, [lastMessage, setPriceRT]);
+
+    // useEffect(() => {
+    //     getUser(props.userId).then(response => {
+    //         const { first_name, last_name, cash_cad, cash_usd, dp } =
+    //             response.data;
+    //         const user = {
+    //             firstName: first_name,
+    //             lastName: last_name,
+    //             cashCAD: cash_cad,
+    //             cashUSD: cash_usd,
+    //             dp: dp,
+    //         };
+    //         setUserData(user);
+    //     });
+    //     getHoldings(props.userId).then(response => {
+    //         setHoldingList(response.data);
+    //     });
+    //     const holdingRTPrice = getHoldingRTPrice(props.userId);
+    //     const exchangeRate = getCurrency();
+
+    //     Promise.allSettled([holdingRTPrice, exchangeRate]).then(response => {
+    //         const holdingRTPriceRes = response[0].value.data;
+    //         const USD2CAD = response[1].value.data;
+
+    //         let equityCAD = 0;
+    //         let equityUSD = 0;
+    //         let equityTotal = 0;
+    //         holdingRTPriceRes.forEach(item => {
+    //             const value =
+    //                 item.last_price * (item.buy_shares - item.sell_shares);
+    //             if (item.currency === 'cad') {
+    //                 equityCAD += value;
+    //             } else if (item.currency === 'usd') {
+    //                 equityUSD += value;
+    //             }
+    //             equityTotal += value;
+    //         });
+
+    //         const result = {
+    //             equityCAD: equityCAD * USD2CAD,
+    //             equityUSD: equityUSD,
+    //             equityTotal: equityTotal * USD2CAD,
+    //             usd2cad: USD2CAD,
+    //             holdingList: holdingRTPriceRes,
+    //         };
+
+    //         setAccountDetail(result);
+    //     });
+    // }, [props.userId]);
 
     if (true) {
         return (
@@ -169,9 +224,13 @@ function Profile(props) {
                     STOP
                 </button>
                 <Box>
-                    {lastMessage ? (
-                        <span>Last message: {lastMessage.data}</span>
-                    ) : null}
+                    {Object.keys(priceRT).map((key, i) => {
+                        return (
+                            <Box key={i}>
+                                {key}: {priceRT[key]}
+                            </Box>
+                        );
+                    })}
                 </Box>
 
                 {/* Account Details */}
@@ -330,11 +389,7 @@ function Profile(props) {
                     <TabPanels>
                         <TabPanel p={0}>
                             <HoldingList
-                                list={
-                                    accountDetail
-                                        ? accountDetail.holdingList
-                                        : holdingList
-                                }
+                                list={holdingList}
                                 usd2cad={
                                     accountDetail ? accountDetail.usd2cad : 1
                                 }

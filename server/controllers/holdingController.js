@@ -13,7 +13,6 @@ const selectHolding = userId =>
             'sell_shares',
             'currency'
         )
-        // .join('symbol', { 'symbol.ticker': 'holding.ticker' })
         .where('user_id', userId);
 
 const getHolding = (req, res) => {

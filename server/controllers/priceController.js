@@ -14,21 +14,6 @@ const realstonks = symbol => {
     };
 };
 
-const twelveData = symbol => {
-    return {
-        method: 'GET',
-        url: 'https://twelve-data1.p.rapidapi.com/price',
-        params: {
-            symbol: `${symbol}`,
-            format: 'json',
-            outputsize: '30',
-        },
-        headers: {
-            'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
-        },
-    };
-};
-
 const finnHub = (symbol, resolution, from, to) => {
     return {
         method: 'GET',
