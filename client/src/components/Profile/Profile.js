@@ -22,7 +22,6 @@ import List from '../List';
 import Portfolio from './Portfolio';
 import {
     getUser,
-    getHoldingRTPrice,
     getLastPrice,
     getCurrency,
     getHoldings,
@@ -35,6 +34,7 @@ function Profile(props) {
     const [holdingList, setHoldingList] = useState([]);
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
     const [accountDetail, setAccountDetail] = useState(undefined);
+    
     const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
     const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
     const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
@@ -61,16 +61,16 @@ function Profile(props) {
             let newHoldingList = [...holdingList];
             for (let i = 0; i < newHoldingList.length; i++) {
                 const holding = newHoldingList[i];
-                const lastData = await getLastPrice(holding.ticker);
-                const lastPrice = lastData.data.c[0];
-                holding.last_price = lastPrice;
+                const quote = await getLastPrice(holding.ticker);
+                const currentPrice = quote.data.c;
+                holding.last_price = currentPrice;
             }
             setHoldingList(newHoldingList);
         }
     };
 
     useEffect(() => {
-        // handleClickSendMessage('subscribe');
+        handleClickSendMessage('subscribe');
     }, []);
 
     useEffect(() => {

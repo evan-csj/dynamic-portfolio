@@ -15,10 +15,9 @@ import { AddIcon } from '@chakra-ui/icons';
 import {
     getWatchlist,
     getPriceHistory,
-    getRTWatchlist,
+    getLastPrice,
     getCurrency,
     getSymbols,
-    getRTPrice,
     postWatchItem,
     deleteWatchItem,
 } from '../../global/axios';
@@ -28,8 +27,8 @@ import '../../styles/global.scss';
 
 function Watchlist(props) {
     const [watchlist, setWatchlist] = useState([]);
-    const [watchlistRT, setWatchlistRT] = useState([]);
-    const [exRate, setExRate] = useState(0);
+    const [isWatchlistLoaded, setIsWatchlistLoaded] = useState(false);
+    const [exRate, setExRate] = useState(1);
     const [candlestickData, setCandleStickData] = useState([]);
     const [chartScale, setChartScale] = useState('1Y');
     const [ticker, setTicker] = useState('');
@@ -37,23 +36,30 @@ function Watchlist(props) {
     const [searchTicker, setSearchTicker] = useState('');
     const symbolOptions = useRef([]);
 
+    const updateWatchlist = async () => {
+        if (watchlist.length > 0) {
+            let newWatchlist = [...watchlist];
+            for (let i = 0; i < newWatchlist.length; i++) {
+                const watchItem = newWatchlist[i];
+                const quote = await getLastPrice(watchItem.ticker);
+                const currentPrice = quote.data.c;
+                watchItem.price = currentPrice;
+            }
+            setWatchlist(newWatchlist);
+        }
+    };
+
     useEffect(() => {
         getWatchlist(props.userId).then(response => {
             setWatchlist(response.data);
+            setIsWatchlistLoaded(true);
             setTicker(response.data[0].ticker);
         });
-
-        const watchlist = getRTWatchlist(props.userId);
-        const exchangeRate = getCurrency();
-
-        Promise.allSettled([watchlist, exchangeRate]).then(response => {
-            const watchlistRes = response[0].value.data;
-            const USD2CAD = response[1].value.data;
-
-            setWatchlistRT(watchlistRes);
-            setExRate(USD2CAD);
-        });
     }, [props.userId]);
+
+    useEffect(() => {
+        updateWatchlist();
+    }, [isWatchlistLoaded]);
 
     useEffect(() => {
         getSymbols().then(response => {
@@ -72,8 +78,17 @@ function Watchlist(props) {
         if (ticker === '') return;
         getPriceHistory(ticker, chartScale).then(response => {
             if (response.data.s !== 'ok') return;
-            const { c: close, h: high, l: low, o: open, t: time, v: volume } = response.data;
-            const lengths = [time, close, high, low, open, volume].map(arr => arr.length);
+            const {
+                c: close,
+                h: high,
+                l: low,
+                o: open,
+                t: time,
+                v: volume,
+            } = response.data;
+            const lengths = [time, close, high, low, open, volume].map(
+                arr => arr.length
+            );
             const isSame = lengths.every(len => len === lengths[0]);
             if (!isSame) return;
 
@@ -102,8 +117,8 @@ function Watchlist(props) {
 
     const findTicker = selected => {
         setSearchTicker(selected.value);
-        for (let i = 0; i < watchlistRT.length; i++) {
-            if (watchlistRT[i].ticker === selected.value) {
+        for (let i = 0; i < watchlist.length; i++) {
+            if (watchlist[i].ticker === selected.value) {
                 setExising(true);
                 return;
             }
@@ -114,33 +129,36 @@ function Watchlist(props) {
 
     const addTicker = async () => {
         if (searchTicker !== '' && !existing) {
-            const response = await getRTPrice(searchTicker);
-            const priceRT = response.data.price;
+            const quote = await getLastPrice(searchTicker);
+            const currentPrice = quote.data.c;
             let newItem = {
                 id: `${props.userId}-${searchTicker}`,
                 user_id: props.userId,
                 ticker: searchTicker,
-                price: priceRT,
+                price: currentPrice,
                 currency: 'usd',
             };
-            const newWatchlistRT = [...watchlistRT, newItem];
-            setWatchlistRT(newWatchlistRT);
+            const newWatchlist = [...watchlist, newItem];
+            setWatchlist(newWatchlist);
             await postWatchItem(newItem);
             setSearchTicker('');
         }
     };
 
     const deleteItem = ticker => {
-        let newWatchlistRT = [];
-        for (let i = 0; i < watchlistRT.length; i++) {
-            if (watchlistRT[i].ticker !== ticker) newWatchlistRT.push(watchlistRT[i]);
+        let newWatchlist = [];
+        for (let i = 0; i < watchlist.length; i++) {
+            if (watchlist[i].ticker !== ticker) newWatchlist.push(watchlist[i]);
         }
-        setWatchlistRT(newWatchlistRT);
+        setWatchlist(newWatchlist);
         deleteWatchItem(`${props.userId}-${ticker}`);
     };
 
     return (
-        <Flex className="flex-col" fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}>
+        <Flex
+            className="flex-col"
+            fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}
+        >
             <Center
                 bg="light.navy"
                 color="light.white"
@@ -148,7 +166,9 @@ function Watchlist(props) {
                 borderBottomColor="light.yellow"
                 borderBottomWidth={4}
             >
-                <Heading size={{ base: 'md', lg: 'lg' }}>{ticker || 'Watchlist'}</Heading>
+                <Heading size={{ base: 'md', lg: 'lg' }}>
+                    {ticker || 'Watchlist'}
+                </Heading>
             </Center>
 
             <Box
@@ -157,7 +177,9 @@ function Watchlist(props) {
                 w={{ xl: '1020px' }}
                 pt={4}
             >
-                <CandleStick data={candlestickData.length > 0 ? candlestickData : []}></CandleStick>
+                <CandleStick
+                    data={candlestickData.length > 0 ? candlestickData : []}
+                ></CandleStick>
             </Box>
             <Tabs
                 variant="unstyled"
@@ -173,7 +195,10 @@ function Watchlist(props) {
                         mx={4}
                         borderBottom="2px"
                         borderBottomColor="light.white"
-                        _selected={{ color: 'light.blue', borderBottomColor: 'light.blue' }}
+                        _selected={{
+                            color: 'light.blue',
+                            borderBottomColor: 'light.blue',
+                        }}
                         onClick={() => changeScale('1Y')}
                     >
                         1Y
@@ -183,7 +208,10 @@ function Watchlist(props) {
                         mx={4}
                         borderBottom="2px"
                         borderBottomColor="light.white"
-                        _selected={{ color: 'light.blue', borderBottomColor: 'light.blue' }}
+                        _selected={{
+                            color: 'light.blue',
+                            borderBottomColor: 'light.blue',
+                        }}
                         onClick={() => changeScale('5Y')}
                     >
                         5Y
@@ -197,7 +225,7 @@ function Watchlist(props) {
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
             >
-                <FormControl key={watchlistRT} py={4}>
+                <FormControl key={watchlist} py={4}>
                     <Flex w="100%" gap={4} justifyContent="space-between">
                         <Box flex="1" zIndex={1}>
                             <Select
@@ -221,7 +249,9 @@ function Watchlist(props) {
                         </Center>
                     </Flex>
                     {existing ? (
-                        <FormHelperText color="light.red">Already existing!</FormHelperText>
+                        <FormHelperText color="light.red">
+                            Already existing!
+                        </FormHelperText>
                     ) : (
                         <></>
                     )}
@@ -230,7 +260,7 @@ function Watchlist(props) {
                 <List
                     key={0}
                     type={'watchlist'}
-                    list={watchlistRT ? watchlistRT : watchlist}
+                    list={watchlist}
                     usd2cad={exRate}
                     changeTicker={changeTicker}
                     deleteTicker={deleteItem}

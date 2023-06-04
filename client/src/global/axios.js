@@ -38,14 +38,18 @@ const getFunding = async id => {
 
 const getRTPrice = async ticker => {
     try {
-        const priceRT = await axios.get(`${API_ADDRESS}/price/realtime/${ticker}`);
+        const priceRT = await axios.get(
+            `${API_ADDRESS}/price/realtime/${ticker}`
+        );
         return priceRT;
     } catch (err) {}
 };
 
 const getHoldingRTPrice = async id => {
     try {
-        const totalValue = await axios.get(`${API_ADDRESS}/holding/user/${id}/rtprice`);
+        const totalValue = await axios.get(
+            `${API_ADDRESS}/holding/user/${id}/rtprice`
+        );
         return totalValue;
     } catch (err) {}
 };
@@ -59,14 +63,18 @@ const getCurrency = async () => {
 
 const getWatchlist = async id => {
     try {
-        const watchlist = await axios.get(`${API_ADDRESS}/watchlist/user/${id}`);
+        const watchlist = await axios.get(
+            `${API_ADDRESS}/watchlist/user/${id}`
+        );
         return watchlist;
     } catch (err) {}
 };
 
 const getRTWatchlist = async id => {
     try {
-        const watchlist = await axios.get(`${API_ADDRESS}/watchlist/user/${id}/rtprice`);
+        const watchlist = await axios.get(
+            `${API_ADDRESS}/watchlist/user/${id}/rtprice`
+        );
         return watchlist;
     } catch (err) {}
 };
@@ -77,7 +85,7 @@ const getPriceHistory = async (ticker, scale) => {
     const factor = scale === '5Y' ? 5 : 1;
     const resolution = scale === '5Y' ? 'W' : 'D';
     try {
-        const priceHistory = await axios.get(`${API_ADDRESS}/price/history`, {
+        const priceHistory = await axios.get(`${API_ADDRESS}/price/candles`, {
             params: {
                 ticker: ticker,
                 resolution: resolution,
@@ -89,17 +97,11 @@ const getPriceHistory = async (ticker, scale) => {
     } catch (err) {}
 };
 
-const getLastPrice = async (ticker) => {
-    const today = dayjs().unix();
-    const day = 86400;
-
+const getLastPrice = async ticker => {
     try {
-        const lastPrice = await axios.get(`${API_ADDRESS}/price/history`, {
+        const lastPrice = await axios.get(`${API_ADDRESS}/price/quote`, {
             params: {
                 ticker: ticker,
-                resolution: 'D',
-                from: today - day,
-                to: today,
             },
         });
         return lastPrice;
@@ -115,7 +117,9 @@ const getSymbols = async () => {
 
 const getPortfolio = async id => {
     try {
-        const portfolio = await axios.get(`${API_ADDRESS}/portfolio/user/${id}`);
+        const portfolio = await axios.get(
+            `${API_ADDRESS}/portfolio/user/${id}`
+        );
         return portfolio;
     } catch (err) {}
 };
@@ -133,21 +137,33 @@ const putPortfolio = async (id, dp) => {
 
 const postFunding = async funding => {
     try {
-        const newFunding = await axios.post(`${API_ADDRESS}/fund`, funding, newHeader);
+        const newFunding = await axios.post(
+            `${API_ADDRESS}/fund`,
+            funding,
+            newHeader
+        );
         return newFunding;
     } catch (err) {}
 };
 
 const postTrading = async trading => {
     try {
-        const newTrading = await axios.post(`${API_ADDRESS}/trade`, trading, newHeader);
+        const newTrading = await axios.post(
+            `${API_ADDRESS}/trade`,
+            trading,
+            newHeader
+        );
         return newTrading;
     } catch (err) {}
 };
 
 const postWatchItem = async item => {
     try {
-        const newItem = await axios.post(`${API_ADDRESS}/watchlist`, item, newHeader);
+        const newItem = await axios.post(
+            `${API_ADDRESS}/watchlist`,
+            item,
+            newHeader
+        );
         return newItem;
     } catch (err) {}
 };

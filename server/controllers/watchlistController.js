@@ -54,7 +54,7 @@ const addWatchItem = async (req, res) => {
         id: `${userId}-${ticker}`,
         user_id: userId,
         ticker: ticker,
-        price: price,
+        price: 0,
         currency: currency,
     };
 
