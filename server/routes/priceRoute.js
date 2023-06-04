@@ -3,6 +3,7 @@ const priceController = require('../controllers/priceController');
 
 router.route('/realtime/:ticker').get(priceController.getRTPriceAPI);
 router.route('/forex').get(priceController.getForex);
-router.route('/history').get(priceController.getPriceHistory);
+router.route('/candles').get(priceController.getCandles);
+router.route('/quote').get(priceController.getQuote);
 
 module.exports = router;

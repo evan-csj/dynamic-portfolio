@@ -14,22 +14,7 @@ const realstonks = symbol => {
     };
 };
 
-const twelveData = symbol => {
-    return {
-        method: 'GET',
-        url: 'https://twelve-data1.p.rapidapi.com/price',
-        params: {
-            symbol: `${symbol}`,
-            format: 'json',
-            outputsize: '30',
-        },
-        headers: {
-            'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
-        },
-    };
-};
-
-const finnHub = (symbol, resolution, from, to) => {
+const finnHubCandles = (symbol, resolution, from, to) => {
     return {
         method: 'GET',
         url: 'https://finnhub.io/api/v1/stock/candle',
@@ -45,11 +30,36 @@ const finnHub = (symbol, resolution, from, to) => {
     };
 };
 
-const getPriceHistory = async (req, res) => {
+const finnHubQuote = symbol => {
+    return {
+        method: 'GET',
+        url: 'https://finnhub.io/api/v1/quote',
+        params: {
+            symbol: symbol,
+        },
+        headers: {
+            'X-Finnhub-Token': FINNHUB_KEY,
+        },
+    };
+};
+
+const getCandles = async (req, res) => {
     const { ticker, resolution, from, to } = req.query;
 
     try {
-        const response = await axios.request(finnHub(ticker, resolution, from, to));
+        const response = await axios.request(
+            finnHubCandles(ticker, resolution, from, to)
+        );
+        return res.status(200).json(response.data);
+    } catch (error) {
+        return res.status(404).json(error);
+    }
+};
+
+const getQuote = async (req, res) => {
+    const { ticker } = req.query;
+    try {
+        const response = await axios.request(finnHubQuote(ticker));
         return res.status(200).json(response.data);
     } catch (error) {
         return res.status(404).json(error);
@@ -106,4 +116,4 @@ const getForex = async (_req, res) => {
     }
 };
 
-module.exports = { getRTPriceAPI, getRTPrice, getPriceHistory, getForex };
+module.exports = { getRTPriceAPI, getRTPrice, getCandles, getQuote, getForex };
