@@ -9,7 +9,6 @@ import TradingForm from './components/TradingForm';
 import Profile from './components/Profile/Profile';
 import Watchlist from './components/Watchlist/Watchlist';
 import Txn from './components/Transaction/Transaction';
-import { WebSocketDemo } from './WebSocketDemo';
 
 function App() {
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Select from 'react-select';
 import {
     Heading,
@@ -24,6 +24,7 @@ import {
 import CandleStick from './CandleStick';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
+import useWebSocket from 'react-use-websocket';
 
 function Watchlist(props) {
     const [watchlist, setWatchlist] = useState({});
@@ -36,6 +37,25 @@ function Watchlist(props) {
     const [searchTicker, setSearchTicker] = useState('');
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
+
+    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+        onOpen: () => console.log('opened'),
+        shouldReconnect: closeEvent => true,
+    });
+
+    const wsInitial = () => {
+        const keyList = Object.keys(watchlist);
+        console.log(keyList);
+        for (const symbol of keyList) {
+            sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
+        }
+    };
+
+    const wsChange = useCallback((type, symbol) => {
+        sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+    }, []);
 
     const updateWatchlist = async () => {
         if (isWatchlistLoaded) {
@@ -50,6 +70,14 @@ function Watchlist(props) {
             }
             setWatchlist(newWatchlist);
         }
+    };
+
+    const updatePrice = (symbol, price) => {
+        let newWatchlist = { ...watchlist };
+        if (symbol in watchlist) {
+            newWatchlist[symbol].price = price;
+        }
+        setWatchlist(newWatchlist);
     };
 
     const convertArray2Dict = array => {
@@ -93,6 +121,7 @@ function Watchlist(props) {
             newWatchlist[searchTicker] = newWatch;
             setWatchlist(newWatchlist);
             await postWatchItem(newWatch);
+            wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
         }
     };
@@ -103,6 +132,7 @@ function Watchlist(props) {
             delete newWatchlist[ticker];
             setWatchlist(newWatchlist);
             deleteWatchItem(`${props.userId}-${ticker}`);
+            wsChange('unsubscribe', ticker);
         }
         return;
     };
@@ -117,8 +147,26 @@ function Watchlist(props) {
     }, [props.userId]);
 
     useEffect(() => {
-        updateWatchlist();
+        if (isWatchlistLoaded) {
+            updateWatchlist();
+            wsInitial();
+        }
     }, [isWatchlistLoaded]);
+
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            console.log(type);
+            if (type === 'trade') {
+                const data = json.data;
+                const price = data[0].p;
+                const symbol = data[0].s;
+                console.log(symbol, price);
+                updatePrice(symbol, price);
+            }
+        }
+    }, [lastMessage]);
 
     useEffect(() => {
         getSymbols().then(response => {
