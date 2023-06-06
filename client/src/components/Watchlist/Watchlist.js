@@ -161,7 +161,6 @@ function Watchlist(props) {
         if (lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
             const type = json.type;
-            console.log(type);
             if (type === 'trade') {
                 const data = json.data;
                 const price = data[0].p;

@@ -137,7 +137,6 @@ function Profile(props) {
     //     getHoldings(props.userId).then(response => {
     //         setHoldingList(response.data);
     //     });
-    //     const holdingRTPrice = getHoldingRTPrice(props.userId);
     //     const exchangeRate = getCurrency();
 
     //     Promise.allSettled([holdingRTPrice, exchangeRate]).then(response => {

@@ -45,15 +45,6 @@ const getRTPrice = async ticker => {
     } catch (err) {}
 };
 
-const getHoldingRTPrice = async id => {
-    try {
-        const totalValue = await axios.get(
-            `${API_ADDRESS}/holding/user/${id}/rtprice`
-        );
-        return totalValue;
-    } catch (err) {}
-};
-
 const getCurrency = async () => {
     try {
         const exRate = await axios.get(`${API_ADDRESS}/price/forex`);
@@ -65,15 +56,6 @@ const getWatchlist = async id => {
     try {
         const watchlist = await axios.get(
             `${API_ADDRESS}/watchlist/user/${id}`
-        );
-        return watchlist;
-    } catch (err) {}
-};
-
-const getRTWatchlist = async id => {
-    try {
-        const watchlist = await axios.get(
-            `${API_ADDRESS}/watchlist/user/${id}/rtprice`
         );
         return watchlist;
     } catch (err) {}
@@ -181,10 +163,8 @@ export {
     getTrading,
     getFunding,
     getRTPrice,
-    getHoldingRTPrice,
     getCurrency,
     getWatchlist,
-    getRTWatchlist,
     getPriceHistory,
     getLastPrice,
     getSymbols,
