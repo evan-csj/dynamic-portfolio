@@ -17,8 +17,7 @@ import {
     Tab,
     TabPanel,
 } from '@chakra-ui/react';
-import HoldingList from './HoldingList';
-import List from '../List';
+import ObjList from '../ObjList';
 import Portfolio from './Portfolio';
 import {
     getUser,
@@ -27,51 +26,59 @@ import {
     getHoldings,
 } from '../../global/axios';
 import '../../styles/global.scss';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);
-    const [holdingList, setHoldingList] = useState([]);
+    const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
     const [accountDetail, setAccountDetail] = useState(undefined);
-    
+
     const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
     const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
-    const [priceRT, setPriceRT] = useState({});
+    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+        onOpen: () => console.log('opened'),
+        shouldReconnect: closeEvent => true,
+    });
 
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: 'Connecting',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing',
-        [ReadyState.CLOSED]: 'Closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-
-    const array = ['BINANCE:BTCUSDT', 'BINANCE:ETHUSDT'];
-
-    const handleClickSendMessage = useCallback(type => {
-        for (const symbol of array) {
-            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
-        }
-    }, []);
-
-    const updateHoldingList = async () => {
-        if (holdingList.length > 0) {
-            let newHoldingList = [...holdingList];
-            for (let i = 0; i < newHoldingList.length; i++) {
-                const holding = newHoldingList[i];
-                const quote = await getLastPrice(holding.ticker);
-                const currentPrice = quote.data.c;
-                holding.last_price = currentPrice;
-            }
-            setHoldingList(newHoldingList);
+    const wsInitial = () => {
+        const keyList = Object.keys(holdingList);
+        console.log(keyList);
+        for (const symbol of keyList) {
+            sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
         }
     };
 
-    useEffect(() => {
-        handleClickSendMessage('subscribe');
-    }, []);
+    const updateHoldingList = async () => {
+        if (isHoldingLoaded) {
+            let newHoldinglist = {};
+            const keyList = Object.keys(holdingList);
+            for (let i = 0; i < keyList.length; i++) {
+                let holdingItem = holdingList[keyList[i]];
+                const quote = await getLastPrice(keyList[i]);
+                const currentPrice = quote.data.c;
+                holdingItem.price = currentPrice;
+                newHoldinglist[keyList[i]] = holdingItem;
+            }
+            setHoldingList(newHoldinglist);
+        }
+    };
+
+    const updatePrice = (symbol, price) => {
+        let newHoldinglist = { ...holdingList };
+        if (symbol in holdingList) {
+            newHoldinglist[symbol].price = price;
+        }
+        setHoldingList(newHoldinglist);
+    };
+
+    const convertArray2Dict = array => {
+        let dict = {};
+        for (const item of array) {
+            dict[item.ticker] = item;
+        }
+        return dict;
+    };
 
     useEffect(() => {
         getUser(props.userId).then(response => {
@@ -87,13 +94,17 @@ function Profile(props) {
             setUserData(user);
         });
         getHoldings(props.userId).then(response => {
-            setHoldingList(response.data);
+            const dataObj = convertArray2Dict(response.data);
+            setHoldingList(dataObj);
             setIsHoldingLoaded(true);
         });
     }, [props.userId]);
 
     useEffect(() => {
-        updateHoldingList();
+        if (isHoldingLoaded) {
+            updateHoldingList();
+            wsInitial();
+        }
     }, [isHoldingLoaded]);
 
     useEffect(() => {
@@ -104,13 +115,11 @@ function Profile(props) {
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;
-                let newPriceRT = priceRT;
-                newPriceRT[symbol] = price;
-
-                setPriceRT(newPriceRT);
+                console.log(symbol, price);
+                updatePrice(symbol, price);
             }
         }
-    }, [lastMessage, setPriceRT]);
+    }, [lastMessage]);
 
     // useEffect(() => {
     //     getUser(props.userId).then(response => {
@@ -209,29 +218,6 @@ function Profile(props) {
                         </Text>
                     </Flex>
                 </Flex>
-
-                <Box>Status: {connectionStatus}</Box>
-                <button
-                    onClick={() => handleClickSendMessage('subscribe')}
-                    disabled={readyState !== ReadyState.OPEN}
-                >
-                    START
-                </button>
-                <button
-                    onClick={() => handleClickSendMessage('unsubscribe')}
-                    disabled={readyState !== ReadyState.OPEN}
-                >
-                    STOP
-                </button>
-                <Box>
-                    {Object.keys(priceRT).map((key, i) => {
-                        return (
-                            <Box key={i}>
-                                {key}: {priceRT[key]}
-                            </Box>
-                        );
-                    })}
-                </Box>
 
                 {/* Account Details */}
                 <Flex
@@ -388,7 +374,9 @@ function Profile(props) {
                     </TabList>
                     <TabPanels>
                         <TabPanel p={0}>
-                            <HoldingList
+                            <ObjList
+                                key={0}
+                                type={'holding'}
                                 list={holdingList}
                                 usd2cad={
                                     accountDetail ? accountDetail.usd2cad : 1
@@ -396,7 +384,11 @@ function Profile(props) {
                             />
                         </TabPanel>
                         <TabPanel p={0}>
-                            <Portfolio user={userData} userId={props.userId} />
+                            <Portfolio
+                                key={1}
+                                user={userData}
+                                userId={props.userId}
+                            />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
