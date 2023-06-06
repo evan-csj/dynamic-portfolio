@@ -19,9 +19,9 @@ function Holding(props) {
             <GridItem fontWeight="bold">{ticker}</GridItem>
             <GridItem fontWeight="bold" textAlign="right">
                 <HStack justify="end">
-                    {price !== 0 ? (
-                        <Box color={diff >= 0 ? 'light.green' : 'light.red'}>
-                            {diff >= 0 ? '+' : '-'}${Math.abs(diff).toFixed(2)}
+                    {price !== 0 && Math.abs(diff) > 0.001 ? (
+                        <Box color={diff > 0 ? 'light.green' : 'light.red'}>
+                            {diff > 0 ? '+' : '-'}${Math.abs(diff).toFixed(2)}
                         </Box>
                     ) : (
                         <Box></Box>
