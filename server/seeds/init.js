@@ -16,8 +16,6 @@ const { v1 } = require('uuid');
 const { FMP_KEY } = process.env;
 
 exports.seed = async function (knex) {
-    const mics = ['XNYS', 'XNAS', 'ARCX'];
-
     tradeData.map(item => {
         item['id'] = v1();
     });

@@ -65,7 +65,9 @@ function Watchlist(props) {
                 let watchItem = watchlist[keyList[i]];
                 const quote = await getLastPrice(keyList[i]);
                 const currentPrice = quote.data.c;
+                const previousClose = quote.data.pc;
                 watchItem.price = currentPrice;
+                watchItem.prev_close = previousClose;
                 newWatchlist[keyList[i]] = watchItem;
             }
             setWatchlist(newWatchlist);
@@ -110,11 +112,13 @@ function Watchlist(props) {
         if (searchTicker !== '' && !existing) {
             const quote = await getLastPrice(searchTicker);
             const currentPrice = quote.data.c;
+            const previousClose = quote.data.pc;
             let newWatch = {
                 id: `${props.userId}-${searchTicker}`,
                 user_id: props.userId,
                 ticker: searchTicker,
                 price: currentPrice,
+                prev_close: previousClose,
                 currency: 'usd',
             };
             let newWatchlist = { ...watchlist };

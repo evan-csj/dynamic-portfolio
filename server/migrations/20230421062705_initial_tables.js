@@ -74,6 +74,7 @@ exports.up = function (knex) {
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
             table.float('price', 12, 2).notNullable();
+            table.float('prev_close', 12, 2).notNullable();
             table.string('currency').notNullable();
         })
         .createTable('portfolio', table => {
