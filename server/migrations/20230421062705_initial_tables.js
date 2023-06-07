@@ -45,7 +45,7 @@ exports.up = function (knex) {
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
             table.float('avg_price', 20, 7).notNullable();
-            table.float('last_price', 12, 4).notNullable();
+            table.float('price', 12, 2).notNullable();
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
             table.string('currency').notNullable();
@@ -74,6 +74,7 @@ exports.up = function (knex) {
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
             table.float('price', 12, 2).notNullable();
+            table.float('prev_close', 12, 2).notNullable();
             table.string('currency').notNullable();
         })
         .createTable('portfolio', table => {

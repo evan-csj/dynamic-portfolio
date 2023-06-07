@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Select from 'react-select';
 import {
     Heading,
@@ -22,11 +22,12 @@ import {
     deleteWatchItem,
 } from '../../global/axios';
 import CandleStick from './CandleStick';
-import List from '../List';
+import ObjList from '../ObjList';
 import '../../styles/global.scss';
+import useWebSocket from 'react-use-websocket';
 
 function Watchlist(props) {
-    const [watchlist, setWatchlist] = useState([]);
+    const [watchlist, setWatchlist] = useState({});
     const [isWatchlistLoaded, setIsWatchlistLoaded] = useState(false);
     const [exRate, setExRate] = useState(1);
     const [candlestickData, setCandleStickData] = useState([]);
@@ -34,32 +35,141 @@ function Watchlist(props) {
     const [ticker, setTicker] = useState('');
     const [existing, setExising] = useState(false);
     const [searchTicker, setSearchTicker] = useState('');
+    const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
 
+    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+        onOpen: () => console.log('opened'),
+        shouldReconnect: closeEvent => true,
+    });
+
+    const wsInitial = () => {
+        const keyList = Object.keys(watchlist);
+        console.log(keyList);
+        for (const symbol of keyList) {
+            sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
+        }
+    };
+
+    const wsChange = useCallback((type, symbol) => {
+        sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+    }, []);
+
     const updateWatchlist = async () => {
-        if (watchlist.length > 0) {
-            let newWatchlist = [...watchlist];
-            for (let i = 0; i < newWatchlist.length; i++) {
-                const watchItem = newWatchlist[i];
-                const quote = await getLastPrice(watchItem.ticker);
+        if (isWatchlistLoaded) {
+            let newWatchlist = {};
+            const keyList = Object.keys(watchlist);
+            for (let i = 0; i < keyList.length; i++) {
+                let watchItem = watchlist[keyList[i]];
+                const quote = await getLastPrice(keyList[i]);
                 const currentPrice = quote.data.c;
+                const previousClose = quote.data.pc;
                 watchItem.price = currentPrice;
+                watchItem.prev_close = previousClose;
+                newWatchlist[keyList[i]] = watchItem;
             }
             setWatchlist(newWatchlist);
         }
     };
 
+    const updatePrice = (symbol, price) => {
+        let newWatchlist = { ...watchlist };
+        if (symbol in watchlist) {
+            newWatchlist[symbol].price = price;
+        }
+        setWatchlist(newWatchlist);
+    };
+
+    const convertArray2Dict = array => {
+        let dict = {};
+        for (const item of array) {
+            dict[item.ticker] = item;
+        }
+        return dict;
+    };
+
+    const changeTicker = symbol => {
+        setTicker(symbol);
+    };
+
+    const changeScale = scale => {
+        setChartScale(scale);
+    };
+
+    const findTicker = selected => {
+        setSearchTicker(selected.value);
+        if (selected.value in watchlist) {
+            setExising(true);
+        } else {
+            setExising(false);
+        }
+        return;
+    };
+
+    const addTicker = async () => {
+        if (searchTicker !== '' && !existing) {
+            const quote = await getLastPrice(searchTicker);
+            const currentPrice = quote.data.c;
+            const previousClose = quote.data.pc;
+            let newWatch = {
+                id: `${props.userId}-${searchTicker}`,
+                user_id: props.userId,
+                ticker: searchTicker,
+                price: currentPrice,
+                prev_close: previousClose,
+                currency: 'usd',
+            };
+            let newWatchlist = { ...watchlist };
+            newWatchlist[searchTicker] = newWatch;
+            setWatchlist(newWatchlist);
+            await postWatchItem(newWatch);
+            wsChange('subscribe', searchTicker);
+            setListLength(Object.keys(newWatchlist).length);
+        }
+    };
+
+    const deleteItem = ticker => {
+        let newWatchlist = { ...watchlist };
+        if (ticker in watchlist) {
+            delete newWatchlist[ticker];
+            setWatchlist(newWatchlist);
+            deleteWatchItem(`${props.userId}-${ticker}`);
+            wsChange('unsubscribe', ticker);
+        }
+        return;
+    };
+
     useEffect(() => {
         getWatchlist(props.userId).then(response => {
-            setWatchlist(response.data);
+            const dataObj = convertArray2Dict(response.data);
+            setWatchlist(dataObj);
             setIsWatchlistLoaded(true);
             setTicker(response.data[0].ticker);
         });
     }, [props.userId]);
 
     useEffect(() => {
-        updateWatchlist();
+        if (isWatchlistLoaded) {
+            updateWatchlist();
+            wsInitial();
+        }
     }, [isWatchlistLoaded]);
+
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            if (type === 'trade') {
+                const data = json.data;
+                const price = data[0].p;
+                const symbol = data[0].s;
+                console.log(symbol, price);
+                updatePrice(symbol, price);
+            }
+        }
+    }, [lastMessage]);
 
     useEffect(() => {
         getSymbols().then(response => {
@@ -106,53 +216,6 @@ function Watchlist(props) {
             setCandleStickData(formattedData);
         });
     }, [ticker, chartScale]);
-
-    const changeTicker = symbol => {
-        setTicker(symbol);
-    };
-
-    const changeScale = scale => {
-        setChartScale(scale);
-    };
-
-    const findTicker = selected => {
-        setSearchTicker(selected.value);
-        for (let i = 0; i < watchlist.length; i++) {
-            if (watchlist[i].ticker === selected.value) {
-                setExising(true);
-                return;
-            }
-        }
-        setExising(false);
-        return;
-    };
-
-    const addTicker = async () => {
-        if (searchTicker !== '' && !existing) {
-            const quote = await getLastPrice(searchTicker);
-            const currentPrice = quote.data.c;
-            let newItem = {
-                id: `${props.userId}-${searchTicker}`,
-                user_id: props.userId,
-                ticker: searchTicker,
-                price: currentPrice,
-                currency: 'usd',
-            };
-            const newWatchlist = [...watchlist, newItem];
-            setWatchlist(newWatchlist);
-            await postWatchItem(newItem);
-            setSearchTicker('');
-        }
-    };
-
-    const deleteItem = ticker => {
-        let newWatchlist = [];
-        for (let i = 0; i < watchlist.length; i++) {
-            if (watchlist[i].ticker !== ticker) newWatchlist.push(watchlist[i]);
-        }
-        setWatchlist(newWatchlist);
-        deleteWatchItem(`${props.userId}-${ticker}`);
-    };
 
     return (
         <Flex
@@ -225,10 +288,11 @@ function Watchlist(props) {
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
             >
-                <FormControl key={watchlist} py={4}>
+                <FormControl py={4}>
                     <Flex w="100%" gap={4} justifyContent="space-between">
                         <Box flex="1" zIndex={1}>
                             <Select
+                                key={listLength}
                                 placeholder="Type Symbol"
                                 options={symbolOptions.current}
                                 isRequired
@@ -257,7 +321,7 @@ function Watchlist(props) {
                     )}
                 </FormControl>
 
-                <List
+                <ObjList
                     key={0}
                     type={'watchlist'}
                     list={watchlist}

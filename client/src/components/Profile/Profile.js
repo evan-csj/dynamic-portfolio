@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Flex,
     Box,
@@ -17,8 +17,7 @@ import {
     Tab,
     TabPanel,
 } from '@chakra-ui/react';
-import HoldingList from './HoldingList';
-import List from '../List';
+import ObjList from '../ObjList';
 import Portfolio from './Portfolio';
 import {
     getUser,
@@ -27,50 +26,67 @@ import {
     getHoldings,
 } from '../../global/axios';
 import '../../styles/global.scss';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 
 function Profile(props) {
     const [userData, setUserData] = useState(undefined);
-    const [holdingList, setHoldingList] = useState([]);
+    const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
+    const [isPriceLoaded, setIsPriceLoaded] = useState(false);
+    const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
-    
+
     const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
     const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
-    const [priceRT, setPriceRT] = useState({});
+    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+        onOpen: () => console.log('opened'),
+        shouldReconnect: closeEvent => true,
+    });
 
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: 'Connecting',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing',
-        [ReadyState.CLOSED]: 'Closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-
-    const array = ['BINANCE:BTCUSDT', 'BINANCE:ETHUSDT'];
-
-    const handleClickSendMessage = useCallback(type => {
-        for (const symbol of array) {
-            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
-        }
-    }, []);
-
-    const updateHoldingList = async () => {
-        if (holdingList.length > 0) {
-            let newHoldingList = [...holdingList];
-            for (let i = 0; i < newHoldingList.length; i++) {
-                const holding = newHoldingList[i];
-                const quote = await getLastPrice(holding.ticker);
-                const currentPrice = quote.data.c;
-                holding.last_price = currentPrice;
-            }
-            setHoldingList(newHoldingList);
+    const wsInitial = () => {
+        const keyList = Object.keys(holdingList);
+        console.log(keyList);
+        for (const symbol of keyList) {
+            sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
         }
     };
 
+    const updateHoldingList = async () => {
+        if (isHoldingLoaded) {
+            let newHoldinglist = {};
+            const keyList = Object.keys(holdingList);
+            for (let i = 0; i < keyList.length; i++) {
+                let holdingItem = holdingList[keyList[i]];
+                const quote = await getLastPrice(keyList[i]);
+                const currentPrice = quote.data.c;
+                holdingItem.price = currentPrice;
+                newHoldinglist[keyList[i]] = holdingItem;
+            }
+            setHoldingList(newHoldinglist);
+            setIsPriceLoaded(true);
+        }
+    };
+
+    const updatePrice = (symbol, price) => {
+        let newHoldinglist = { ...holdingList };
+        if (symbol in holdingList) {
+            newHoldinglist[symbol].price = price;
+        }
+        setHoldingList(newHoldinglist);
+    };
+
+    const convertArray2Dict = array => {
+        let dict = {};
+        for (const item of array) {
+            dict[item.ticker] = item;
+        }
+        return dict;
+    };
+
     useEffect(() => {
-        handleClickSendMessage('subscribe');
+        getCurrency().then(response => {
+            setExRate(response.data);
+        });
     }, []);
 
     useEffect(() => {
@@ -87,13 +103,17 @@ function Profile(props) {
             setUserData(user);
         });
         getHoldings(props.userId).then(response => {
-            setHoldingList(response.data);
+            const dataObj = convertArray2Dict(response.data);
+            setHoldingList(dataObj);
             setIsHoldingLoaded(true);
         });
     }, [props.userId]);
 
     useEffect(() => {
-        updateHoldingList();
+        if (isHoldingLoaded) {
+            updateHoldingList();
+            wsInitial();
+        }
     }, [isHoldingLoaded]);
 
     useEffect(() => {
@@ -104,62 +124,45 @@ function Profile(props) {
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;
-                let newPriceRT = priceRT;
-                newPriceRT[symbol] = price;
-
-                setPriceRT(newPriceRT);
+                console.log(symbol, price);
+                updatePrice(symbol, price);
             }
         }
-    }, [lastMessage, setPriceRT]);
+    }, [lastMessage]);
 
-    // useEffect(() => {
-    //     getUser(props.userId).then(response => {
-    //         const { first_name, last_name, cash_cad, cash_usd, dp } =
-    //             response.data;
-    //         const user = {
-    //             firstName: first_name,
-    //             lastName: last_name,
-    //             cashCAD: cash_cad,
-    //             cashUSD: cash_usd,
-    //             dp: dp,
-    //         };
-    //         setUserData(user);
-    //     });
-    //     getHoldings(props.userId).then(response => {
-    //         setHoldingList(response.data);
-    //     });
-    //     const holdingRTPrice = getHoldingRTPrice(props.userId);
-    //     const exchangeRate = getCurrency();
+    useEffect(() => {
+        if (exRate !== 0 && userData !== undefined && isPriceLoaded) {
+            let equityCAD = 0;
+            let equityUSD = 0;
+            let equityTotal = 0;
+            const USD2CAD = exRate;
 
-    //     Promise.allSettled([holdingRTPrice, exchangeRate]).then(response => {
-    //         const holdingRTPriceRes = response[0].value.data;
-    //         const USD2CAD = response[1].value.data;
+            const keyList = Object.keys(holdingList);
+            for (let i = 0; i < keyList.length; i++) {
+                const holding = holdingList[keyList[i]];
+                const currency = holding.currency;
+                const shares = holding.buy_shares - holding.sell_shares;
+                const price = holding.price;
 
-    //         let equityCAD = 0;
-    //         let equityUSD = 0;
-    //         let equityTotal = 0;
-    //         holdingRTPriceRes.forEach(item => {
-    //             const value =
-    //                 item.last_price * (item.buy_shares - item.sell_shares);
-    //             if (item.currency === 'cad') {
-    //                 equityCAD += value;
-    //             } else if (item.currency === 'usd') {
-    //                 equityUSD += value;
-    //             }
-    //             equityTotal += value;
-    //         });
+                if (currency === 'usd') {
+                    equityUSD += price * shares;
+                }
+                if (currency === 'cad') {
+                    equityCAD += price * shares;
+                }
+                equityTotal += price * shares;
+            }
 
-    //         const result = {
-    //             equityCAD: equityCAD * USD2CAD,
-    //             equityUSD: equityUSD,
-    //             equityTotal: equityTotal * USD2CAD,
-    //             usd2cad: USD2CAD,
-    //             holdingList: holdingRTPriceRes,
-    //         };
+            const result = {
+                equityCAD: equityCAD * USD2CAD,
+                equityUSD: equityUSD,
+                equityTotal: equityTotal * USD2CAD,
+                usd2cad: USD2CAD,
+            };
 
-    //         setAccountDetail(result);
-    //     });
-    // }, [props.userId]);
+            setAccountDetail(result);
+        }
+    }, [exRate, userData, holdingList]);
 
     if (true) {
         return (
@@ -209,29 +212,6 @@ function Profile(props) {
                         </Text>
                     </Flex>
                 </Flex>
-
-                <Box>Status: {connectionStatus}</Box>
-                <button
-                    onClick={() => handleClickSendMessage('subscribe')}
-                    disabled={readyState !== ReadyState.OPEN}
-                >
-                    START
-                </button>
-                <button
-                    onClick={() => handleClickSendMessage('unsubscribe')}
-                    disabled={readyState !== ReadyState.OPEN}
-                >
-                    STOP
-                </button>
-                <Box>
-                    {Object.keys(priceRT).map((key, i) => {
-                        return (
-                            <Box key={i}>
-                                {key}: {priceRT[key]}
-                            </Box>
-                        );
-                    })}
-                </Box>
 
                 {/* Account Details */}
                 <Flex
@@ -388,7 +368,9 @@ function Profile(props) {
                     </TabList>
                     <TabPanels>
                         <TabPanel p={0}>
-                            <HoldingList
+                            <ObjList
+                                key={0}
+                                type={'holding'}
                                 list={holdingList}
                                 usd2cad={
                                     accountDetail ? accountDetail.usd2cad : 1
@@ -396,7 +378,11 @@ function Profile(props) {
                             />
                         </TabPanel>
                         <TabPanel p={0}>
-                            <Portfolio user={userData} userId={props.userId} />
+                            <Portfolio
+                                key={1}
+                                user={userData}
+                                userId={props.userId}
+                            />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

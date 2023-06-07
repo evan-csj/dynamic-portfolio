@@ -10,7 +10,6 @@ const priceRoute = require('./routes/priceRoute');
 const watchlistRoute = require('./routes/watchlistRoute');
 const portfolioRoute = require('./routes/portfolioRoute');
 const symbolRoute = require('./routes/symbolRoute');
-const websocketRoute = require('./routes/websocketRoute');
 
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
@@ -26,7 +25,6 @@ app.use('/price', priceRoute);
 app.use('/watchlist', watchlistRoute);
 app.use('/portfolio', portfolioRoute);
 app.use('/symbols', symbolRoute);
-app.use('/websocket', websocketRoute);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

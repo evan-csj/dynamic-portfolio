@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import {
@@ -16,8 +16,15 @@ import {
     Stat,
     StatNumber,
 } from '@chakra-ui/react';
-import { getUser, getSymbols, getRTPrice, getHoldings, postTrading } from '../global/axios';
+import {
+    getUser,
+    getSymbols,
+    getLastPrice,
+    getHoldings,
+    postTrading,
+} from '../global/axios';
 import '../styles/global.scss';
+import useWebSocket from 'react-use-websocket';
 
 function TradingForm(props) {
     const typeOptions = [
@@ -40,13 +47,22 @@ function TradingForm(props) {
     const symbolOptions = useRef([]);
     const holdings = useRef(undefined);
 
+    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+        onOpen: () => console.log('opened'),
+        shouldReconnect: closeEvent => true,
+    });
+
     const title = type === 'buy' ? 'Buy' : type === 'sell' ? 'Sell' : 'Trading';
     const handleTypeChange = selected => setType(selected.value);
     const handleSymbolChange = selected => {
-        getRTPrice(selected.value).then(response => {
-            setCurrentPrice(response.data.price);
+        getLastPrice(selected.value).then(response => {
+            setCurrentPrice(response.data.c);
         });
         setSymbol(selected.value);
+        if (symbol !== '') wsChange('unsubscribe', symbol);
+        wsChange('subscribe', selected.value);
     };
 
     // const handleSymbolChange = event => {
@@ -81,6 +97,10 @@ function TradingForm(props) {
         }
     };
 
+    const wsChange = useCallback((type, symbol) => {
+        sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+    }, []);
+
     useEffect(() => {
         getSymbols().then(response => {
             const symbols = response.data;
@@ -102,7 +122,9 @@ function TradingForm(props) {
             const holdingArray = holdings.current;
             for (let i = 0; i < holdingArray.length; i++) {
                 if (holdingArray[i].ticker === symbol) {
-                    const shares = holdingArray[i].buy_shares - holdingArray[i].sell_shares;
+                    const shares =
+                        holdingArray[i].buy_shares -
+                        holdingArray[i].sell_shares;
                     setShares(shares);
                     break;
                 } else {
@@ -118,12 +140,28 @@ function TradingForm(props) {
         });
     }, [props.userId]);
 
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            if (type === 'trade') {
+                const data = json.data;
+                const price = data[0].p;
+                const symbol = data[0].s;
+                console.log(symbol, price);
+                setCurrentPrice(price);
+            }
+        }
+    }, [lastMessage]);
+
     const enoughShares = () => {
         const holdingArray = holdings.current;
         if (type === 'sell' && symbol !== '' && quantity !== '') {
             for (let i = 0; i < holdingArray.length; i++) {
                 if (holdingArray[i].ticker === symbol) {
-                    const shares = holdingArray[i].buy_shares - holdingArray[i].sell_shares;
+                    const shares =
+                        holdingArray[i].buy_shares -
+                        holdingArray[i].sell_shares;
                     if (shares >= Number(quantity)) {
                         return true;
                     } else {
@@ -199,7 +237,8 @@ function TradingForm(props) {
                 </InputGroup> */}
                 {
                     <FormHelperText>
-                        Current price: ${currentPrice} USD / Position: {shares} shares
+                        Current price: ${currentPrice} USD / Position: {shares}{' '}
+                        shares
                     </FormHelperText>
                 }
                 <Box h={8} />
@@ -214,18 +253,29 @@ function TradingForm(props) {
                     />
                 </InputGroup>
                 {!notZero() ? (
-                    <FormHelperText color="light.red">Don't enter 0!</FormHelperText>
+                    <FormHelperText color="light.red">
+                        Don't enter 0!
+                    </FormHelperText>
                 ) : (
                     <></>
                 )}
                 <Box h={8} />
-                <Button variant="submit" type="submit" w="100%" onClick={handleSubmit}>
+                <Button
+                    variant="submit"
+                    type="submit"
+                    w="100%"
+                    onClick={handleSubmit}
+                >
                     Submit
                 </Button>
                 {!enoughShares() ? (
-                    <FormHelperText color="light.red">Not enough shares to sell</FormHelperText>
+                    <FormHelperText color="light.red">
+                        Not enough shares to sell
+                    </FormHelperText>
                 ) : !enoughFund() ? (
-                    <FormHelperText color="light.red">Not enough fund to buy</FormHelperText>
+                    <FormHelperText color="light.red">
+                        Not enough fund to buy
+                    </FormHelperText>
                 ) : (
                     <></>
                 )}
@@ -234,12 +284,16 @@ function TradingForm(props) {
             <StatGroup>
                 <Stat>
                     <StatLabel>USD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_usd.toFixed(2) : 0}</StatNumber>
+                    <StatNumber>
+                        ${userData ? userData.cash_usd.toFixed(2) : 0}
+                    </StatNumber>
                 </Stat>
 
                 <Stat>
                     <StatLabel>CAD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_cad.toFixed(2) : 0}</StatNumber>
+                    <StatNumber>
+                        ${userData ? userData.cash_cad.toFixed(2) : 0}
+                    </StatNumber>
                 </Stat>
             </StatGroup>
         </Flex>

@@ -8,7 +8,7 @@ const selectHolding = userId =>
             'user_id',
             'holding.ticker',
             'avg_price',
-            'last_price',
+            'price',
             'buy_shares',
             'sell_shares',
             'currency'
