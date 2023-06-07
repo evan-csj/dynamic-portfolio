@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Flex,
     Box,
@@ -32,6 +32,8 @@ function Profile(props) {
     const [userData, setUserData] = useState(undefined);
     const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
+    const [isPriceLoaded, setIsPriceLoaded] = useState(false);
+    const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
 
     const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
@@ -61,6 +63,7 @@ function Profile(props) {
                 newHoldinglist[keyList[i]] = holdingItem;
             }
             setHoldingList(newHoldinglist);
+            setIsPriceLoaded(true);
         }
     };
 
@@ -79,6 +82,12 @@ function Profile(props) {
         }
         return dict;
     };
+
+    useEffect(() => {
+        getCurrency().then(response => {
+            setExRate(response.data);
+        });
+    }, []);
 
     useEffect(() => {
         getUser(props.userId).then(response => {
@@ -121,53 +130,39 @@ function Profile(props) {
         }
     }, [lastMessage]);
 
-    // useEffect(() => {
-    //     getUser(props.userId).then(response => {
-    //         const { first_name, last_name, cash_cad, cash_usd, dp } =
-    //             response.data;
-    //         const user = {
-    //             firstName: first_name,
-    //             lastName: last_name,
-    //             cashCAD: cash_cad,
-    //             cashUSD: cash_usd,
-    //             dp: dp,
-    //         };
-    //         setUserData(user);
-    //     });
-    //     getHoldings(props.userId).then(response => {
-    //         setHoldingList(response.data);
-    //     });
-    //     const exchangeRate = getCurrency();
+    useEffect(() => {
+        if (exRate !== 0 && userData !== undefined && isPriceLoaded) {
+            let equityCAD = 0;
+            let equityUSD = 0;
+            let equityTotal = 0;
+            const USD2CAD = exRate;
 
-    //     Promise.allSettled([holdingRTPrice, exchangeRate]).then(response => {
-    //         const holdingRTPriceRes = response[0].value.data;
-    //         const USD2CAD = response[1].value.data;
+            const keyList = Object.keys(holdingList);
+            for (let i = 0; i < keyList.length; i++) {
+                const holding = holdingList[keyList[i]];
+                const currency = holding.currency;
+                const shares = holding.buy_shares - holding.sell_shares;
+                const price = holding.price;
 
-    //         let equityCAD = 0;
-    //         let equityUSD = 0;
-    //         let equityTotal = 0;
-    //         holdingRTPriceRes.forEach(item => {
-    //             const value =
-    //                 item.last_price * (item.buy_shares - item.sell_shares);
-    //             if (item.currency === 'cad') {
-    //                 equityCAD += value;
-    //             } else if (item.currency === 'usd') {
-    //                 equityUSD += value;
-    //             }
-    //             equityTotal += value;
-    //         });
+                if (currency === 'usd') {
+                    equityUSD += price * shares;
+                }
+                if (currency === 'cad') {
+                    equityCAD += price * shares;
+                }
+                equityTotal += price * shares;
+            }
 
-    //         const result = {
-    //             equityCAD: equityCAD * USD2CAD,
-    //             equityUSD: equityUSD,
-    //             equityTotal: equityTotal * USD2CAD,
-    //             usd2cad: USD2CAD,
-    //             holdingList: holdingRTPriceRes,
-    //         };
+            const result = {
+                equityCAD: equityCAD * USD2CAD,
+                equityUSD: equityUSD,
+                equityTotal: equityTotal * USD2CAD,
+                usd2cad: USD2CAD,
+            };
 
-    //         setAccountDetail(result);
-    //     });
-    // }, [props.userId]);
+            setAccountDetail(result);
+        }
+    }, [exRate, userData, holdingList]);
 
     if (true) {
         return (
