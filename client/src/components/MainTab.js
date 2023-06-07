@@ -23,7 +23,7 @@ import '../styles/global.scss';
 
 function MainTab() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [page, setPage] = useState('');
+    const [page, setPage] = useState('profile');
 
     return (
         <>
