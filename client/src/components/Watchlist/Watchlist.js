@@ -5,11 +5,13 @@ import {
     Flex,
     Box,
     Center,
-    Tabs,
-    TabList,
-    Tab,
     FormControl,
     FormHelperText,
+    Tabs,
+    TabList,
+    TabPanels,
+    Tab,
+    TabPanel,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
@@ -22,6 +24,7 @@ import {
     deleteWatchItem,
 } from '../../global/axios';
 import CandleStick from './CandleStick';
+import Statistics from './Statistics';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
@@ -47,15 +50,17 @@ function Watchlist(props) {
 
     const wsInitial = () => {
         const keyList = Object.keys(watchlist);
-        console.log(keyList);
         for (const symbol of keyList) {
             sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
         }
     };
 
-    const wsChange = useCallback((type, symbol) => {
-        sendMessage(JSON.stringify({ type: type, symbol: symbol }));
-    }, []);
+    const wsChange = useCallback(
+        (type, symbol) => {
+            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+        },
+        [sendMessage]
+    );
 
     const updateWatchlist = async () => {
         if (isWatchlistLoaded) {
@@ -155,6 +160,7 @@ function Watchlist(props) {
             updateWatchlist();
             wsInitial();
         }
+        // eslint-disable-next-line
     }, [isWatchlistLoaded]);
 
     useEffect(() => {
@@ -169,6 +175,7 @@ function Watchlist(props) {
                 updatePrice(symbol, price);
             }
         }
+        // eslint-disable-next-line
     }, [lastMessage]);
 
     useEffect(() => {
@@ -282,56 +289,13 @@ function Watchlist(props) {
                 </TabList>
             </Tabs>
 
-            <Flex
-                className="flex-col"
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                w={{ xl: '1020px' }}
+            <Tabs
+                isFitted
+                variant="enclosed"
+                px={4}
+                pt={4}
+                borderBottomColor="light.white"
             >
-                <FormControl py={4}>
-                    <Flex w="100%" gap={4} justifyContent="space-between">
-                        <Box flex="1" zIndex={1}>
-                            <Select
-                                key={listLength}
-                                placeholder="Type Symbol"
-                                options={symbolOptions.current}
-                                isRequired
-                                onChange={findTicker}
-                            ></Select>
-                        </Box>
-
-                        <Center
-                            bg="light.black"
-                            boxSize="38px"
-                            justifyItems="center"
-                            alignItems="center"
-                            cursor="pointer"
-                            borderRadius={4}
-                            onClick={addTicker}
-                        >
-                            <AddIcon color="light.white" />
-                        </Center>
-                    </Flex>
-                    {existing ? (
-                        <FormHelperText color="light.red">
-                            Already existing!
-                        </FormHelperText>
-                    ) : (
-                        <></>
-                    )}
-                </FormControl>
-
-                <ObjList
-                    key={0}
-                    type={'watchlist'}
-                    list={watchlist}
-                    usd2cad={exRate}
-                    changeTicker={changeTicker}
-                    deleteTicker={deleteItem}
-                />
-            </Flex>
-
-            {/* <Tabs isFitted variant="enclosed" px={4} pt={4} borderBottomColor="light.white">
                 <TabList>
                     <Tab
                         borderBottomColor="light.yellow"
@@ -351,22 +315,69 @@ function Watchlist(props) {
                             borderBottomColor: 'light.white',
                         }}
                     >
-                        Summary
+                        Statistics
                     </Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel p={0}>
-                        <List
-                            key={0}
-                            type={'watchlist'}
-                            list={watchlistRT ? watchlistRT.list : watchlist}
-                            usd2cad={watchlistRT ? watchlistRT.usd2cad : 1}
-                            changeTicker={changeTicker}
-                        />
+                    <TabPanel key={0} p={0}>
+                        <Flex
+                            className="flex-col"
+                            px={{ base: '16px', lg: '32px', xl: '0' }}
+                            mx={{ xl: 'auto' }}
+                            w={{ xl: '1020px' }}
+                        >
+                            <FormControl py={4}>
+                                <Flex
+                                    w="100%"
+                                    gap={4}
+                                    justifyContent="space-between"
+                                >
+                                    <Box flex="1" zIndex={1}>
+                                        <Select
+                                            key={listLength}
+                                            placeholder="Type Symbol"
+                                            options={symbolOptions.current}
+                                            isRequired
+                                            onChange={findTicker}
+                                        ></Select>
+                                    </Box>
+
+                                    <Center
+                                        bg="light.black"
+                                        boxSize="38px"
+                                        justifyItems="center"
+                                        alignItems="center"
+                                        cursor="pointer"
+                                        borderRadius={4}
+                                        onClick={addTicker}
+                                    >
+                                        <AddIcon color="light.white" />
+                                    </Center>
+                                </Flex>
+                                {existing ? (
+                                    <FormHelperText color="light.red">
+                                        Already existing!
+                                    </FormHelperText>
+                                ) : (
+                                    <></>
+                                )}
+                            </FormControl>
+
+                            <ObjList
+                                key={0}
+                                type={'watchlist'}
+                                list={watchlist}
+                                usd2cad={exRate}
+                                changeTicker={changeTicker}
+                                deleteTicker={deleteItem}
+                            />
+                        </Flex>
                     </TabPanel>
-                    <TabPanel p={0}></TabPanel>
+                    <TabPanel key={1} p={0}>
+                        <Statistics />
+                    </TabPanel>
                 </TabPanels>
-            </Tabs> */}
+            </Tabs>
         </Flex>
     );
 }
