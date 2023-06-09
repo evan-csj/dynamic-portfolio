@@ -17,7 +17,12 @@ import {
     Spinner,
 } from '@chakra-ui/react';
 import { AddIcon, CloseIcon, CheckIcon } from '@chakra-ui/icons';
-import { putPortfolio, getSymbols, postTrading, getRTPrice } from '../../global/axios';
+import {
+    putPortfolio,
+    getSymbols,
+    postTrading,
+    getRTPrice,
+} from '../../global/axios';
 import PortfolioItem from './PortfolioItem';
 import '../../styles/global.scss';
 
@@ -46,7 +51,7 @@ function Portfolio(props) {
         const newPortfolio = [...portfolioList];
         let newAvailablePct = 100;
         let newTotal = 0;
-        newPortfolio.map(item => {
+        newPortfolio.forEach(item => {
             if (item.ticker === ticker) {
                 item.percentage = value;
             }
@@ -118,7 +123,7 @@ function Portfolio(props) {
         let newTotal = 0;
         let newAvailablePct = 100;
         let newPortfolioList = [];
-        portfolioList.map(item => {
+        portfolioList.forEach(item => {
             if (item.ticker !== ticker) {
                 newPortfolioList.push(item);
                 newTotal += item.percentage;
@@ -155,11 +160,12 @@ function Portfolio(props) {
             const response = await getRTPrice(item.ticker);
             const priceRT = response.data.price;
             const shares = (numberValue * item.percentage) / 100 / priceRT;
+            const sharesRound = Math.round(shares * 1000) / 1000;
             const newTrade = {
                 user_id: props.userId,
                 ticker: item.ticker,
                 price: priceRT,
-                shares: shares,
+                shares: sharesRound,
                 type: 'buy',
                 order_status: 'pending',
                 currency: 'usd',
@@ -177,7 +183,7 @@ function Portfolio(props) {
             let newAvailablePct = 100;
             const list = jsonObj2Array(userData.dp);
 
-            list.map(item => {
+            list.forEach(item => {
                 newTotal += item.percentage;
                 newAvailablePct -= item.percentage;
             });
@@ -227,21 +233,25 @@ function Portfolio(props) {
                     </Center>
                 </Flex>
                 {existing ? (
-                    <FormHelperText color="light.red">Already existing!</FormHelperText>
+                    <FormHelperText color="light.red">
+                        Already existing!
+                    </FormHelperText>
                 ) : totalPct === 100 && searchTicker !== '' ? (
                     <FormHelperText color="light.red">
-                        No space for new investment. Please reduce some allocation!
+                        No space for new investment. Please reduce some
+                        allocation!
                     </FormHelperText>
                 ) : (
                     <></>
                 )}
                 <Box h={4} />
-                <Flex
-                    gap={4}
-                    direction={{ base: 'column', md: 'row' }}
-                >
+                <Flex gap={4} direction={{ base: 'column', md: 'row' }}>
                     <InputGroup>
-                        <InputLeftElement pointerEvents="none" color="light.grey" children="$" />
+                        <InputLeftElement
+                            pointerEvents="none"
+                            color="light.grey"
+                            children="$"
+                        />
                         <Input
                             placeholder="Enter amount"
                             name="amount"
@@ -266,11 +276,19 @@ function Portfolio(props) {
                             w={{ base: '100%', md: '100px' }}
                             _hover={{}}
                             isDisabled={
-                                totalPct === 100 && numberValue > 0 && enoughFund() ? false : true
+                                totalPct === 100 &&
+                                numberValue > 0 &&
+                                enoughFund()
+                                    ? false
+                                    : true
                             }
                             onClick={handleSubmitChange}
                         >
-                            {!processing ? 'Distribute' : <Spinner color="light.white" />}
+                            {!processing ? (
+                                'Distribute'
+                            ) : (
+                                <Spinner color="light.white" />
+                            )}
                         </Button>
                         <Button
                             variant="distribute"

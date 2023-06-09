@@ -4,7 +4,7 @@ module.exports = [
         user_email: 'evancheng2014@gmail.com',
         first_name: 'Evan',
         last_name: 'Cheng',
-        cash_usd: 100,
+        cash_usd: 10000,
         cash_cad: 50,
         dp: {
             AAPL: 25,
