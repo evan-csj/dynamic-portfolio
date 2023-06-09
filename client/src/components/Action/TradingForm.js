@@ -98,6 +98,7 @@ const TradingForm = props => {
                 currency: 'usd',
             };
             postTrading(newTrade);
+            props.changePage('profile');
             navigate('/profile');
         }
     };

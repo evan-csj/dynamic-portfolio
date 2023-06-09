@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, GridItem, Text } from '@chakra-ui/react';
+import { Grid, GridItem, Text, Badge, Flex } from '@chakra-ui/react';
 import '../../styles/global.scss';
 
 const dayjs = require('dayjs');
@@ -18,24 +18,33 @@ function Trading(props) {
     return (
         <Grid className="grid4">
             <GridItem>
-                <Text as="span" fontWeight="bold">
-                    {ticker}
-                </Text>
-                {' \u2022 '}
-                <Text
-                    as="span"
-                    color={
-                        orderStatus === 'approved'
-                            ? 'light.green'
-                            : orderStatus === 'pending'
-                            ? 'light.yellow'
-                            : orderStatus === 'declined'
-                            ? 'light.red'
-                            : 'light.grey'
-                    }
-                >
-                    {orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1)}
-                </Text>
+                <Flex alignItems="center" gap={2}>
+                    <Text as="span" fontWeight="bold">
+                        {ticker}
+                    </Text>
+                    <Badge
+                        color={
+                            orderStatus === 'approved'
+                                ? 'light.green'
+                                : orderStatus === 'pending'
+                                ? 'light.white'
+                                : orderStatus === 'declined'
+                                ? 'light.red'
+                                : 'light.grey'
+                        }
+                        background={
+                            orderStatus === 'approved'
+                                ? 'lightBG.green'
+                                : orderStatus === 'pending'
+                                ? 'light.yellow'
+                                : orderStatus === 'declined'
+                                ? 'lightBG.red'
+                                : ''
+                        }
+                    >
+                        {orderStatus.toUpperCase()}
+                    </Badge>
+                </Flex>
             </GridItem>
             <GridItem fontWeight="bold" textAlign="right">
                 ${price} {currency.toUpperCase()}

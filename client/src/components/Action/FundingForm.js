@@ -103,6 +103,7 @@ const FundingForm = props => {
                 currency: account,
             };
             postFunding(newFunding);
+            props.changePage('profile');
             navigate('/profile');
         }
     };
@@ -179,7 +180,7 @@ const FundingForm = props => {
                     Submit
                 </Button>
             </FormControl>
-            <Balance userData={userData}/>
+            <Balance userData={userData} />
         </Flex>
     );
 };
