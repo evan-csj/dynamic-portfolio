@@ -21,9 +21,9 @@ import {
 } from '../styles/icons';
 import '../styles/global.scss';
 
-function MainTab() {
+const MainTab = props => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [page, setPage] = useState('profile');
+    const page = props.page;
 
     return (
         <>
@@ -48,7 +48,7 @@ function MainTab() {
                         to="/profile"
                         onClick={() => {
                             onClose();
-                            setPage('profile');
+                            props.changePage('profile');
                         }}
                     >
                         <Profile variant="btn" />
@@ -65,13 +65,17 @@ function MainTab() {
                             variant="btn"
                             onClick={() => {
                                 onClose();
-                                setPage('watchlist');
+                                props.changePage('watchlist');
                             }}
                         />
                     </NavLink>
                 </Box>
                 <Box
-                    color={page === 'money' ? 'light.yellow' : 'light.black'}
+                    color={
+                        page === 'trading' || page === 'funding'
+                            ? 'light.yellow'
+                            : 'light.black'
+                    }
                     _hover={{ color: 'light.yellow' }}
                 >
                     <Fund variant="btn" onClick={onOpen} />
@@ -85,7 +89,7 @@ function MainTab() {
                         to="/history"
                         onClick={() => {
                             onClose();
-                            setPage('history');
+                            props.changePage('history');
                         }}
                     >
                         <History variant="btn" />
@@ -108,7 +112,7 @@ function MainTab() {
                                 className="nav-link"
                                 onClick={() => {
                                     onClose();
-                                    setPage('money');
+                                    props.changePage('funding');
                                 }}
                             >
                                 <Flex
@@ -124,11 +128,11 @@ function MainTab() {
                                 </Flex>
                             </NavLink>
                             <NavLink
-                                to="trading"
+                                to="/trading"
                                 className="nav-link"
                                 onClick={() => {
                                     onClose();
-                                    setPage('money');
+                                    props.changePage('trading');
                                 }}
                             >
                                 <Flex
@@ -153,6 +157,6 @@ function MainTab() {
             </Drawer>
         </>
     );
-}
+};
 
 export default MainTab;

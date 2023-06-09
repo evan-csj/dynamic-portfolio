@@ -34,7 +34,7 @@ const jsonObj2Array = jsonObj => {
     return portfolioList;
 };
 
-function Portfolio(props) {
+const Portfolio = props => {
     const userData = props.user;
     const navigate = useNavigate();
     const [portfolioList, setPortfolioList] = useState([]);
@@ -173,6 +173,7 @@ function Portfolio(props) {
             return postTrading(newTrade);
         });
         Promise.allSettled(promises).then(_response => {
+            props.changePage('history');
             navigate('/history');
         });
     };
@@ -322,6 +323,6 @@ function Portfolio(props) {
             })}
         </Flex>
     );
-}
+};
 
 export default Portfolio;

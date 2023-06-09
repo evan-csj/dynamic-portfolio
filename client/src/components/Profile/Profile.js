@@ -28,7 +28,7 @@ import {
 import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
 
-function Profile(props) {
+const Profile = props => {
     const [userData, setUserData] = useState(undefined);
     const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
@@ -382,6 +382,7 @@ function Profile(props) {
                                 key={1}
                                 user={userData}
                                 userId={props.userId}
+                                changePage={props.changePage}
                             />
                         </TabPanel>
                     </TabPanels>
@@ -390,6 +391,6 @@ function Profile(props) {
             </Flex>
         );
     }
-}
+};
 
 export default Profile;
