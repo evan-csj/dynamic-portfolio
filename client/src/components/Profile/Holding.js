@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, GridItem, Box, HStack } from '@chakra-ui/react';
+import { Grid, GridItem, Box, HStack, Stat, StatArrow } from '@chakra-ui/react';
 import '../../styles/global.scss';
 
 function Holding(props) {
@@ -20,9 +20,17 @@ function Holding(props) {
             <GridItem fontWeight="bold" textAlign="right">
                 <HStack justify="end">
                     {price !== 0 && Math.abs(diff) > 0.001 ? (
-                        <Box color={diff > 0 ? 'light.green' : 'light.red'}>
-                            {diff > 0 ? '+' : '-'}${Math.abs(diff).toFixed(2)}
-                        </Box>
+                        <Stat color={diff > 0 ? 'light.green' : 'light.red'}>
+                            {diff > 0 ? (
+                                <StatArrow
+                                    type="increase"
+                                    color="light.green"
+                                />
+                            ) : (
+                                <StatArrow type="decrease" color="light.red" />
+                            )}
+                            ${Math.abs(diff).toFixed(2)}
+                        </Stat>
                     ) : (
                         <Box color="light.grey">$0.00</Box>
                     )}

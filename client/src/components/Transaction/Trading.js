@@ -15,7 +15,6 @@ function Trading(props) {
         created_at: timestamp,
     } = props.detail;
 
-
     return (
         <Grid className="grid4">
             <GridItem>
