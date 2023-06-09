@@ -94,9 +94,12 @@ const TradingForm = props => {
         }
     };
 
-    const wsChange = useCallback((type, symbol) => {
-        sendMessage(JSON.stringify({ type: type, symbol: symbol }));
-    }, []);
+    const wsChange = useCallback(
+        (type, symbol) => {
+            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+        },
+        [sendMessage]
+    );
 
     useEffect(() => {
         getSymbols().then(response => {
@@ -108,9 +111,6 @@ const TradingForm = props => {
                 };
             });
             symbolOptions.current = formattedSymbols;
-        });
-        getHoldings(props.userId).then(response => {
-            holdings.current = response.data;
         });
     }, []);
 
@@ -134,6 +134,9 @@ const TradingForm = props => {
     useEffect(() => {
         getUser(props.userId).then(response => {
             setUserData(response.data);
+        });
+        getHoldings(props.userId).then(response => {
+            holdings.current = response.data;
         });
     }, [props.userId]);
 
