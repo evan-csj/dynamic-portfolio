@@ -11,10 +11,6 @@ import {
     FormHelperText,
     Input,
     InputGroup,
-    StatGroup,
-    StatLabel,
-    Stat,
-    StatNumber,
 } from '@chakra-ui/react';
 import {
     getUser,
@@ -22,11 +18,12 @@ import {
     getLastPrice,
     getHoldings,
     postTrading,
-} from '../global/axios';
-import '../styles/global.scss';
+} from '../../global/axios';
+import Balance from './Balance';
+import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
 
-function TradingForm(props) {
+const TradingForm = props => {
     const typeOptions = [
         {
             value: 'buy',
@@ -71,9 +68,17 @@ function TradingForm(props) {
     // };
     const handleQuantityChange = event => {
         const input = event.target.value;
-        const pureNumber = input.replace(/\D/g, '');
-        setQuantity(pureNumber);
+        const period = input.split('.', 2);
+        let intPart = period[0].replace(/\D/g, '');
+        let fracPart;
+        let fracNum = intPart;
+        if (period.length > 1) {
+            fracPart = period[1].replace(/\D/g, '');
+            fracNum += '.' + fracPart;
+        }
+        setQuantity(fracNum);
     };
+
     const handleSubmit = () => {
         if (
             enoughFund() &&
@@ -97,9 +102,12 @@ function TradingForm(props) {
         }
     };
 
-    const wsChange = useCallback((type, symbol) => {
-        sendMessage(JSON.stringify({ type: type, symbol: symbol }));
-    }, []);
+    const wsChange = useCallback(
+        (type, symbol) => {
+            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+        },
+        [sendMessage]
+    );
 
     useEffect(() => {
         getSymbols().then(response => {
@@ -111,9 +119,6 @@ function TradingForm(props) {
                 };
             });
             symbolOptions.current = formattedSymbols;
-        });
-        getHoldings(props.userId).then(response => {
-            holdings.current = response.data;
         });
     }, []);
 
@@ -137,6 +142,9 @@ function TradingForm(props) {
     useEffect(() => {
         getUser(props.userId).then(response => {
             setUserData(response.data);
+        });
+        getHoldings(props.userId).then(response => {
+            holdings.current = response.data;
         });
     }, [props.userId]);
 
@@ -280,24 +288,9 @@ function TradingForm(props) {
                     <></>
                 )}
             </FormControl>
-            <Heading>Your Balance</Heading>
-            <StatGroup>
-                <Stat>
-                    <StatLabel>USD Account</StatLabel>
-                    <StatNumber>
-                        ${userData ? userData.cash_usd.toFixed(2) : 0}
-                    </StatNumber>
-                </Stat>
-
-                <Stat>
-                    <StatLabel>CAD Account</StatLabel>
-                    <StatNumber>
-                        ${userData ? userData.cash_cad.toFixed(2) : 0}
-                    </StatNumber>
-                </Stat>
-            </StatGroup>
+            <Balance userData={userData} />
         </Flex>
     );
-}
+};
 
 export default TradingForm;
