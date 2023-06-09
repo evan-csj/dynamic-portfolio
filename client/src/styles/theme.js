@@ -20,6 +20,10 @@ const theme = extendTheme({
             green: '#0B8457',
             red: '#FF5F5F',
         },
+        lightBG: {
+            green: '#E5F9DB',
+            red: '#FFF2F2',
+        },
     },
     components: {
         Icon: {

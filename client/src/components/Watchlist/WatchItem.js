@@ -25,7 +25,7 @@ function WatchItem(props) {
                             {diff > 0 ? '+' : '-'}${Math.abs(diff).toFixed(2)}
                         </Box>
                     ) : (
-                        <Box></Box>
+                        <Box color="light.grey">$0.00</Box>
                     )}
 
                     <Box>
