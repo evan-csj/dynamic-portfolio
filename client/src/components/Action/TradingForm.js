@@ -68,9 +68,17 @@ const TradingForm = props => {
     // };
     const handleQuantityChange = event => {
         const input = event.target.value;
-        const pureNumber = input.replace(/\D/g, '');
-        setQuantity(pureNumber);
+        const period = input.split('.', 2);
+        let intPart = period[0].replace(/\D/g, '');
+        let fracPart;
+        let fracNum = intPart;
+        if (period.length > 1) {
+            fracPart = period[1].replace(/\D/g, '');
+            fracNum += '.' + fracPart;
+        }
+        setQuantity(fracNum);
     };
+
     const handleSubmit = () => {
         if (
             enoughFund() &&
