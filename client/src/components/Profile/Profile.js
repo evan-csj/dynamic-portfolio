@@ -114,6 +114,7 @@ const Profile = props => {
             updateHoldingList();
             wsInitial();
         }
+        // eslint-disable-next-line
     }, [isHoldingLoaded]);
 
     useEffect(() => {
@@ -128,6 +129,7 @@ const Profile = props => {
                 updatePrice(symbol, price);
             }
         }
+        // eslint-disable-next-line
     }, [lastMessage]);
 
     useEffect(() => {
@@ -162,7 +164,7 @@ const Profile = props => {
 
             setAccountDetail(result);
         }
-    }, [exRate, userData, holdingList]);
+    }, [exRate, userData, holdingList, isPriceLoaded]);
 
     if (true) {
         return (

@@ -9,7 +9,7 @@ function Holding(props) {
         buy_shares: buyShares,
         sell_shares: sellShares,
         avg_price: avgPrice,
-        price: price,
+        price,
     } = props.detail;
 
     const diff = price - avgPrice;
