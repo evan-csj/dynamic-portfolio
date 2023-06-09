@@ -11,10 +11,6 @@ import {
     FormHelperText,
     Input,
     InputGroup,
-    StatGroup,
-    StatLabel,
-    Stat,
-    StatNumber,
 } from '@chakra-ui/react';
 import {
     getUser,
@@ -22,11 +18,12 @@ import {
     getLastPrice,
     getHoldings,
     postTrading,
-} from '../global/axios';
-import '../styles/global.scss';
+} from '../../global/axios';
+import Balance from './Balance';
+import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
 
-function TradingForm(props) {
+const TradingForm = props => {
     const typeOptions = [
         {
             value: 'buy',
@@ -280,24 +277,9 @@ function TradingForm(props) {
                     <></>
                 )}
             </FormControl>
-            <Heading>Your Balance</Heading>
-            <StatGroup>
-                <Stat>
-                    <StatLabel>USD Account</StatLabel>
-                    <StatNumber>
-                        ${userData ? userData.cash_usd.toFixed(2) : 0}
-                    </StatNumber>
-                </Stat>
-
-                <Stat>
-                    <StatLabel>CAD Account</StatLabel>
-                    <StatNumber>
-                        ${userData ? userData.cash_cad.toFixed(2) : 0}
-                    </StatNumber>
-                </Stat>
-            </StatGroup>
+            <Balance userData={userData} />
         </Flex>
     );
-}
+};
 
 export default TradingForm;

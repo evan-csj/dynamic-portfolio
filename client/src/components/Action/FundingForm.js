@@ -13,16 +13,13 @@ import {
     InputGroup,
     InputLeftElement,
     InputRightElement,
-    StatGroup,
-    StatLabel,
-    Stat,
-    StatNumber,
 } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
-import { getUser, postFunding } from '../global/axios';
-import '../styles/global.scss';
+import { getUser, postFunding } from '../../global/axios';
+import Balance from './Balance';
+import '../../styles/global.scss';
 
-function FundingForm(props) {
+const FundingForm = props => {
     const typeOptions = [
         {
             value: 'deposit',
@@ -49,7 +46,12 @@ function FundingForm(props) {
     const [amount, setAmount] = useState('');
     const [numberValue, setNumberValue] = useState(-1);
     const [account, setAccount] = useState('');
-    const title = type === 'deposit' ? 'Deposit' : type === 'withdraw' ? 'Withdraw' : 'Funding';
+    const title =
+        type === 'deposit'
+            ? 'Deposit'
+            : type === 'withdraw'
+            ? 'Withdraw'
+            : 'Funding';
     const handleTypeChange = selected => setType(selected.value);
     const handleAccountChange = selected => setAccount(selected.value);
     const handleAmountChange = event => {
@@ -76,8 +78,10 @@ function FundingForm(props) {
 
     const enoughFund = () => {
         if (type === 'withdraw') {
-            if (account === 'usd' && numberValue > userData.cash_usd) return false;
-            if (account === 'cad' && numberValue > userData.cash_cad) return false;
+            if (account === 'usd' && numberValue > userData.cash_usd)
+                return false;
+            if (account === 'cad' && numberValue > userData.cash_cad)
+                return false;
         }
         return true;
     };
@@ -124,7 +128,11 @@ function FundingForm(props) {
                 <Box h={8} />
                 <FormLabel>Amount</FormLabel>
                 <InputGroup>
-                    <InputLeftElement pointerEvents="none" color="light.grey" children="$" />
+                    <InputLeftElement
+                        pointerEvents="none"
+                        color="light.grey"
+                        children="$"
+                    />
                     <Input
                         placeholder="Enter amount"
                         name="amount"
@@ -147,7 +155,9 @@ function FundingForm(props) {
                         Fund is not enough to withdraw
                     </FormHelperText>
                 ) : !notZero ? (
-                    <FormHelperText color="light.red">Don't enter 0</FormHelperText>
+                    <FormHelperText color="light.red">
+                        Don't enter 0
+                    </FormHelperText>
                 ) : (
                     <></>
                 )}
@@ -160,24 +170,18 @@ function FundingForm(props) {
                     onChange={handleAccountChange}
                 ></Select>
                 <Box h={8} />
-                <Button variant="submit" type="submit" w="100%" onClick={handleSubmit}>
+                <Button
+                    variant="submit"
+                    type="submit"
+                    w="100%"
+                    onClick={handleSubmit}
+                >
                     Submit
                 </Button>
             </FormControl>
-            <Heading>Your Balance</Heading>
-            <StatGroup>
-                <Stat>
-                    <StatLabel>USD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_usd.toFixed(2) : 0}</StatNumber>
-                </Stat>
-
-                <Stat>
-                    <StatLabel>CAD Account</StatLabel>
-                    <StatNumber>${userData ? userData.cash_cad.toFixed(2) : 0}</StatNumber>
-                </Stat>
-            </StatGroup>
+            <Balance userData={userData}/>
         </Flex>
     );
-}
+};
 
 export default FundingForm;

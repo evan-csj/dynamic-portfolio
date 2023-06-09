@@ -4,18 +4,16 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainTab from './components/MainTab';
 import TopTab from './components/TopTab';
-import FundingForm from './components/FundingForm';
-import TradingForm from './components/TradingForm';
+import FundingForm from './components/Action/FundingForm';
+import TradingForm from './components/Action/TradingForm';
 import Profile from './components/Profile/Profile';
 import Watchlist from './components/Watchlist/Watchlist';
 import Txn from './components/Transaction/Transaction';
 
 function App() {
-
     return (
         <BrowserRouter>
             <TopTab />
-            {/* <WebSocketDemo /> */}
             <Routes>
                 <Route path="/" element={<Profile userId={'evancheng'} />} />
                 <Route
