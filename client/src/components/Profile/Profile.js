@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
     Flex,
     Box,
+    Skeleton,
     Heading,
     Text,
     Table,
@@ -266,15 +267,19 @@ const Profile = props => {
                                             : '0.00'}
                                     </Td>
                                     <Td isNumeric>
-                                        $
-                                        {accountDetail && userData
-                                            ? (
-                                                  accountDetail.equityTotal +
-                                                  userData.cashCAD +
-                                                  userData.cashUSD *
-                                                      accountDetail.usd2cad
-                                              ).toFixed(2)
-                                            : '0.00'}
+                                        {accountDetail && userData ? (
+                                            <Skeleton isLoaded>
+                                                $
+                                                {(
+                                                    accountDetail.equityTotal +
+                                                    userData.cashCAD +
+                                                    userData.cashUSD *
+                                                        accountDetail.usd2cad
+                                                ).toFixed(2)}
+                                            </Skeleton>
+                                        ) : (
+                                            <Skeleton>X</Skeleton>
+                                        )}
                                     </Td>
                                 </Tr>
                                 <Tr>
