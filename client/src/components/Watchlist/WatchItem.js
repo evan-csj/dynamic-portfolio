@@ -1,5 +1,13 @@
 import React from 'react';
-import { Grid, GridItem, HStack, Box, Stat, StatArrow } from '@chakra-ui/react';
+import {
+    Grid,
+    GridItem,
+    HStack,
+    Box,
+    Stat,
+    StatArrow,
+    Skeleton,
+} from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 import '../../styles/global.scss';
 
@@ -36,13 +44,14 @@ function WatchItem(props) {
                         <Box color="light.grey">$0.00</Box>
                     )}
 
-                    <Box>
+                    <Skeleton isLoaded={price !== 0}>
                         $
                         {currency === 'cad'
                             ? (price * usd2cad).toFixed(2)
-                            : price.toFixed(2)}{' '}
-                        {currency.toUpperCase()}
-                    </Box>
+                            : price.toFixed(2)}
+                    </Skeleton>
+
+                    <Box>{currency.toUpperCase()}</Box>
                 </HStack>
             </GridItem>
             <GridItem textAlign="right">
