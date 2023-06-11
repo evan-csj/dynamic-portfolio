@@ -14,7 +14,7 @@ import { CloseIcon } from '@chakra-ui/icons';
 import { getCompanyProfile } from '../../global/axios';
 import '../../styles/global.scss';
 
-function WatchItem(props) {
+const WatchItem = props => {
     const { ticker, price, currency, prev_close: prevClose } = props.detail;
     const usd2cad = props.usd2cad;
     const diff = price - prevClose;
@@ -84,7 +84,7 @@ function WatchItem(props) {
                     p={2}
                     cursor="pointer"
                     borderRadius={4}
-                    _hover={{background:'light.black', color:'light.white'}}
+                    _hover={{ background: 'light.black', color: 'light.white' }}
                     onClick={event => {
                         props.deleteTicker(ticker);
                         event.stopPropagation();
@@ -93,6 +93,6 @@ function WatchItem(props) {
             </GridItem>
         </Grid>
     );
-}
+};
 
 export default WatchItem;

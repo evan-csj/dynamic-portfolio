@@ -373,7 +373,11 @@ function Watchlist(props) {
                         />
                     </TabPanel>
                     <TabPanel key={1} p={0}>
-                        <Statistics />
+                        {ticker ? (
+                            <Statistics key={ticker} ticker={ticker} />
+                        ) : (
+                            <></>
+                        )}
                     </TabPanel>
                 </TabPanels>
             </Tabs>
