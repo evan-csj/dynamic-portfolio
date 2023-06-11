@@ -106,6 +106,17 @@ const getPortfolio = async id => {
     } catch (err) {}
 };
 
+const getCompanyProfile = async ticker => {
+    try {
+        const profile = await axios.get(`${API_ADDRESS}/stat/profile`, {
+            params: {
+                ticker: ticker,
+            },
+        });
+        return profile;
+    } catch (err) {}
+};
+
 const putPortfolio = async (id, dp) => {
     try {
         const response = await axios.put(
@@ -169,6 +180,7 @@ export {
     getLastPrice,
     getSymbols,
     getPortfolio,
+    getCompanyProfile,
     putPortfolio,
     postFunding,
     postTrading,

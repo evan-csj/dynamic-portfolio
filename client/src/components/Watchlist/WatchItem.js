@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Grid,
     GridItem,
@@ -7,22 +7,46 @@ import {
     Stat,
     StatArrow,
     Skeleton,
+    Image,
+    SkeletonCircle,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
+import { getCompanyProfile } from '../../global/axios';
 import '../../styles/global.scss';
 
 function WatchItem(props) {
     const { ticker, price, currency, prev_close: prevClose } = props.detail;
     const usd2cad = props.usd2cad;
     const diff = price - prevClose;
+    const [logo, setLogo] = useState(undefined);
+
+    useEffect(() => {
+        getCompanyProfile(ticker).then(response => {
+            setLogo(response.data.logo);
+        });
+    }, []);
 
     return (
         <Grid
-            className="grid2"
+            className="grid-watch"
             cursor="pointer"
             onClick={() => props.changeTicker(ticker)}
             _hover={{ bg: 'light.yellow' }}
+            h={12}
+            pl={2}
         >
+            <GridItem>
+                {logo ? (
+                    <Image
+                        borderRadius="full"
+                        boxSize="30px"
+                        src={logo}
+                        alt={ticker}
+                    />
+                ) : (
+                    <SkeletonCircle size="30px" />
+                )}
+            </GridItem>
             <GridItem as="span" fontWeight="bold">
                 {ticker}
             </GridItem>
@@ -56,7 +80,11 @@ function WatchItem(props) {
             </GridItem>
             <GridItem textAlign="right">
                 <CloseIcon
+                    boxSize={8}
+                    p={2}
                     cursor="pointer"
+                    borderRadius={4}
+                    _hover={{background:'light.black', color:'light.white'}}
                     onClick={event => {
                         props.deleteTicker(ticker);
                         event.stopPropagation();
