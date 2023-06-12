@@ -24,7 +24,7 @@ const WatchItem = props => {
         getCompanyProfile(ticker).then(response => {
             setLogo(response.data.logo);
         });
-    }, []);
+    }, [ticker]);
 
     return (
         <Grid
