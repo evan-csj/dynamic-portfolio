@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getCompanyProfile, getEps } from '../../global/axios';
+import { getCompanyProfile, getEps, getTrends } from '../../global/axios';
 import { HStack, Box, Heading, Image } from '@chakra-ui/react';
 import {
     Chart as ChartJS,
@@ -22,7 +22,7 @@ ChartJS.register(
     Legend
 );
 
-const options = {
+const optionsEps = {
     responsive: true,
     plugins: {
         legend: {
@@ -35,9 +35,31 @@ const options = {
     },
 };
 
+const optionsTrends = {
+    plugins: {
+        legend: {
+            position: 'bottom',
+        },
+        title: {
+            display: true,
+            text: 'Recommendation Trends',
+        },
+    },
+    responsive: true,
+    scales: {
+        x: {
+            stacked: true,
+        },
+        y: {
+            stacked: true,
+        },
+    },
+};
+
 const Statistics = props => {
     const [profile, setProfile] = useState(undefined);
-    const [data, setData] = useState(undefined);
+    const [dataEps, setDataEps] = useState(undefined);
+    const [dataTrends, setDataTrends] = useState(undefined);
 
     useEffect(() => {
         getCompanyProfile(props.ticker).then(response => {
@@ -60,7 +82,7 @@ const Statistics = props => {
                 estimate.push(item.estimate);
             });
 
-            const data = {
+            const dataEps = {
                 labels,
                 datasets: [
                     {
@@ -76,12 +98,64 @@ const Statistics = props => {
                 ],
             };
 
-            setData(data);
+            setDataEps(dataEps);
+        });
+
+        getTrends(props.ticker).then(response => {
+            const trends = response.data;
+            let labels = [];
+            let strongBuy = [];
+            let buy = [];
+            let hold = [];
+            let sell = [];
+            let strongSell = [];
+
+            trends.forEach(item => {
+                labels.push(item.period);
+                strongBuy.push(item.strongBuy);
+                buy.push(item.buy);
+                hold.push(item.hold);
+                sell.push(item.sell);
+                strongSell.push(item.strongSell);
+            });
+
+            const dataTrends = {
+                labels,
+                datasets: [
+                    {
+                        label: 'Strong Sell',
+                        data: strongSell,
+                        backgroundColor: '#850000',
+                    },
+                    {
+                        label: 'Sell',
+                        data: sell,
+                        backgroundColor: '#FF5F5F',
+                    },
+                    {
+                        label: 'Hold',
+                        data: hold,
+                        backgroundColor: '#FFCE63',
+                    },
+                    {
+                        label: 'Buy',
+                        data: buy,
+                        backgroundColor: '#0B8457',
+                    },
+                    {
+                        label: 'Strong Buy',
+                        data: strongBuy,
+                        backgroundColor: '#183A1D',
+                    },
+                ],
+            };
+
+            setDataTrends(dataTrends);
         });
         // eslint-disable-next-line
     }, [profile]);
 
-    if (profile && data) {
+    if (profile && dataEps && dataTrends) {
         return (
             <Box p={4}>
                 <HStack>
@@ -96,9 +170,9 @@ const Statistics = props => {
                 <Box color="light.grey" pt={2}>
                     {profile.exchange}
                 </Box>
-                <Box>
-                    <Bar options={options} data={data} />
-                </Box>
+                <Bar options={optionsEps} data={dataEps} />
+                <Bar options={optionsTrends} data={dataTrends} />
+                <Box h={20} />
             </Box>
         );
     }

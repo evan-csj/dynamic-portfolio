@@ -28,6 +28,19 @@ const finnHubEps = symbol => {
     };
 };
 
+const finnHubTrends = symbol => {
+    return {
+        method: 'GET',
+        url: 'https://finnhub.io/api/v1/stock/recommendation',
+        params: {
+            symbol: symbol,
+        },
+        headers: {
+            'X-Finnhub-Token': FINNHUB_KEY,
+        },
+    };
+};
+
 const getCompanyProfile = async (req, res) => {
     const { ticker } = req.query;
     try {
@@ -48,4 +61,14 @@ const getEps = async (req, res) => {
     }
 };
 
-module.exports = { getCompanyProfile, getEps };
+const getTrends = async (req, res) => {
+    const { ticker } = req.query;
+    try {
+        const response = await axios.request(finnHubTrends(ticker));
+        return res.status(200).json(response.data);
+    } catch (error) {
+        return res.status(404).json(error);
+    }
+};
+
+module.exports = { getCompanyProfile, getEps, getTrends };
