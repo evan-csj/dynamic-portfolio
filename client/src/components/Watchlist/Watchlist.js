@@ -362,7 +362,7 @@ function Watchlist(props) {
                     </Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel key={0} p={0}>
+                    <TabPanel key={0} p={0} pt={4}>
                         <ObjList
                             key={0}
                             type={'watchlist'}
@@ -372,8 +372,12 @@ function Watchlist(props) {
                             deleteTicker={deleteItem}
                         />
                     </TabPanel>
-                    <TabPanel key={1} p={0}>
-                        <Statistics />
+                    <TabPanel key={1} p={0} pt={4}>
+                        {ticker ? (
+                            <Statistics key={ticker} ticker={ticker} />
+                        ) : (
+                            <></>
+                        )}
                     </TabPanel>
                 </TabPanels>
             </Tabs>

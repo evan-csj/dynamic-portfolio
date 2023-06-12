@@ -106,6 +106,39 @@ const getPortfolio = async id => {
     } catch (err) {}
 };
 
+const getCompanyProfile = async ticker => {
+    try {
+        const profile = await axios.get(`${API_ADDRESS}/stat/profile`, {
+            params: {
+                ticker: ticker,
+            },
+        });
+        return profile;
+    } catch (err) {}
+};
+
+const getEps = async ticker => {
+    try {
+        const eps = await axios.get(`${API_ADDRESS}/stat/eps`, {
+            params: {
+                ticker: ticker,
+            },
+        });
+        return eps;
+    } catch (err) {}
+};
+
+const getTrends = async ticker => {
+    try {
+        const eps = await axios.get(`${API_ADDRESS}/stat/trends`, {
+            params: {
+                ticker: ticker,
+            },
+        });
+        return eps;
+    } catch (err) {}
+};
+
 const putPortfolio = async (id, dp) => {
     try {
         const response = await axios.put(
@@ -169,6 +202,9 @@ export {
     getLastPrice,
     getSymbols,
     getPortfolio,
+    getEps,
+    getCompanyProfile,
+    getTrends,
     putPortfolio,
     postFunding,
     postTrading,

@@ -1,5 +1,14 @@
 import React from 'react';
-import { Grid, GridItem, Box, HStack, Stat, StatArrow } from '@chakra-ui/react';
+import {
+    Grid,
+    GridItem,
+    Box,
+    HStack,
+    Stat,
+    StatArrow,
+    Skeleton,
+} from '@chakra-ui/react';
+import SkeletonDollar from './SkeletonDollar';
 import '../../styles/global.scss';
 
 function Holding(props) {
@@ -35,13 +44,14 @@ function Holding(props) {
                         <Box color="light.grey">$0.00</Box>
                     )}
 
-                    <Box>
+                    <Skeleton isLoaded={price !== 0}>
                         $
                         {currency === 'cad'
                             ? (price * props.usd2cad).toFixed(2)
-                            : price.toFixed(2)}{' '}
-                        {currency.toUpperCase()}
-                    </Box>
+                            : price.toFixed(2)}
+                    </Skeleton>
+
+                    <Box>{currency.toUpperCase()}</Box>
                 </HStack>
             </GridItem>
             <GridItem>{(buyShares - sellShares).toFixed(2)} shares</GridItem>
