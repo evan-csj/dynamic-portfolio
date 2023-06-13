@@ -97,6 +97,17 @@ const getSymbols = async () => {
     } catch (err) {}
 };
 
+const putSymbolInfo = async symbolInfo => {
+    try {
+        const response = await axios.put(
+            `${API_ADDRESS}/symbols`,
+            symbolInfo,
+            newHeader
+        );
+        return response;
+    } catch (err) {}
+};
+
 const getPortfolio = async id => {
     try {
         const portfolio = await axios.get(
@@ -201,6 +212,7 @@ export {
     getPriceHistory,
     getLastPrice,
     getSymbols,
+    putSymbolInfo,
     getPortfolio,
     getEps,
     getCompanyProfile,

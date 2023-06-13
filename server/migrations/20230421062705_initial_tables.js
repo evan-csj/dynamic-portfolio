@@ -16,8 +16,14 @@ exports.up = function (knex) {
         })
         .createTable('symbol', table => {
             table.string('symbol').primary().unique().notNullable();
-            table.string('name').notNullable();
-            table.string('sector').notNullable();
+            table.string('name');
+            table.string('exchange');
+            table.string('sector');
+            table.string('logo');
+            table.float('price', 12, 2).defaultTo(0);
+            table.float('prev_close', 12, 2).defaultTo(0);
+            table.string('currency');
+            table.timestamps(true, true);
         })
         .createTable('trade', table => {
             table.uuid('id').primary().unique().notNullable();
@@ -73,9 +79,6 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
-            table.float('price', 12, 2).notNullable();
-            table.float('prev_close', 12, 2).notNullable();
-            table.string('currency').notNullable();
         })
         .createTable('portfolio', table => {
             table.string('id').primary().unique().notNullable();

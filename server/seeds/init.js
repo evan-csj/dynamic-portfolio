@@ -55,21 +55,18 @@ exports.seed = async function (knex) {
         const formattedIXIC = IXIC.map(item => {
             return {
                 symbol: item.symbol,
-                name: item.name,
-                sector: item.sector,
             };
         });
         const formattedSPX = SPX.map(item => {
             return {
                 symbol: item.Symbol,
-                name: item.Name,
-                sector: item.Sector,
             };
         });
 
         formattedIXIC.map(async item => {
             await knex('symbol').insert(item);
         });
+
         formattedSPX.map(async item => {
             const symbol = await knex('symbol').where({ symbol: item.symbol });
             if (symbol.length === 0) {

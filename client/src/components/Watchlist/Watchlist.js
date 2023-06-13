@@ -22,6 +22,7 @@ import {
     getSymbols,
     postWatchItem,
     deleteWatchItem,
+    getCompanyProfile,
 } from '../../global/axios';
 import CandleStick from './CandleStick';
 import Statistics from './Statistics';
@@ -116,21 +117,39 @@ function Watchlist(props) {
     const addTicker = async () => {
         if (searchTicker !== '' && !existing) {
             const quote = await getLastPrice(searchTicker);
-            const currentPrice = quote.data.c;
-            const previousClose = quote.data.pc;
-            let newWatch = {
+            const profile = await getCompanyProfile(searchTicker);
+            const { c: currentPrice, pc: prevClose } = quote.data;
+            const { logo, name, exchange, finnhubIndustry, currency } =
+                profile.data;
+
+            let newWatchFE = {
                 id: `${props.userId}-${searchTicker}`,
                 user_id: props.userId,
+                logo: logo,
                 ticker: searchTicker,
                 price: currentPrice,
-                prev_close: previousClose,
-                currency: 'usd',
+                prev_close: prevClose,
+                currency: currency,
             };
+
+            let newWatchBE = {
+                id: `${props.userId}-${searchTicker}`,
+                user_id: props.userId,
+                name: name,
+                exchange: exchange,
+                sector: finnhubIndustry,
+                logo: logo,
+                ticker: searchTicker,
+                price: currentPrice,
+                prev_close: prevClose,
+                currency: currency,
+            };
+
             let newWatchlist = { ...watchlist };
-            newWatchlist[searchTicker] = newWatch;
+            newWatchlist[searchTicker] = newWatchFE;
             setWatchlist(newWatchlist);
             setTicker(searchTicker);
-            await postWatchItem(newWatch);
+            await postWatchItem(newWatchBE);
             setSearchTicker('');
             wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
@@ -144,6 +163,7 @@ function Watchlist(props) {
             setWatchlist(newWatchlist);
             deleteWatchItem(`${props.userId}-${ticker}`);
             wsChange('unsubscribe', ticker);
+            setListLength(Object.keys(newWatchlist).length);
         }
         return;
     };

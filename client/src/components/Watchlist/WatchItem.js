@@ -11,20 +11,56 @@ import {
     SkeletonCircle,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
-import { getCompanyProfile } from '../../global/axios';
+import { getCompanyProfile, putSymbolInfo } from '../../global/axios';
 import '../../styles/global.scss';
 
 const WatchItem = props => {
-    const { ticker, price, currency, prev_close: prevClose } = props.detail;
+    const {
+        logo,
+        ticker,
+        price,
+        prev_close: prevClose,
+        currency,
+    } = props.detail;
     const usd2cad = props.usd2cad;
     const diff = price - prevClose;
-    const [logo, setLogo] = useState(undefined);
+    const [stockBasicInfo, setStockBasicInfo] = useState(undefined);
 
     useEffect(() => {
-        getCompanyProfile(ticker).then(response => {
-            setLogo(response.data.logo);
-        });
-    }, [ticker]);
+        if (logo === null || currency === null) {
+            getCompanyProfile(ticker).then(response => {
+                const {
+                    ticker,
+                    name,
+                    exchange,
+                    finnhubIndustry: sector,
+                    logo,
+                    currency,
+                } = response.data;
+                const stockBasicInfo = {
+                    logo: logo,
+                    currency: currency,
+                };
+
+                setStockBasicInfo(stockBasicInfo);
+                const updateSymbol = {
+                    ticker: ticker,
+                    name: name,
+                    exchange: exchange,
+                    sector: sector,
+                    logo: logo,
+                    currency: currency,
+                };
+                putSymbolInfo(updateSymbol);
+            });
+        } else {
+            const stockBasicInfo = {
+                logo: logo,
+                currency: currency,
+            };
+            setStockBasicInfo(stockBasicInfo);
+        }
+    }, []);
 
     return (
         <Grid
@@ -36,11 +72,11 @@ const WatchItem = props => {
             pl={2}
         >
             <GridItem>
-                {logo ? (
+                {stockBasicInfo ? (
                     <Image
                         borderRadius="full"
                         boxSize="30px"
-                        src={logo}
+                        src={stockBasicInfo.logo}
                         alt={ticker}
                     />
                 ) : (
@@ -75,7 +111,7 @@ const WatchItem = props => {
                             : price.toFixed(2)}
                     </Skeleton>
 
-                    <Box>{currency.toUpperCase()}</Box>
+                    <Box>{stockBasicInfo ? stockBasicInfo.currency : ''}</Box>
                 </HStack>
             </GridItem>
             <GridItem textAlign="right">
