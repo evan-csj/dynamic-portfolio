@@ -15,19 +15,14 @@ import { getCompanyProfile, putSymbolInfo } from '../../global/axios';
 import '../../styles/global.scss';
 
 const WatchItem = props => {
-    const {
-        logo,
-        ticker,
-        price,
-        prev_close: prevClose,
-        currency,
-    } = props.detail;
+    const { ticker, price, prev_close: prevClose } = props.detail;
+    const [logo, setLogo] = useState(null);
+    const [currency, setCurrency] = useState(null);
     const usd2cad = props.usd2cad;
     const diff = price - prevClose;
-    const [stockBasicInfo, setStockBasicInfo] = useState(undefined);
 
     useEffect(() => {
-        if (logo === null || currency === null) {
+        if (props.detail.logo === null || props.detail.currency === null) {
             getCompanyProfile(ticker).then(response => {
                 const {
                     ticker,
@@ -37,12 +32,10 @@ const WatchItem = props => {
                     logo,
                     currency,
                 } = response.data;
-                const stockBasicInfo = {
-                    logo: logo,
-                    currency: currency,
-                };
 
-                setStockBasicInfo(stockBasicInfo);
+                setLogo(logo);
+                setCurrency(currency);
+
                 const updateSymbol = {
                     ticker: ticker,
                     name: name,
@@ -54,13 +47,11 @@ const WatchItem = props => {
                 putSymbolInfo(updateSymbol);
             });
         } else {
-            const stockBasicInfo = {
-                logo: logo,
-                currency: currency,
-            };
-            setStockBasicInfo(stockBasicInfo);
+            setLogo(props.detail.logo);
+            setCurrency(props.detail.currency);
         }
-    }, []);
+        // eslint-disable-next-line
+    }, [ticker]);
 
     return (
         <Grid
@@ -72,11 +63,11 @@ const WatchItem = props => {
             pl={2}
         >
             <GridItem>
-                {stockBasicInfo ? (
+                {logo !== null ? (
                     <Image
                         borderRadius="full"
                         boxSize="30px"
-                        src={stockBasicInfo.logo}
+                        src={logo}
                         alt={ticker}
                     />
                 ) : (
@@ -106,12 +97,12 @@ const WatchItem = props => {
 
                     <Skeleton isLoaded={price !== 0}>
                         $
-                        {currency === 'cad'
+                        {currency === 'CAD'
                             ? (price * usd2cad).toFixed(2)
                             : price.toFixed(2)}
                     </Skeleton>
 
-                    <Box>{stockBasicInfo ? stockBasicInfo.currency : ''}</Box>
+                    <Skeleton isLoaded={currency !== null}>{currency}</Skeleton>
                 </HStack>
             </GridItem>
             <GridItem textAlign="right">

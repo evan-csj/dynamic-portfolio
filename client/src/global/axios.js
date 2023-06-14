@@ -100,8 +100,19 @@ const getSymbols = async () => {
 const putSymbolInfo = async symbolInfo => {
     try {
         const response = await axios.put(
-            `${API_ADDRESS}/symbols`,
+            `${API_ADDRESS}/symbols/info`,
             symbolInfo,
+            newHeader
+        );
+        return response;
+    } catch (err) {}
+};
+
+const putSymbolPrice = async symbolPrice => {
+    try {
+        const response = await axios.put(
+            `${API_ADDRESS}/symbols/price`,
+            symbolPrice,
             newHeader
         );
         return response;
@@ -213,6 +224,7 @@ export {
     getLastPrice,
     getSymbols,
     putSymbolInfo,
+    putSymbolPrice,
     getPortfolio,
     getEps,
     getCompanyProfile,

@@ -12,7 +12,8 @@ const getWatchlist = async (req, res) => {
             'logo',
             'price',
             'prev_close',
-            'currency'
+            'currency',
+            'updated_at'
         )
         .where({ user_id: userId });
 

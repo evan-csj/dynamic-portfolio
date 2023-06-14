@@ -23,12 +23,14 @@ import {
     postWatchItem,
     deleteWatchItem,
     getCompanyProfile,
+    putSymbolPrice,
 } from '../../global/axios';
 import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
+import dayjs from 'dayjs';
 
 function Watchlist(props) {
     const [watchlist, setWatchlist] = useState({});
@@ -68,13 +70,23 @@ function Watchlist(props) {
             let newWatchlist = {};
             const keyList = Object.keys(watchlist);
             for (let i = 0; i < keyList.length; i++) {
-                let watchItem = watchlist[keyList[i]];
-                const quote = await getLastPrice(keyList[i]);
-                const currentPrice = quote.data.c;
-                const previousClose = quote.data.pc;
-                watchItem.price = currentPrice;
-                watchItem.prev_close = previousClose;
-                newWatchlist[keyList[i]] = watchItem;
+                const watchItem = watchlist[keyList[i]];
+                const ticker = keyList[i];
+                const diff = dayjs().diff(dayjs(watchItem.updated_at), 's');
+
+                if (diff > 60) {
+                    const quote = await getLastPrice(ticker);
+                    const { c: currentPrice, pc: previousClose } = quote.data;
+                    watchItem.price = currentPrice;
+                    watchItem.prev_close = previousClose;
+                    putSymbolPrice({
+                        symbol: ticker,
+                        price: currentPrice,
+                        prevClose: previousClose,
+                    });
+                }
+
+                newWatchlist[ticker] = watchItem;
             }
             setWatchlist(newWatchlist);
         }
@@ -190,6 +202,7 @@ function Watchlist(props) {
             const json = JSON.parse(lastMessage.data);
             const type = json.type;
             if (type === 'trade') {
+                console.log('NO NO NO NO');
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;

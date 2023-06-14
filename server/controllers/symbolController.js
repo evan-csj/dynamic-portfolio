@@ -1,4 +1,5 @@
 const knex = require('knex')(require('../knexfile'));
+const dayjs = require('dayjs');
 
 const getSymbols = async (req, res) => {
     if (Object.keys(req.query).length === 0) {
@@ -15,7 +16,7 @@ const getSymbols = async (req, res) => {
 const updateSymbolInfo = async (req, res) => {
     const { ticker, name, exchange, sector, logo, currency } = req.body;
 
-    const updateStockInfo = {
+    const updateInfo = {
         name: name,
         exchange: exchange,
         sector: sector,
@@ -23,8 +24,19 @@ const updateSymbolInfo = async (req, res) => {
         currency: currency,
     };
 
-    await knex('symbol').where({ symbol: ticker }).update(updateStockInfo);
-    return res.status(200).json(updateStockInfo);
+    await knex('symbol').where({ symbol: ticker }).update(updateInfo);
+    return res.status(200).json(updateInfo);
 };
 
-module.exports = { getSymbols, updateSymbolInfo };
+const updateSymbolPrice = async (req, res) => {
+    const { symbol, price, prevClose } = req.body;
+    const updatePrice = {
+        price: price,
+        prev_close: prevClose,
+        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    };
+    await knex('symbol').where({ symbol: symbol }).update(updatePrice);
+    return res.status(200).json(updatePrice);
+};
+
+module.exports = { getSymbols, updateSymbolInfo, updateSymbolPrice };
