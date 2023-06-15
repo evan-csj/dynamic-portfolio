@@ -51,11 +51,8 @@ exports.up = function (knex) {
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
             table.float('avg_price', 20, 7).notNullable();
-            table.float('price', 12, 2).notNullable();
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
-            table.string('currency').notNullable();
-            table.timestamps(true, true);
         })
         .createTable('fund', table => {
             table.uuid('id').primary().unique().notNullable();

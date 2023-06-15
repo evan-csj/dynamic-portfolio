@@ -70,8 +70,8 @@ function Watchlist(props) {
             let newWatchlist = {};
             const keyList = Object.keys(watchlist);
             for (let i = 0; i < keyList.length; i++) {
-                const watchItem = watchlist[keyList[i]];
                 const ticker = keyList[i];
+                const watchItem = watchlist[ticker];
                 const diff = dayjs().diff(dayjs(watchItem.updated_at), 's');
 
                 if (diff > 60) {
@@ -202,7 +202,6 @@ function Watchlist(props) {
             const json = JSON.parse(lastMessage.data);
             const type = json.type;
             if (type === 'trade') {
-                console.log('NO NO NO NO');
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;
