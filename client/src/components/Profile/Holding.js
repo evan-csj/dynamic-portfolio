@@ -45,7 +45,7 @@ function Holding(props) {
 
                     <Skeleton isLoaded={price !== 0}>
                         $
-                        {currency === 'cad'
+                        {currency === 'CAD'
                             ? (price * props.usd2cad).toFixed(2)
                             : price.toFixed(2)}
                     </Skeleton>

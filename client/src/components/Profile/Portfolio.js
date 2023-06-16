@@ -21,7 +21,7 @@ import {
     putPortfolio,
     getSymbols,
     postTrading,
-    getRTPrice,
+    getLastPrice,
 } from '../../global/axios';
 import PortfolioItem from './PortfolioItem';
 import '../../styles/global.scss';
@@ -157,21 +157,23 @@ const Portfolio = props => {
         if (!enoughFund() || !notZero || totalPct !== 100) return;
         setProcessing(true);
         const promises = portfolioList.map(async item => {
-            const response = await getRTPrice(item.ticker);
-            const priceRT = response.data.price;
-            const shares = (numberValue * item.percentage) / 100 / priceRT;
+            const quote = await getLastPrice(item.ticker);
+            const { c: price } = quote.data;
+            const shares = (numberValue * item.percentage) / 100 / price;
             const sharesRound = Math.round(shares * 1000) / 1000;
+
             const newTrade = {
                 user_id: props.userId,
                 ticker: item.ticker,
-                price: priceRT,
+                price: price,
                 shares: sharesRound,
                 type: 'buy',
                 order_status: 'pending',
-                currency: 'usd',
+                currency: 'USD',
             };
             return postTrading(newTrade);
         });
+
         Promise.allSettled(promises).then(_response => {
             props.changePage('history');
             navigate('/history');

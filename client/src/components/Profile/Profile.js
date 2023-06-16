@@ -65,35 +65,34 @@ const Profile = props => {
                 const diff = dayjs().diff(dayjs(holdingItem.updated_at), 's');
 
                 if (holdingItem.currency === null) {
-                    getCompanyProfile(ticker).then(response => {
-                        const {
-                            ticker,
-                            name,
-                            exchange,
-                            finnhubIndustry: sector,
-                            logo,
-                            currency,
-                        } = response.data;
+                    const profile = await getCompanyProfile(ticker);
 
-                        const updateSymbol = {
-                            ticker: ticker,
-                            name: name,
-                            exchange: exchange,
-                            sector: sector,
-                            logo: logo,
-                            currency: currency,
-                        };
+                    const {
+                        name,
+                        exchange,
+                        finnhubIndustry: sector,
+                        logo,
+                        currency,
+                    } = profile.data;
 
-                        holdingItem.currency = currency;
-                        putSymbolInfo(updateSymbol);
-                    });
+                    const updateSymbol = {
+                        ticker: ticker,
+                        name: name,
+                        exchange: exchange,
+                        sector: sector,
+                        logo: logo,
+                        currency: currency,
+                    };
+
+                    holdingItem.currency = currency;
+                    await putSymbolInfo(updateSymbol);
                 }
 
-                if (diff > 60) {
+                if (diff > 60 || holdingItem.price === 0) {
                     const quote = await getLastPrice(ticker);
                     const { c: currentPrice, pc: previousClose } = quote.data;
                     holdingItem.price = currentPrice;
-                    putSymbolPrice({
+                    await putSymbolPrice({
                         symbol: ticker,
                         price: currentPrice,
                         prevClose: previousClose,

@@ -36,15 +36,6 @@ const getFunding = async id => {
     } catch (err) {}
 };
 
-const getRTPrice = async ticker => {
-    try {
-        const priceRT = await axios.get(
-            `${API_ADDRESS}/price/realtime/${ticker}`
-        );
-        return priceRT;
-    } catch (err) {}
-};
-
 const getCurrency = async () => {
     try {
         const exRate = await axios.get(`${API_ADDRESS}/price/forex`);
@@ -217,7 +208,6 @@ export {
     getHoldings,
     getTrading,
     getFunding,
-    getRTPrice,
     getCurrency,
     getWatchlist,
     getPriceHistory,

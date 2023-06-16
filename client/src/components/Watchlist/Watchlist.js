@@ -74,12 +74,12 @@ function Watchlist(props) {
                 const watchItem = watchlist[ticker];
                 const diff = dayjs().diff(dayjs(watchItem.updated_at), 's');
 
-                if (diff > 60) {
+                if (diff > 60 || watchItem.price === 0) {
                     const quote = await getLastPrice(ticker);
                     const { c: currentPrice, pc: previousClose } = quote.data;
                     watchItem.price = currentPrice;
                     watchItem.prev_close = previousClose;
-                    putSymbolPrice({
+                    await putSymbolPrice({
                         symbol: ticker,
                         price: currentPrice,
                         prevClose: previousClose,

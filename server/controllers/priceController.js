@@ -2,17 +2,7 @@ const axios = require('axios');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
 require('dotenv').config();
-const { RAPIDAPI_KEY, EX_KEY, FINNHUB_KEY } = process.env;
-
-const realstonks = symbol => {
-    return {
-        method: 'GET',
-        url: `https://realstonks.p.rapidapi.com/${symbol}`,
-        headers: {
-            'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
-        },
-    };
-};
+const { EX_KEY, FINNHUB_KEY } = process.env;
 
 const finnHubCandles = (symbol, resolution, from, to) => {
     return {
@@ -66,24 +56,6 @@ const getQuote = async (req, res) => {
     }
 };
 
-const getRTPriceAPI = async (req, res) => {
-    try {
-        const response = await axios.request(realstonks(req.params.ticker));
-        return res.status(200).json(response.data);
-    } catch (error) {
-        return res.status(404).json(error);
-    }
-};
-
-const getRTPrice = async ticker => {
-    try {
-        const response = await axios.request(realstonks(ticker));
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-};
-
 const getForex = async (_req, res) => {
     try {
         const exchangeRate = await knex('forex')
@@ -116,4 +88,4 @@ const getForex = async (_req, res) => {
     }
 };
 
-module.exports = { getRTPriceAPI, getRTPrice, getCandles, getQuote, getForex };
+module.exports = { getCandles, getQuote, getForex };
