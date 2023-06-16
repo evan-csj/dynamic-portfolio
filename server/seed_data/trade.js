@@ -6,7 +6,7 @@ module.exports = [
         shares: 1,
         type: 'buy',
         order_status: 'approved',
-        currency: 'usd',
+        currency: 'USD',
     },
     {
         user_id: 'evancheng',
@@ -15,6 +15,6 @@ module.exports = [
         shares: 0.5,
         type: 'buy',
         order_status: 'approved',
-        currency: 'usd',
+        currency: 'USD',
     },
 ];

@@ -25,7 +25,9 @@ import {
     getLastPrice,
     getCurrency,
     getHoldings,
+    getCompanyProfile,
     putSymbolPrice,
+    putSymbolInfo,
 } from '../../global/axios';
 import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
@@ -61,6 +63,31 @@ const Profile = props => {
                 const ticker = keyList[i];
                 const holdingItem = holdingList[ticker];
                 const diff = dayjs().diff(dayjs(holdingItem.updated_at), 's');
+
+                if (holdingItem.currency === null) {
+                    getCompanyProfile(ticker).then(response => {
+                        const {
+                            ticker,
+                            name,
+                            exchange,
+                            finnhubIndustry: sector,
+                            logo,
+                            currency,
+                        } = response.data;
+
+                        const updateSymbol = {
+                            ticker: ticker,
+                            name: name,
+                            exchange: exchange,
+                            sector: sector,
+                            logo: logo,
+                            currency: currency,
+                        };
+
+                        holdingItem.currency = currency;
+                        putSymbolInfo(updateSymbol);
+                    });
+                }
 
                 if (diff > 60) {
                     const quote = await getLastPrice(ticker);
@@ -138,7 +165,6 @@ const Profile = props => {
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;
-                console.log(symbol, price);
                 updatePrice(symbol, price);
             }
         }

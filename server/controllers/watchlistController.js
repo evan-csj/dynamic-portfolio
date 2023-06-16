@@ -1,5 +1,5 @@
 const knex = require('knex')(require('../knexfile'));
-const priceController = require('./priceController');
+const dayjs = require('dayjs');
 
 const getWatchlist = async (req, res) => {
     const userId = req.params.userId;
@@ -53,6 +53,7 @@ const addWatchItem = async (req, res) => {
         price: price,
         prev_close: prev_close,
         currency: currency,
+        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
     };
 
     try {
