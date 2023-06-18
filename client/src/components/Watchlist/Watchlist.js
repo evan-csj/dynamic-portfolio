@@ -22,12 +22,15 @@ import {
     getSymbols,
     postWatchItem,
     deleteWatchItem,
+    getCompanyProfile,
+    putSymbolPrice,
 } from '../../global/axios';
 import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
+import dayjs from 'dayjs';
 
 function Watchlist(props) {
     const [watchlist, setWatchlist] = useState({});
@@ -67,13 +70,23 @@ function Watchlist(props) {
             let newWatchlist = {};
             const keyList = Object.keys(watchlist);
             for (let i = 0; i < keyList.length; i++) {
-                let watchItem = watchlist[keyList[i]];
-                const quote = await getLastPrice(keyList[i]);
-                const currentPrice = quote.data.c;
-                const previousClose = quote.data.pc;
-                watchItem.price = currentPrice;
-                watchItem.prev_close = previousClose;
-                newWatchlist[keyList[i]] = watchItem;
+                const ticker = keyList[i];
+                const watchItem = watchlist[ticker];
+                const diff = dayjs().diff(dayjs(watchItem.updated_at), 's');
+
+                if (diff > 60 || watchItem.price === 0) {
+                    const quote = await getLastPrice(ticker);
+                    const { c: currentPrice, pc: previousClose } = quote.data;
+                    watchItem.price = currentPrice;
+                    watchItem.prev_close = previousClose;
+                    await putSymbolPrice({
+                        symbol: ticker,
+                        price: currentPrice,
+                        prevClose: previousClose,
+                    });
+                }
+
+                newWatchlist[ticker] = watchItem;
             }
             setWatchlist(newWatchlist);
         }
@@ -116,21 +129,39 @@ function Watchlist(props) {
     const addTicker = async () => {
         if (searchTicker !== '' && !existing) {
             const quote = await getLastPrice(searchTicker);
-            const currentPrice = quote.data.c;
-            const previousClose = quote.data.pc;
-            let newWatch = {
+            const profile = await getCompanyProfile(searchTicker);
+            const { c: currentPrice, pc: prevClose } = quote.data;
+            const { logo, name, exchange, finnhubIndustry, currency } =
+                profile.data;
+
+            let newWatchFE = {
                 id: `${props.userId}-${searchTicker}`,
                 user_id: props.userId,
+                logo: logo,
                 ticker: searchTicker,
                 price: currentPrice,
-                prev_close: previousClose,
-                currency: 'usd',
+                prev_close: prevClose,
+                currency: currency,
             };
+
+            let newWatchBE = {
+                id: `${props.userId}-${searchTicker}`,
+                user_id: props.userId,
+                name: name,
+                exchange: exchange,
+                sector: finnhubIndustry,
+                logo: logo,
+                ticker: searchTicker,
+                price: currentPrice,
+                prev_close: prevClose,
+                currency: currency,
+            };
+
             let newWatchlist = { ...watchlist };
-            newWatchlist[searchTicker] = newWatch;
+            newWatchlist[searchTicker] = newWatchFE;
             setWatchlist(newWatchlist);
             setTicker(searchTicker);
-            await postWatchItem(newWatch);
+            await postWatchItem(newWatchBE);
             setSearchTicker('');
             wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
@@ -144,6 +175,7 @@ function Watchlist(props) {
             setWatchlist(newWatchlist);
             deleteWatchItem(`${props.userId}-${ticker}`);
             wsChange('unsubscribe', ticker);
+            setListLength(Object.keys(newWatchlist).length);
         }
         return;
     };
@@ -173,7 +205,6 @@ function Watchlist(props) {
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;
-                console.log(symbol, price);
                 updatePrice(symbol, price);
             }
         }

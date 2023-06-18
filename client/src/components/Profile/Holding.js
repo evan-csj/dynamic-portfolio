@@ -8,7 +8,6 @@ import {
     StatArrow,
     Skeleton,
 } from '@chakra-ui/react';
-import SkeletonDollar from './SkeletonDollar';
 import '../../styles/global.scss';
 
 function Holding(props) {
@@ -46,12 +45,12 @@ function Holding(props) {
 
                     <Skeleton isLoaded={price !== 0}>
                         $
-                        {currency === 'cad'
+                        {currency === 'CAD'
                             ? (price * props.usd2cad).toFixed(2)
                             : price.toFixed(2)}
                     </Skeleton>
 
-                    <Box>{currency.toUpperCase()}</Box>
+                    <Box>{currency}</Box>
                 </HStack>
             </GridItem>
             <GridItem>{(buyShares - sellShares).toFixed(2)} shares</GridItem>

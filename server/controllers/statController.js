@@ -47,7 +47,7 @@ const getCompanyProfile = async (req, res) => {
         const response = await axios.request(finnHubCompanyProfile(ticker));
         return res.status(200).json(response.data);
     } catch (error) {
-        return res.status(404).json(error);
+        return res.status(500).json({ error: 'Something went wrong' });
     }
 };
 

@@ -172,7 +172,6 @@ const Statistics = props => {
                 </Box>
                 <Bar options={optionsEps} data={dataEps} />
                 <Bar options={optionsTrends} data={dataTrends} />
-                <Box h={20} />
             </Box>
         );
     }

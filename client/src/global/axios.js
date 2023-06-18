@@ -36,15 +36,6 @@ const getFunding = async id => {
     } catch (err) {}
 };
 
-const getRTPrice = async ticker => {
-    try {
-        const priceRT = await axios.get(
-            `${API_ADDRESS}/price/realtime/${ticker}`
-        );
-        return priceRT;
-    } catch (err) {}
-};
-
 const getCurrency = async () => {
     try {
         const exRate = await axios.get(`${API_ADDRESS}/price/forex`);
@@ -94,6 +85,28 @@ const getSymbols = async () => {
     try {
         const symbols = await axios.get(`${API_ADDRESS}/symbols`);
         return symbols;
+    } catch (err) {}
+};
+
+const putSymbolInfo = async symbolInfo => {
+    try {
+        const response = await axios.put(
+            `${API_ADDRESS}/symbols/info`,
+            symbolInfo,
+            newHeader
+        );
+        return response;
+    } catch (err) {}
+};
+
+const putSymbolPrice = async symbolPrice => {
+    try {
+        const response = await axios.put(
+            `${API_ADDRESS}/symbols/price`,
+            symbolPrice,
+            newHeader
+        );
+        return response;
     } catch (err) {}
 };
 
@@ -195,12 +208,13 @@ export {
     getHoldings,
     getTrading,
     getFunding,
-    getRTPrice,
     getCurrency,
     getWatchlist,
     getPriceHistory,
     getLastPrice,
     getSymbols,
+    putSymbolInfo,
+    putSymbolPrice,
     getPortfolio,
     getEps,
     getCompanyProfile,

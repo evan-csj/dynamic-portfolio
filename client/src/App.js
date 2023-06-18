@@ -9,6 +9,7 @@ import TradingForm from './components/Action/TradingForm';
 import Profile from './components/Profile/Profile';
 import Watchlist from './components/Watchlist/Watchlist';
 import Txn from './components/Transaction/Transaction';
+import { Box } from '@chakra-ui/react';
 
 function App() {
     const [page, setPage] = useState('');
@@ -57,6 +58,7 @@ function App() {
                     }
                 />
             </Routes>
+            <Box h={20}/>
             <MainTab page={page} changePage={changePage} />
         </BrowserRouter>
     );

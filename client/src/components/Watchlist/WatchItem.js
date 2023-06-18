@@ -11,20 +11,47 @@ import {
     SkeletonCircle,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
-import { getCompanyProfile } from '../../global/axios';
+import { getCompanyProfile, putSymbolInfo } from '../../global/axios';
 import '../../styles/global.scss';
 
 const WatchItem = props => {
-    const { ticker, price, currency, prev_close: prevClose } = props.detail;
+    const { ticker, price, prev_close: prevClose } = props.detail;
+    const [logo, setLogo] = useState(null);
+    const [currency, setCurrency] = useState(null);
     const usd2cad = props.usd2cad;
     const diff = price - prevClose;
-    const [logo, setLogo] = useState(undefined);
 
     useEffect(() => {
-        getCompanyProfile(ticker).then(response => {
-            setLogo(response.data.logo);
-        });
-    }, []);
+        if (props.detail.logo === null || props.detail.currency === null) {
+            getCompanyProfile(ticker).then(response => {
+                const {
+                    ticker,
+                    name,
+                    exchange,
+                    finnhubIndustry: sector,
+                    logo,
+                    currency,
+                } = response.data;
+
+                setLogo(logo);
+                setCurrency(currency);
+
+                const updateSymbol = {
+                    ticker: ticker,
+                    name: name,
+                    exchange: exchange,
+                    sector: sector,
+                    logo: logo,
+                    currency: currency,
+                };
+                putSymbolInfo(updateSymbol);
+            });
+        } else {
+            setLogo(props.detail.logo);
+            setCurrency(props.detail.currency);
+        }
+        // eslint-disable-next-line
+    }, [ticker]);
 
     return (
         <Grid
@@ -36,7 +63,7 @@ const WatchItem = props => {
             pl={2}
         >
             <GridItem>
-                {logo ? (
+                {logo !== null ? (
                     <Image
                         borderRadius="full"
                         boxSize="30px"
@@ -70,12 +97,12 @@ const WatchItem = props => {
 
                     <Skeleton isLoaded={price !== 0}>
                         $
-                        {currency === 'cad'
+                        {currency === 'CAD'
                             ? (price * usd2cad).toFixed(2)
                             : price.toFixed(2)}
                     </Skeleton>
 
-                    <Box>{currency.toUpperCase()}</Box>
+                    <Skeleton isLoaded={currency !== null}>{currency}</Skeleton>
                 </HStack>
             </GridItem>
             <GridItem textAlign="right">

@@ -1,10 +1,20 @@
 const knex = require('knex')(require('../knexfile'));
-const priceController = require('./priceController');
+const dayjs = require('dayjs');
 
 const getWatchlist = async (req, res) => {
     const userId = req.params.userId;
     const watchlist = await knex('watchlist')
-        .select('id', 'user_id', 'ticker', 'price', 'prev_close', 'currency')
+        .join('symbol', { 'symbol.symbol': 'watchlist.ticker' })
+        .select(
+            'watchlist.id',
+            'user_id',
+            'ticker',
+            'logo',
+            'price',
+            'prev_close',
+            'currency',
+            'updated_at'
+        )
         .where({ user_id: userId });
 
     if (!watchlist)
@@ -16,27 +26,51 @@ const getWatchlist = async (req, res) => {
 };
 
 const addWatchItem = async (req, res) => {
-    const { user_id: userId, currency, ticker } = req.body;
+    const {
+        id,
+        user_id: userId,
+        ticker,
+        name,
+        exchange,
+        sector,
+        logo,
+        price,
+        prev_close,
+        currency,
+    } = req.body;
+
     const newWatchItem = {
-        id: `${userId}-${ticker}`,
+        id: id,
         user_id: userId,
         ticker: ticker,
-        price: 0,
-        prev_close: 0,
-        currency: currency,
     };
 
-    const watchlistItem = await knex('watchlist')
-        .where({ user_id: userId })
-        .andWhere({ ticker: ticker });
+    const updateStockInfo = {
+        name: name,
+        exchange: exchange,
+        sector: sector,
+        logo: logo,
+        price: price,
+        prev_close: prev_close,
+        currency: currency,
+        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    };
 
-    if (watchlistItem.length !== 0) {
-        return res.status(400).json({
-            error: `${ticker} already existed in ${userId} watchlist`,
-        });
-    } else {
-        await knex('watchlist').insert(newWatchItem);
-        return res.status(200).json(newWatchItem);
+    try {
+        await knex('symbol').update(updateStockInfo).where({ symbol: ticker });
+
+        const watchlistItem = await knex('watchlist').where({ id: id });
+
+        if (watchlistItem.length !== 0) {
+            return res.status(400).json({
+                error: `${ticker} already existed in ${userId} watchlist`,
+            });
+        } else {
+            await knex('watchlist').insert(newWatchItem);
+            return res.status(200).json(newWatchItem);
+        }
+    } catch (error) {
+        return res.status(500).json({ error: 'Something went wrong' });
     }
 };
 

@@ -18,6 +18,8 @@ import {
     getLastPrice,
     getHoldings,
     postTrading,
+    getCompanyProfile,
+    putSymbolInfo,
 } from '../../global/axios';
 import Balance from './Balance';
 import '../../styles/global.scss';
@@ -41,6 +43,7 @@ const TradingForm = props => {
     const [shares, setShares] = useState(0);
     const [quantity, setQuantity] = useState('');
     const [currentPrice, setCurrentPrice] = useState(0);
+    const [currency, setCurrency] = useState('');
     const symbolOptions = useRef([]);
     const holdings = useRef(undefined);
 
@@ -57,6 +60,29 @@ const TradingForm = props => {
         getLastPrice(selected.value).then(response => {
             setCurrentPrice(response.data.c);
         });
+        getCompanyProfile(selected.value).then(response => {
+            const {
+                ticker,
+                name,
+                exchange,
+                finnhubIndustry: sector,
+                logo,
+                currency,
+            } = response.data;
+
+            const updateSymbol = {
+                ticker: ticker,
+                name: name,
+                exchange: exchange,
+                sector: sector,
+                logo: logo,
+                currency: currency,
+            };
+
+            putSymbolInfo(updateSymbol);
+            setCurrency(currency);
+        });
+
         setSymbol(selected.value);
         if (symbol !== '') wsChange('unsubscribe', symbol);
         wsChange('subscribe', selected.value);
@@ -95,7 +121,7 @@ const TradingForm = props => {
                 shares: Number(quantity),
                 type: type,
                 order_status: 'pending',
-                currency: 'usd',
+                currency: currency,
             };
             postTrading(newTrade);
             props.changePage('profile');
@@ -246,7 +272,7 @@ const TradingForm = props => {
                 </InputGroup> */}
                 {
                     <FormHelperText>
-                        Current price: ${currentPrice} USD / Position: {shares}{' '}
+                        Current price: ${currentPrice} {currency} / Position: {shares}{' '}
                         shares
                     </FormHelperText>
                 }

@@ -25,9 +25,13 @@ import {
     getLastPrice,
     getCurrency,
     getHoldings,
+    getCompanyProfile,
+    putSymbolPrice,
+    putSymbolInfo,
 } from '../../global/axios';
 import '../../styles/global.scss';
 import useWebSocket from 'react-use-websocket';
+import dayjs from 'dayjs';
 
 const Profile = props => {
     const [userData, setUserData] = useState(undefined);
@@ -56,11 +60,46 @@ const Profile = props => {
             let newHoldinglist = {};
             const keyList = Object.keys(holdingList);
             for (let i = 0; i < keyList.length; i++) {
-                let holdingItem = holdingList[keyList[i]];
-                const quote = await getLastPrice(keyList[i]);
-                const currentPrice = quote.data.c;
-                holdingItem.price = currentPrice;
-                newHoldinglist[keyList[i]] = holdingItem;
+                const ticker = keyList[i];
+                const holdingItem = holdingList[ticker];
+                const diff = dayjs().diff(dayjs(holdingItem.updated_at), 's');
+
+                if (holdingItem.currency === null) {
+                    const profile = await getCompanyProfile(ticker);
+
+                    const {
+                        name,
+                        exchange,
+                        finnhubIndustry: sector,
+                        logo,
+                        currency,
+                    } = profile.data;
+
+                    const updateSymbol = {
+                        ticker: ticker,
+                        name: name,
+                        exchange: exchange,
+                        sector: sector,
+                        logo: logo,
+                        currency: currency,
+                    };
+
+                    holdingItem.currency = currency;
+                    await putSymbolInfo(updateSymbol);
+                }
+
+                if (diff > 60 || holdingItem.price === 0) {
+                    const quote = await getLastPrice(ticker);
+                    const { c: currentPrice, pc: previousClose } = quote.data;
+                    holdingItem.price = currentPrice;
+                    await putSymbolPrice({
+                        symbol: ticker,
+                        price: currentPrice,
+                        prevClose: previousClose,
+                    });
+                }
+
+                newHoldinglist[ticker] = holdingItem;
             }
             setHoldingList(newHoldinglist);
             setIsPriceLoaded(true);
@@ -125,7 +164,6 @@ const Profile = props => {
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;
-                console.log(symbol, price);
                 updatePrice(symbol, price);
             }
         }
@@ -146,10 +184,10 @@ const Profile = props => {
                 const shares = holding.buy_shares - holding.sell_shares;
                 const price = holding.price;
 
-                if (currency === 'usd') {
+                if (currency === 'USD') {
                     equityUSD += price * shares;
                 }
-                if (currency === 'cad') {
+                if (currency === 'CAD') {
                     equityCAD += price * shares;
                 }
                 equityTotal += price * shares;

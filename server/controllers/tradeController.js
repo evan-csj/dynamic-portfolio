@@ -24,7 +24,7 @@ const tradeHistory = (req, res) => {
 const addTrade = async (req, res) => {
     const { user_id: userId, type, currency, price, shares, ticker } = req.body;
     const validType = ['buy', 'sell'];
-    const validCurrency = ['usd', 'cad'];
+    const validCurrency = ['USD', 'CAD'];
 
     if (!validType.includes(type)) {
         return res.status(422).json({ error: 'Invalid funding type' });
@@ -63,11 +63,9 @@ const addTrade = async (req, res) => {
                 id: userId + '-' + ticker,
                 user_id: userId,
                 ticker: ticker,
-                price: 0,
                 avg_price: 0,
                 buy_shares: 0,
                 sell_shares: 0,
-                currency: currency,
             };
             await knex('holding').insert(newHolding);
         }
@@ -84,9 +82,9 @@ const addTrade = async (req, res) => {
 
         // check your cash for buy and update cash and holding
         if (type === 'buy') {
-            if (currency === 'usd' && cashUSD >= amountRequired) {
+            if (currency === 'USD' && cashUSD >= amountRequired) {
                 cashUSD -= amountRequired;
-            } else if (currency === 'cad' && cashCAD >= amountRequired) {
+            } else if (currency === 'CAD' && cashCAD >= amountRequired) {
                 cashCAD -= amountRequired;
             } else {
                 return res.status(422).json({ error: 'Insufficient cash' });
@@ -103,8 +101,8 @@ const addTrade = async (req, res) => {
             } else {
                 return res.status(422).json({ error: 'Insufficient shares' });
             }
-            if (currency === 'usd') cashUSD += amountRequired;
-            if (currency === 'cad') cashCAD += amountRequired;
+            if (currency === 'USD') cashUSD += amountRequired;
+            if (currency === 'CAD') cashCAD += amountRequired;
         }
 
         await knex('user').update({ cash_usd: cashUSD, cash_cad: cashCAD }).where({ id: userId });

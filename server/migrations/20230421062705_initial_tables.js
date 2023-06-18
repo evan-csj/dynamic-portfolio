@@ -16,8 +16,14 @@ exports.up = function (knex) {
         })
         .createTable('symbol', table => {
             table.string('symbol').primary().unique().notNullable();
-            table.string('name').notNullable();
-            table.string('sector').notNullable();
+            table.string('name');
+            table.string('exchange');
+            table.string('sector');
+            table.string('logo');
+            table.float('price', 12, 2).defaultTo(0);
+            table.float('prev_close', 12, 2).defaultTo(0);
+            table.string('currency');
+            table.timestamps(true, true);
         })
         .createTable('trade', table => {
             table.uuid('id').primary().unique().notNullable();
@@ -45,11 +51,8 @@ exports.up = function (knex) {
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
             table.float('avg_price', 20, 7).notNullable();
-            table.float('price', 12, 2).notNullable();
             table.float('buy_shares', 15, 5).notNullable();
             table.float('sell_shares', 15, 5).notNullable();
-            table.string('currency').notNullable();
-            table.timestamps(true, true);
         })
         .createTable('fund', table => {
             table.uuid('id').primary().unique().notNullable();
@@ -73,20 +76,6 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
             table.string('ticker').notNullable();
-            table.float('price', 12, 2).notNullable();
-            table.float('prev_close', 12, 2).notNullable();
-            table.string('currency').notNullable();
-        })
-        .createTable('portfolio', table => {
-            table.string('id').primary().unique().notNullable();
-            table
-                .string('user_id')
-                .references('id')
-                .inTable('user')
-                .onUpdate('CASCADE')
-                .onDelete('CASCADE');
-            table.string('ticker').notNullable();
-            table.integer('percentage').notNullable();
         })
         .createTable('forex', table => {
             table.string('symbol').primary().unique().notNullable();
@@ -107,6 +96,5 @@ exports.down = function (knex) {
         .dropTable('holding')
         .dropTable('trade')
         .dropTable('symbol')
-        .dropTable('portfolio')
         .dropTable('user');
 };
