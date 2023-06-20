@@ -160,7 +160,7 @@ const Portfolio = props => {
             const quote = await getLastPrice(item.ticker);
             const { c: price } = quote.data;
             const shares = (numberValue * item.percentage) / 100 / price;
-            const sharesRound = Math.round(shares * 1000) / 1000;
+            const sharesRound = Math.floor(shares * 1000) / 1000;
 
             const newTrade = {
                 user_id: props.userId,
@@ -171,7 +171,8 @@ const Portfolio = props => {
                 order_status: 'pending',
                 currency: 'USD',
             };
-            postTrading(newTrade);
+
+            if (sharesRound > 0) postTrading(newTrade);
         }
 
         props.changePage('history');
