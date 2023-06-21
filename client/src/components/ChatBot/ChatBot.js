@@ -123,6 +123,7 @@ const ChatBot = props => {
                                 borderWidth="1px"
                                 borderStyle="solid"
                                 borderColor="light.grey"
+                                focusBorderColor="light.yellow"
                                 placeholder="Message"
                                 value={userMsg}
                                 onChange={e => handleMsgChange(e)}
