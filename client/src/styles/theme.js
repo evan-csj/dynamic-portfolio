@@ -19,6 +19,7 @@ const theme = extendTheme({
             grey: '#9BA4B5',
             green: '#0B8457',
             red: '#FF5F5F',
+            silver: '#F1F6F9'
         },
         lightBG: {
             green: '#E5F9DB',

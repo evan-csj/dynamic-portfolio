@@ -22,7 +22,6 @@ const tradeHistory = (req, res) => {
 };
 
 const addTrade = async (req, res) => {
-    console.log(req.body)
     const { user_id: userId, type, currency, price, shares, ticker } = req.body;
     const validType = ['buy', 'sell'];
     const validCurrency = ['USD', 'CAD'];

@@ -203,6 +203,21 @@ const deleteWatchItem = async id => {
     } catch (err) {}
 };
 
+const getFeedback = async text => {
+    const newMessage = {
+        text: text,
+    };
+
+    try {
+        const response = await axios.post(
+            `${API_ADDRESS}/chatbot`,
+            newMessage,
+            newHeader
+        );
+        return response;
+    } catch (err) {}
+};
+
 export {
     getUser,
     getHoldings,
@@ -224,4 +239,5 @@ export {
     postTrading,
     postWatchItem,
     deleteWatchItem,
+    getFeedback,
 };
