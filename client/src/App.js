@@ -18,7 +18,7 @@ function App() {
     const [page, setPage] = useState('');
     const [messages, setmessages] = useState([
         {
-            message: 'Hi! This is Trading GPT',
+            message: "Hi! I'm ChatBot",
             sender: 'Bot',
         },
         {

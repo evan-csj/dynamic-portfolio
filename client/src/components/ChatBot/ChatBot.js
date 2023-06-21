@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeftIcon, ArrowRightIcon, ChatIcon } from '@chakra-ui/icons';
+import {
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    ChatIcon,
+    MinusIcon,
+} from '@chakra-ui/icons';
 import { Flex, Box, Center, Input, Circle } from '@chakra-ui/react';
 import '../../styles/global.scss';
 import Message from './Message';
@@ -36,12 +41,13 @@ const ChatBot = props => {
             });
     });
 
-    if (isOpen) {
-        return (
+    return (
+        <>
             <Box
+                display={isOpen ? 'block' : 'none'}
                 pos="fixed"
                 top={{ base: '0', lg: 'auto' }}
-                bottom={{ base: '0', lg: '80px', xl: '32px' }}
+                bottom={{ base: '0', lg: '100px', xl: '32px' }}
                 right={{ base: '0', lg: '32px' }}
                 h={{ base: 'auto', lg: '500px' }}
                 w={{ base: '100%', lg: '300px' }}
@@ -67,10 +73,16 @@ const ChatBot = props => {
                         onClick={handleClose}
                     >
                         Trading GPT
+                        <MinusIcon
+                            display={{ base: 'none', lg: 'block' }}
+                            pos="absolute"
+                            color="light.white"
+                            transform="translateX(130px)"
+                        />
                     </Center>
                     <Flex direction="column" w="100%" bg="light.white">
                         <Box
-                            h={{ base: '100%', lg: '390px' }}
+                            h={{ base: 'calc(100vh - 140px)', lg: '390px' }}
                             pt="20px"
                             px="20px"
                             pb="0"
@@ -111,7 +123,7 @@ const ChatBot = props => {
                                 borderWidth="1px"
                                 borderStyle="solid"
                                 borderColor="light.grey"
-                                placeholder="Chat"
+                                placeholder="Message"
                                 value={userMsg}
                                 onChange={e => handleMsgChange(e)}
                                 onKeyDown={e => handleKeyDown(e)}
@@ -120,13 +132,11 @@ const ChatBot = props => {
                     </Flex>
                 </Box>
             </Box>
-        );
-    } else {
-        return (
             <Center
+                display={isOpen ? 'none' : { base: 'none', lg: 'flex' }}
                 className="bounce-box"
                 pos="fixed"
-                bottom={{ base: '80px', xl: '32px' }}
+                bottom={{ base: '100px', xl: '32px' }}
                 right="0"
                 zIndex="1"
                 w="70px"
@@ -147,8 +157,30 @@ const ChatBot = props => {
                     <ChatIcon />
                 </Circle>
             </Center>
-        );
-    }
+            <Flex
+                display={{ base: 'flex', lg: 'none' }}
+                alignItems="center"
+                pos="fixed"
+                bottom="100px"
+                right="0"
+                zIndex={isOpen ? '13' : '1'}
+                w={isOpen ? '94px' : '54px'}
+                h="50px"
+                borderLeftRadius="25px"
+                bg="light.black"
+                color="light.white"
+                cursor="pointer"
+                transition="width 0.3s ease"
+                onClick={!isOpen ? handleOpen : handleClose}
+            >
+                {!isOpen ? (
+                    <ArrowLeftIcon transform="translate(15px)" />
+                ) : (
+                    <ArrowRightIcon transform="translate(20px)" />
+                )}
+            </Flex>
+        </>
+    );
 };
 
 export default ChatBot;
