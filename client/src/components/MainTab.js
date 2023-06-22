@@ -26,7 +26,7 @@ const MainTab = props => {
     const page = props.page;
 
     return (
-        <>
+        <Box display={props.show ? 'block' : 'none'}>
             <Flex
                 bg="light.white"
                 shadow={isOpen ? '' : 'mainTab'}
@@ -96,7 +96,16 @@ const MainTab = props => {
                     </NavLink>
                 </Box>
 
-                {/* <Login variant="btn" onClick={onClose} /> */}
+                <Box _hover={{ color: 'light.yellow' }}>
+                    <NavLink
+                        to="/login"
+                        onClick={() => {
+                            onClose();
+                        }}
+                    >
+                        <Login variant="btn" />
+                    </NavLink>
+                </Box>
             </Flex>
             <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay zIndex={1} display={{ xl: 'none' }} />
@@ -155,7 +164,7 @@ const MainTab = props => {
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
-        </>
+        </Box>
     );
 };
 

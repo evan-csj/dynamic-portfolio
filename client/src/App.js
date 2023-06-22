@@ -10,12 +10,15 @@ import Profile from './components/Profile/Profile';
 import Watchlist from './components/Watchlist/Watchlist';
 import Txn from './components/Transaction/Transaction';
 import ChatBot from './components/ChatBot/ChatBot';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
 import { Box } from '@chakra-ui/react';
 import { getFeedback } from './global/axios';
 
 function App() {
     const navigate = useNavigate();
     const [page, setPage] = useState('');
+    const [isLogin, setLogin] = useState(true);
     const [messages, setmessages] = useState([
         {
             message: "Hi! I'm ChatBot",
@@ -59,12 +62,9 @@ function App() {
         <>
             <TopTab />
             <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <Profile userId={'evancheng'} changePage={changePage} />
-                    }
-                />
+                <Route path="/" element={<Login />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route
                     path="/profile"
                     element={
@@ -96,8 +96,12 @@ function App() {
                 />
             </Routes>
             <Box h={20} />
-            <ChatBot messages={messages} addMessage={addMessage} />
-            <MainTab page={page} changePage={changePage} />
+            <ChatBot
+                messages={messages}
+                addMessage={addMessage}
+                show={isLogin}
+            />
+            <MainTab page={page} changePage={changePage} show={isLogin} />
         </>
     );
 }

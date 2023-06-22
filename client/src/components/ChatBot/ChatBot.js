@@ -42,7 +42,7 @@ const ChatBot = props => {
     });
 
     return (
-        <>
+        <Box display={props.show ? 'block' : 'none'}>
             <Box
                 display={isOpen ? 'block' : 'none'}
                 pos="fixed"
@@ -180,7 +180,7 @@ const ChatBot = props => {
                     <ArrowRightIcon transform="translate(20px)" />
                 )}
             </Flex>
-        </>
+        </Box>
     );
 };
 
