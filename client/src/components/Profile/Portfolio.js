@@ -153,14 +153,14 @@ const Portfolio = props => {
 
     const notZero = numberValue <= 0 ? false : true;
 
-    const handleSubmitChange = () => {
+    const handleSubmitChange = async () => {
         if (!enoughFund() || !notZero || totalPct !== 100) return;
         setProcessing(true);
-        const promises = portfolioList.map(async item => {
+        for (let item of portfolioList) {
             const quote = await getLastPrice(item.ticker);
             const { c: price } = quote.data;
             const shares = (numberValue * item.percentage) / 100 / price;
-            const sharesRound = Math.round(shares * 1000) / 1000;
+            const sharesRound = Math.floor(shares * 1000) / 1000;
 
             const newTrade = {
                 user_id: props.userId,
@@ -171,13 +171,12 @@ const Portfolio = props => {
                 order_status: 'pending',
                 currency: 'USD',
             };
-            return postTrading(newTrade);
-        });
 
-        Promise.allSettled(promises).then(_response => {
-            props.changePage('history');
-            navigate('/history');
-        });
+            if (sharesRound > 0) postTrading(newTrade);
+        }
+
+        props.changePage('history');
+        navigate('/history');
     };
 
     useEffect(() => {

@@ -53,7 +53,7 @@ function Holding(props) {
                     <Box>{currency}</Box>
                 </HStack>
             </GridItem>
-            <GridItem>{(buyShares - sellShares).toFixed(2)} shares</GridItem>
+            <GridItem>{(buyShares - sellShares).toFixed(3)} shares</GridItem>
             <GridItem textAlign="right">
                 Avg price: ${avgPrice.toFixed(2)}
             </GridItem>
