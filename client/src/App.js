@@ -41,12 +41,9 @@ function App() {
                         { message: text, sender: 'User' },
                         { message: response.data.answer, sender: 'Bot' },
                     ]);
-                    const keyWord = response.data.intent.split('-');
-                    if (keyWord[0] === 'nav.home') {
-                        navigate('/');
-                    }
-                    if (keyWord[0] === 'nav.themes') {
-                        navigate('/themes');
+                    const intent = response.data.intent.split('.');
+                    if (intent[0] === 'nav') {
+                        navigate(`/${intent[1]}`);
                     }
                 })
                 .catch(_error => {
