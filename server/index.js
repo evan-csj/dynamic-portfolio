@@ -4,6 +4,12 @@ const cors = require('cors');
 const { dockStart } = require('@nlpjs/basic');
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
+const { Configuration, OpenAIApi } = require('openai');
+const openai = new OpenAIApi(
+    new Configuration({
+        apiKey: process.env.OPENAI_KEY,
+    })
+);
 
 const userRoute = require('./routes/userRoute');
 const tradeRoute = require('./routes/tradeRoute');
@@ -42,10 +48,25 @@ app.use('/stat', statRoute);
     app.post('/chatbot', async (req, res) => {
         const text = req.body.text;
         const response = await nlp.process('en', text);
-        res.status(200).json({
-            intent: response.intent,
-            answer: response.answer,
-        });
+        if (response.intent !== 'None') {
+            res.status(200).json({
+                intent: response.intent,
+                answer: response.answer,
+            });
+        } else {
+            openai
+                .createChatCompletion({
+                    model: 'gpt-3.5-turbo',
+                    messages: [{ role: 'user', content: text + ' in financial field in 50 words' }],
+                })
+                .then(response => {
+                    const gptRes = response.data.choices[0].message.content;
+                    res.status(200).json({
+                        intent: 'gpt',
+                        answer: gptRes,
+                    });
+                });
+        }
     });
 })();
 
