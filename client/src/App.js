@@ -18,7 +18,7 @@ import { getFeedback } from './global/axios';
 function App() {
     const navigate = useNavigate();
     const [page, setPage] = useState('');
-    const [isLogin, setLogin] = useState(true);
+    const [isLogin, setLogin] = useState(false);
     const [messages, setmessages] = useState([
         {
             message: "Hi! I'm ChatBot",
@@ -60,7 +60,7 @@ function App() {
 
     return (
         <>
-            <TopTab />
+            <TopTab page={page} changePage={changePage} show={isLogin} />
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/login" element={<Login />} />
