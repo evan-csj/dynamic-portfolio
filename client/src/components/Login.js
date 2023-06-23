@@ -9,7 +9,9 @@ import {
     FormLabel,
     Button,
     Stack,
+    Image,
 } from '@chakra-ui/react';
+import logo from '../assets/logo.svg';
 import '../styles/global.scss';
 
 const Login = props => {
@@ -25,7 +27,13 @@ const Login = props => {
                     borderRadius="24px"
                     boxShadow="2xl"
                 >
-                    <Flex direction="column" gap="24px" w="100%">
+                    <Flex
+                        direction="column"
+                        alignItems="center"
+                        gap="24px"
+                        w="100%"
+                    >
+                        <Image src={logo} alt="logo" boxSize="120px" />
                         <FormControl>
                             <FormLabel>User ID</FormLabel>
                             <Input placeholder="Please enter user ID"></Input>
@@ -78,7 +86,7 @@ const Login = props => {
                 left="-50vw"
                 _peerHover={{
                     transform:
-                        'rotate(45deg) translateX(calc(-30vw)) translateY(calc(30vw))',
+                        'rotate(21.8deg) translateX(calc(-15vw)) translateY(calc(15vw))',
                 }}
                 transition="transform 0.3s ease"
                 zIndex="-1"
@@ -91,7 +99,7 @@ const Login = props => {
                 right="-50vw"
                 _peerHover={{
                     transform:
-                        'rotate(45deg) translateX(calc(30vw)) translateY(calc(-30vw))',
+                        'rotate(21.8deg) translateX(calc(15vw)) translateY(calc(-15vw))',
                 }}
                 transition="transform 0.3s ease"
                 zIndex="-1"
