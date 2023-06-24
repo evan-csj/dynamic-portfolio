@@ -8,21 +8,23 @@ import {
     FormControl,
     FormLabel,
     Button,
-    Stack,
     Image,
 } from '@chakra-ui/react';
 import logo from '../assets/logo.svg';
 import '../styles/global.scss';
 
 const Login = props => {
+    const rotateDeg = 25;
+    const shiftDis = 20;
+
     return (
-        <Center h="100vh" w="100vw" pos="relative">
+        <Center h="100vh" w="100vw" pos="relative" overflow="hidden">
             <Center w={{ base: '100%', md: '480px' }} data-peer>
                 <Center
                     h="500px"
                     w="100%"
                     mx="16px"
-                    px="64px"
+                    px={{ base: '32px', md: '64px' }}
                     bg="light.white"
                     borderRadius="24px"
                     boxShadow="2xl"
@@ -36,10 +38,16 @@ const Login = props => {
                         <Image src={logo} alt="logo" boxSize="120px" />
                         <FormControl>
                             <FormLabel>User ID</FormLabel>
-                            <Input placeholder="Please enter user ID"></Input>
+                            <Input
+                                focusBorderColor="light.yellow"
+                                placeholder="Please enter user ID"
+                            ></Input>
                             <Box h="24px" />
                             <FormLabel>Password</FormLabel>
-                            <Input placeholder="Please enter password"></Input>
+                            <Input
+                                focusBorderColor="light.yellow"
+                                placeholder="Please enter password"
+                            ></Input>
                         </FormControl>
                         <Flex
                             w="100%"
@@ -85,8 +93,7 @@ const Login = props => {
                 h="500vh"
                 left="-50vw"
                 _peerHover={{
-                    transform:
-                        'rotate(21.8deg) translateX(calc(-15vw)) translateY(calc(15vw))',
+                    transform: `rotate(${rotateDeg}deg) translateX(calc(-${shiftDis}vw)) translateY(calc(${shiftDis}vw))`,
                 }}
                 transition="transform 0.3s ease"
                 zIndex="-1"
@@ -98,8 +105,7 @@ const Login = props => {
                 h="500vh"
                 right="-50vw"
                 _peerHover={{
-                    transform:
-                        'rotate(21.8deg) translateX(calc(15vw)) translateY(calc(-15vw))',
+                    transform: `rotate(${rotateDeg}deg) translateX(calc(${shiftDis}vw)) translateY(calc(-${shiftDis}vw))`,
                 }}
                 transition="transform 0.3s ease"
                 zIndex="-1"

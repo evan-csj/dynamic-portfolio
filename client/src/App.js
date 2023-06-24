@@ -95,7 +95,7 @@ function App() {
                     }
                 />
             </Routes>
-            <Box h={20} />
+            <Box display={isLogin ? 'block' : 'none'} h={20} />
             <ChatBot
                 messages={messages}
                 addMessage={addMessage}
