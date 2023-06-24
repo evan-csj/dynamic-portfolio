@@ -218,6 +218,21 @@ const getFeedback = async text => {
     } catch (err) {}
 };
 
+const checkUserPassword = async login => {
+    const userInput = {
+        username: login.username,
+        password: login.password,
+    };
+    try {
+        const isCorrect = await axios.put(
+            `${API_ADDRESS}/user`,
+            userInput,
+            newHeader
+        );
+        return isCorrect;
+    } catch (err) {}
+};
+
 export {
     getUser,
     getHoldings,
@@ -240,4 +255,5 @@ export {
     postWatchItem,
     deleteWatchItem,
     getFeedback,
+    checkUserPassword,
 };

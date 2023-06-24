@@ -5,7 +5,7 @@ import '../styles/global.scss';
 
 const TopTab = props => {
     return (
-        <Box display={props.show ? 'block' : 'none'}>
+        <Box>
             <Flex
                 bg="light.white"
                 w="1020px"

@@ -14,7 +14,7 @@ import {
     Profile,
     CandleStick,
     History,
-    Login,
+    Logout,
     Fund,
     Funding,
     Trading,
@@ -26,7 +26,7 @@ const MainTab = props => {
     const page = props.page;
 
     return (
-        <Box display={props.show ? 'block' : 'none'}>
+        <Box>
             <Flex
                 bg="light.white"
                 shadow={isOpen ? '' : 'mainTab'}
@@ -103,10 +103,11 @@ const MainTab = props => {
                             onClose();
                         }}
                     >
-                        <Login variant="btn" />
+                        <Logout variant="btn" />
                     </NavLink>
                 </Box>
             </Flex>
+
             <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay zIndex={1} display={{ xl: 'none' }} />
                 <DrawerContent shadow="none" borderTopRadius={20}>

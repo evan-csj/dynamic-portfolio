@@ -1,24 +1,65 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     Flex,
     Box,
     Center,
     Input,
+    InputGroup,
+    InputRightElement,
     FormControl,
     FormLabel,
     Button,
     Image,
 } from '@chakra-ui/react';
+import { checkUserPassword } from '../global/axios';
 import logo from '../assets/logo.svg';
 import '../styles/global.scss';
 
 const Login = props => {
+    const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [isUsernameCorrect, setUsernameCorrect] = useState(true);
+    const [isPasswordCorrect, setPasswordCorrect] = useState(true);
+    const [show, setShow] = useState(false);
     const rotateDeg = 25;
     const shiftDis = 20;
 
+    const handleChange = (event, setFc) => {
+        const input = event.target.value;
+        const noSpace = input.replace(' ', '');
+        setFc(noSpace);
+        setUsernameCorrect(true);
+        setPasswordCorrect(true);
+    };
+
+    const handleLogin = async () => {
+        if (username === '' || password === '') return;
+        const response = await checkUserPassword({
+            username: username,
+            password: password,
+        });
+        if (response) {
+            setPasswordCorrect(response.data);
+            if (response.data) {
+                navigate('/profile');
+                props.login(username);
+            }
+        } else {
+            setUsernameCorrect(false);
+        }
+    };
+
     return (
-        <Center h="100vh" w="100vw" pos="relative" overflow="hidden">
+        <Center
+            h="100vh"
+            w="100vw"
+            bg="light.white"
+            pos="relative"
+            overflow="hidden"
+            zIndex="15"
+        >
             <Center w={{ base: '100%', md: '480px' }} data-peer>
                 <Center
                     h="500px"
@@ -39,15 +80,52 @@ const Login = props => {
                         <FormControl>
                             <FormLabel>User ID</FormLabel>
                             <Input
+                                id="username"
+                                value={username}
+                                borderColor={
+                                    isUsernameCorrect
+                                        ? 'light.grey'
+                                        : 'light.red'
+                                }
                                 focusBorderColor="light.yellow"
                                 placeholder="Please enter user ID"
+                                onChange={event =>
+                                    handleChange(event, setUsername)
+                                }
                             ></Input>
                             <Box h="24px" />
                             <FormLabel>Password</FormLabel>
-                            <Input
-                                focusBorderColor="light.yellow"
-                                placeholder="Please enter password"
-                            ></Input>
+                            <InputGroup>
+                                <Input
+                                    fontFamily={
+                                        show || password === ''
+                                            ? 'inherit'
+                                            : 'Roboto'
+                                    }
+                                    borderColor={
+                                        isPasswordCorrect
+                                            ? 'light.grey'
+                                            : 'light.red'
+                                    }
+                                    id="password"
+                                    value={password}
+                                    focusBorderColor="light.yellow"
+                                    type={show ? 'text' : 'password'}
+                                    placeholder="Please enter password"
+                                    onChange={event =>
+                                        handleChange(event, setPassword)
+                                    }
+                                />
+                                <InputRightElement w="64px">
+                                    <Button
+                                        size="sm"
+                                        w="56px"
+                                        onClick={() => setShow(!show)}
+                                    >
+                                        {show ? 'Hide' : 'Show'}
+                                    </Button>
+                                </InputRightElement>
+                            </InputGroup>
                         </FormControl>
                         <Flex
                             w="100%"
@@ -78,6 +156,7 @@ const Login = props => {
                                     color: 'light.black',
                                     borderColor: 'light.navy',
                                 }}
+                                onClick={handleLogin}
                             >
                                 Login
                             </Button>

@@ -57,7 +57,12 @@ app.use('/stat', statRoute);
             openai
                 .createChatCompletion({
                     model: 'gpt-3.5-turbo',
-                    messages: [{ role: 'user', content: text + ' in financial field in 50 words' }],
+                    messages: [
+                        {
+                            role: 'user',
+                            content: text + ' in financial field in 50 words',
+                        },
+                    ],
                 })
                 .then(response => {
                     const gptRes = response.data.choices[0].message.content;

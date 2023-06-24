@@ -42,7 +42,7 @@ const ChatBot = props => {
     });
 
     return (
-        <Box display={props.show ? 'block' : 'none'}>
+        <Box>
             <Box
                 display={isOpen ? 'block' : 'none'}
                 pos="fixed"

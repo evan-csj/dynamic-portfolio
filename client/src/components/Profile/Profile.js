@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Flex,
     Box,
@@ -34,6 +35,7 @@ import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
 
 const Profile = props => {
+    const navigate = useNavigate();
     const [userData, setUserData] = useState(undefined);
     const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
@@ -129,23 +131,27 @@ const Profile = props => {
     }, []);
 
     useEffect(() => {
-        getUser(props.userId).then(response => {
-            const { first_name, last_name, cash_cad, cash_usd, dp } =
-                response.data;
-            const user = {
-                firstName: first_name,
-                lastName: last_name,
-                cashCAD: cash_cad,
-                cashUSD: cash_usd,
-                dp: dp,
-            };
-            setUserData(user);
-        });
-        getHoldings(props.userId).then(response => {
-            const dataObj = convertArray2Dict(response.data);
-            setHoldingList(dataObj);
-            setIsHoldingLoaded(true);
-        });
+        if (props.userId == '') {
+            navigate('/');
+        } else {
+            getUser(props.userId).then(response => {
+                const { first_name, last_name, cash_cad, cash_usd, dp } =
+                    response.data;
+                const user = {
+                    firstName: first_name,
+                    lastName: last_name,
+                    cashCAD: cash_cad,
+                    cashUSD: cash_usd,
+                    dp: dp,
+                };
+                setUserData(user);
+            });
+            getHoldings(props.userId).then(response => {
+                const dataObj = convertArray2Dict(response.data);
+                setHoldingList(dataObj);
+                setIsHoldingLoaded(true);
+            });
+        }
     }, [props.userId]);
 
     useEffect(() => {
