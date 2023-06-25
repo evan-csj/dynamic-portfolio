@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import {
     Heading,
@@ -33,6 +34,8 @@ import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
 
 function Watchlist(props) {
+    const navigate = useNavigate();
+    const [userId, setUserId] = useState(null);
     const [watchlist, setWatchlist] = useState({});
     const [isWatchlistLoaded, setIsWatchlistLoaded] = useState(false);
     const [exRate, setExRate] = useState(1);
@@ -135,8 +138,8 @@ function Watchlist(props) {
                 profile.data;
 
             let newWatchFE = {
-                id: `${props.userId}-${searchTicker}`,
-                user_id: props.userId,
+                id: `${userId}-${searchTicker}`,
+                user_id: userId,
                 logo: logo,
                 ticker: searchTicker,
                 price: currentPrice,
@@ -145,8 +148,8 @@ function Watchlist(props) {
             };
 
             let newWatchBE = {
-                id: `${props.userId}-${searchTicker}`,
-                user_id: props.userId,
+                id: `${userId}-${searchTicker}`,
+                user_id: userId,
                 name: name,
                 exchange: exchange,
                 sector: finnhubIndustry,
@@ -173,7 +176,7 @@ function Watchlist(props) {
         if (ticker in watchlist) {
             delete newWatchlist[ticker];
             setWatchlist(newWatchlist);
-            deleteWatchItem(`${props.userId}-${ticker}`);
+            deleteWatchItem(`${userId}-${ticker}`);
             wsChange('unsubscribe', ticker);
             setListLength(Object.keys(newWatchlist).length);
         }
@@ -181,13 +184,21 @@ function Watchlist(props) {
     };
 
     useEffect(() => {
-        getWatchlist(props.userId).then(response => {
-            const dataObj = convertArray2Dict(response.data);
-            setWatchlist(dataObj);
-            setIsWatchlistLoaded(true);
-            setTicker(response.data[0].ticker);
-        });
-    }, [props.userId]);
+        const username = sessionStorage.getItem('userId');
+        setUserId(username);
+
+        if (username === '') {
+            navigate('/');
+        } else {
+            getWatchlist(username).then(response => {
+                const dataObj = convertArray2Dict(response.data);
+                setWatchlist(dataObj);
+                setIsWatchlistLoaded(true);
+                setTicker(response.data[0].ticker);
+            });
+        }
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         if (isWatchlistLoaded) {

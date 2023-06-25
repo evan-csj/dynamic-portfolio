@@ -36,6 +36,7 @@ import dayjs from 'dayjs';
 
 const Profile = props => {
     const navigate = useNavigate();
+    const [userId, setUserId] = useState(null);
     const [userData, setUserData] = useState(undefined);
     const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
@@ -131,10 +132,13 @@ const Profile = props => {
     }, []);
 
     useEffect(() => {
-        if (props.userId == '') {
+        const username = sessionStorage.getItem('userId');
+        setUserId(username);
+
+        if (username === null) {
             navigate('/');
         } else {
-            getUser(props.userId).then(response => {
+            getUser(username).then(response => {
                 const { first_name, last_name, cash_cad, cash_usd, dp } =
                     response.data;
                 const user = {
@@ -146,13 +150,15 @@ const Profile = props => {
                 };
                 setUserData(user);
             });
-            getHoldings(props.userId).then(response => {
+
+            getHoldings(username).then(response => {
                 const dataObj = convertArray2Dict(response.data);
                 setHoldingList(dataObj);
                 setIsHoldingLoaded(true);
             });
         }
-    }, [props.userId]);
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         if (isHoldingLoaded) {
@@ -424,7 +430,7 @@ const Profile = props => {
                         <Portfolio
                             key={1}
                             user={userData}
-                            userId={props.userId}
+                            userId={userId}
                             changePage={props.changePage}
                         />
                     </TabPanel>

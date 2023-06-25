@@ -43,6 +43,7 @@ const Login = props => {
         if (response) {
             setPasswordCorrect(response.data);
             if (response.data) {
+                sessionStorage.setItem('userId', username);
                 navigate('/profile');
                 props.login(username);
             }
@@ -56,9 +57,10 @@ const Login = props => {
             h="100vh"
             w="100vw"
             bg="light.white"
-            pos="relative"
             overflow="hidden"
             zIndex="15"
+            pos="fixed"
+            top={0}
         >
             <Center w={{ base: '100%', md: '480px' }} data-peer>
                 <Center

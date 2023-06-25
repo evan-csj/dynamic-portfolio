@@ -41,6 +41,7 @@ const FundingForm = props => {
         },
     ];
     const navigate = useNavigate();
+    const [userId, setUserId] = useState(null);
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
     const [amount, setAmount] = useState('');
@@ -89,15 +90,23 @@ const FundingForm = props => {
     const notZero = numberValue <= 0 ? false : true;
 
     useEffect(() => {
-        getUser(props.userId).then(response => {
-            setUserData(response.data);
-        });
-    }, [props.userId]);
+        const username = sessionStorage.getItem('userId');
+        setUserId(username);
+
+        if (username === null) {
+            navigate('/');
+        } else {
+            getUser(username).then(response => {
+                setUserData(response.data);
+            });
+        }
+        // eslint-disable-next-line
+    }, []);
 
     const handleSubmit = () => {
         if (type !== '' && account !== '' && notZero && enoughFund()) {
             const newFunding = {
-                user_id: props.userId,
+                user_id: userId,
                 amount: numberValue,
                 type: type,
                 currency: account,

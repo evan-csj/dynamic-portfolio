@@ -101,6 +101,7 @@ const MainTab = props => {
                         to="/login"
                         onClick={() => {
                             onClose();
+                            sessionStorage.clear();
                         }}
                     >
                         <Logout variant="btn" />
