@@ -21,7 +21,7 @@ import {
 } from '../styles/icons';
 import '../styles/global.scss';
 
-const MainTab = props => {
+const NavBarBot = props => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const page = props.page;
 
@@ -170,4 +170,4 @@ const MainTab = props => {
     );
 };
 
-export default MainTab;
+export default NavBarBot;
