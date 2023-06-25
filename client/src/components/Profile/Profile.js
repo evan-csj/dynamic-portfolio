@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Flex,
     Box,
@@ -34,6 +35,8 @@ import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
 
 const Profile = props => {
+    const navigate = useNavigate();
+    const [userId, setUserId] = useState(null);
     const [userData, setUserData] = useState(undefined);
     const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
@@ -129,24 +132,33 @@ const Profile = props => {
     }, []);
 
     useEffect(() => {
-        getUser(props.userId).then(response => {
-            const { first_name, last_name, cash_cad, cash_usd, dp } =
-                response.data;
-            const user = {
-                firstName: first_name,
-                lastName: last_name,
-                cashCAD: cash_cad,
-                cashUSD: cash_usd,
-                dp: dp,
-            };
-            setUserData(user);
-        });
-        getHoldings(props.userId).then(response => {
-            const dataObj = convertArray2Dict(response.data);
-            setHoldingList(dataObj);
-            setIsHoldingLoaded(true);
-        });
-    }, [props.userId]);
+        const username = sessionStorage.getItem('userId');
+        setUserId(username);
+
+        if (username === null) {
+            navigate('/');
+        } else {
+            getUser(username).then(response => {
+                const { first_name, last_name, cash_cad, cash_usd, dp } =
+                    response.data;
+                const user = {
+                    firstName: first_name,
+                    lastName: last_name,
+                    cashCAD: cash_cad,
+                    cashUSD: cash_usd,
+                    dp: dp,
+                };
+                setUserData(user);
+            });
+
+            getHoldings(username).then(response => {
+                const dataObj = convertArray2Dict(response.data);
+                setHoldingList(dataObj);
+                setIsHoldingLoaded(true);
+            });
+        }
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         if (isHoldingLoaded) {
@@ -418,7 +430,7 @@ const Profile = props => {
                         <Portfolio
                             key={1}
                             user={userData}
-                            userId={props.userId}
+                            userId={userId}
                             changePage={props.changePage}
                         />
                     </TabPanel>

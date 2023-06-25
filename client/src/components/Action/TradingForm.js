@@ -37,6 +37,7 @@ const TradingForm = props => {
         },
     ];
     const navigate = useNavigate();
+    const [userId, setUserId] = useState(null);
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
     const [symbol, setSymbol] = useState('');
@@ -115,7 +116,7 @@ const TradingForm = props => {
             quantity !== ''
         ) {
             const newTrade = {
-                user_id: props.userId,
+                user_id: userId,
                 ticker: symbol,
                 price: currentPrice,
                 shares: Number(quantity),
@@ -167,13 +168,21 @@ const TradingForm = props => {
     }, [holdings, symbol]);
 
     useEffect(() => {
-        getUser(props.userId).then(response => {
-            setUserData(response.data);
-        });
-        getHoldings(props.userId).then(response => {
-            holdings.current = response.data;
-        });
-    }, [props.userId]);
+        const username = sessionStorage.getItem('userId');
+        setUserId(username);
+
+        if (username === null) {
+            navigate('/');
+        } else {
+            getUser(username).then(response => {
+                setUserData(response.data);
+            });
+            getHoldings(username).then(response => {
+                holdings.current = response.data;
+            });
+        }
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         if (lastMessage !== null) {
@@ -272,8 +281,8 @@ const TradingForm = props => {
                 </InputGroup> */}
                 {
                     <FormHelperText>
-                        Current price: ${currentPrice} {currency} / Position: {shares}{' '}
-                        shares
+                        Current price: ${currentPrice} {currency} / Position:{' '}
+                        {shares} shares
                     </FormHelperText>
                 }
                 <Box h={8} />

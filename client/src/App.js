@@ -1,5 +1,3 @@
-// import logo from './logo.svg';
-// import './App.css';
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import MainTab from './components/MainTab';
@@ -10,12 +8,16 @@ import Profile from './components/Profile/Profile';
 import Watchlist from './components/Watchlist/Watchlist';
 import Txn from './components/Transaction/Transaction';
 import ChatBot from './components/ChatBot/ChatBot';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
 import { Box } from '@chakra-ui/react';
 import { getFeedback } from './global/axios';
 
 function App() {
     const navigate = useNavigate();
+    const [username, setUsername] = useState('');
     const [page, setPage] = useState('');
+    const [isLogin, setLogin] = useState(false);
     const [messages, setmessages] = useState([
         {
             message: "Hi! I'm ChatBot",
@@ -55,32 +57,34 @@ function App() {
         }
     };
 
+    const login = username => {
+        setLogin(true);
+        setUsername(username);
+    };
+
     return (
         <>
-            <TopTab />
+            <TopTab page={page} changePage={changePage} />
             <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <Profile userId={'evancheng'} changePage={changePage} />
-                    }
-                />
+                <Route path="/" element={<Login login={login} />} />
+                <Route path="/login" element={<Login login={login} />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route
                     path="/profile"
                     element={
-                        <Profile userId={'evancheng'} changePage={changePage} />
+                        <Profile userId={username} changePage={changePage} />
                     }
                 />
                 <Route
                     path="/watchlist"
-                    element={<Watchlist userId={'evancheng'} />}
+                    element={<Watchlist userId={username} />}
                 />
-                <Route path="/history" element={<Txn userId={'evancheng'} />} />
+                <Route path="/history" element={<Txn userId={username} />} />
                 <Route
                     path="/funding"
                     element={
                         <FundingForm
-                            userId={'evancheng'}
+                            userId={username}
                             changePage={changePage}
                         />
                     }
@@ -89,13 +93,12 @@ function App() {
                     path="/trading"
                     element={
                         <TradingForm
-                            userId={'evancheng'}
+                            userId={username}
                             changePage={changePage}
                         />
                     }
                 />
             </Routes>
-            <Box h={20} />
             <ChatBot messages={messages} addMessage={addMessage} />
             <MainTab page={page} changePage={changePage} />
         </>

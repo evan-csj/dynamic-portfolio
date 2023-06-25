@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Heading,
     Flex,
@@ -15,20 +16,31 @@ import List from '../List';
 import '../../styles/global.scss';
 
 function Transaction(props) {
+    const navigate = useNavigate();
     const [tradingList, setTradingList] = useState([]);
     const [fundingList, setFundingList] = useState([]);
 
     useEffect(() => {
-        getTrading(props.userId).then(response => {
-            setTradingList(response.data);
-        });
-        getFunding(props.userId).then(response => {
-            setFundingList(response.data);
-        });
+        const username = sessionStorage.getItem('userId');
+
+        if (username === null) {
+            navigate('/');
+        } else {
+            getTrading(username).then(response => {
+                setTradingList(response.data);
+            });
+            getFunding(username).then(response => {
+                setFundingList(response.data);
+            });
+        }
+        // eslint-disable-next-line
     }, []);
 
     return (
-        <Flex className="flex-col" fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}>
+        <Flex
+            className="flex-col"
+            fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}
+        >
             <Center
                 bg="light.navy"
                 color="light.white"
@@ -36,7 +48,9 @@ function Transaction(props) {
                 borderBottomColor="light.yellow"
                 borderBottomWidth={4}
             >
-                <Heading size={{ base: 'md', lg: 'lg' }}>Transaction History</Heading>
+                <Heading size={{ base: 'md', lg: 'lg' }}>
+                    Transaction History
+                </Heading>
             </Center>
             <Tabs
                 isFitted
