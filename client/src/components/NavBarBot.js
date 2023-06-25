@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
     Text,
@@ -23,7 +23,12 @@ import '../styles/global.scss';
 
 const NavBarBot = props => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const page = props.page;
+    const [navSelect, setNavSelect] = useState(undefined);
+
+    useEffect(() => {
+        const pathname = window.location.pathname;
+        if (pathname[0] === '/') setNavSelect(pathname.split('/')[1]);
+    });
 
     return (
         <Box>
@@ -41,7 +46,9 @@ const NavBarBot = props => {
                 zIndex={10}
             >
                 <Box
-                    color={page === 'profile' ? 'light.yellow' : 'light.black'}
+                    color={
+                        navSelect === 'profile' ? 'light.yellow' : 'light.black'
+                    }
                     _hover={{ color: 'light.yellow' }}
                 >
                     <NavLink
@@ -56,7 +63,9 @@ const NavBarBot = props => {
                 </Box>
                 <Box
                     color={
-                        page === 'watchlist' ? 'light.yellow' : 'light.black'
+                        navSelect === 'watchlist'
+                            ? 'light.yellow'
+                            : 'light.black'
                     }
                     _hover={{ color: 'light.yellow' }}
                 >
@@ -72,7 +81,7 @@ const NavBarBot = props => {
                 </Box>
                 <Box
                     color={
-                        page === 'trading' || page === 'funding'
+                        navSelect === 'trading' || navSelect === 'funding'
                             ? 'light.yellow'
                             : 'light.black'
                     }
@@ -82,7 +91,9 @@ const NavBarBot = props => {
                 </Box>
 
                 <Box
-                    color={page === 'history' ? 'light.yellow' : 'light.black'}
+                    color={
+                        navSelect === 'history' ? 'light.yellow' : 'light.black'
+                    }
                     _hover={{ color: 'light.yellow' }}
                 >
                     <NavLink
