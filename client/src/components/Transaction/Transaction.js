@@ -92,7 +92,7 @@ function Transaction(props) {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            <Box h={20} />
+            <Box h={48} />
         </Flex>
     );
 }
