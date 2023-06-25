@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import MainTab from './components/MainTab';
-import TopTab from './components/TopTab';
+import NavBarBot from './components/NavBarBot';
+import NavBarTop from './components/NavBarTop';
 import FundingForm from './components/Action/FundingForm';
 import TradingForm from './components/Action/TradingForm';
 import Profile from './components/Profile/Profile';
@@ -46,6 +46,7 @@ function App() {
                     const intent = response.data.intent.split('.');
                     if (intent[0] === 'nav') {
                         navigate(`/${intent[1]}`);
+                        setPage(`${intent[1]}`);
                     }
                 })
                 .catch(_error => {
@@ -64,7 +65,7 @@ function App() {
 
     return (
         <>
-            <TopTab page={page} changePage={changePage} />
+            <NavBarTop page={page} changePage={changePage} />
             <Routes>
                 <Route path="/" element={<Login login={login} />} />
                 <Route path="/login" element={<Login login={login} />} />
@@ -100,7 +101,7 @@ function App() {
                 />
             </Routes>
             <ChatBot messages={messages} addMessage={addMessage} />
-            <MainTab page={page} changePage={changePage} />
+            <NavBarBot page={page} changePage={changePage} />
         </>
     );
 }

@@ -4,10 +4,7 @@
     "data": [
         {
             "intent": "agent.acquaintance",
-            "utterances": [
-                "describe yourself",
-                "who are you"
-            ],
+            "utterances": ["describe yourself", "who are you"],
             "answers": [
                 "I'm a Chatbot",
                 "I'm a Trading GPT",
@@ -16,11 +13,7 @@
         },
         {
             "intent": "agent.boss",
-            "utterances": [
-                "master",
-                "boss",
-                "creater"
-            ],
+            "utterances": ["master", "boss", "creater"],
             "answers": [
                 "My boss is Evan",
                 "My master is Evan",
@@ -30,10 +23,7 @@
         },
         {
             "intent": "agent.hobby",
-            "utterances": [
-                "hobbies",
-                "hobby"
-            ],
+            "utterances": ["hobbies", "hobby"],
             "answers": ["I love coding", "I love programming"]
         },
         {
@@ -55,12 +45,7 @@
         },
         {
             "intent": "nav.profile",
-            "utterances": [
-                "profile",
-                "balance",
-                "holdings",
-                "home"
-            ],
+            "utterances": ["profile", "balance", "holdings", "home"],
             "answers": ["Here is profile page"]
         },
         {
@@ -75,27 +60,17 @@
         },
         {
             "intent": "nav.trading",
-            "utterances": [
-                "buy stocks",
-                "sell stocks",
-                "trade"
-            ],
+            "utterances": ["buy stocks", "sell stocks", "trade", "trading"],
             "answers": ["Here is trading page"]
         },
         {
             "intent": "nav.funding",
-            "utterances": [
-                "deposit",
-                "withdraw"
-            ],
+            "utterances": ["deposit", "withdraw", "funding", "fund"],
             "answers": ["Here is funding page"]
         },
         {
             "intent": "nav.history",
-            "utterances": [
-                "trading history",
-                "funding history"
-            ],
+            "utterances": ["trading history", "funding history"],
             "answers": ["Here is history page"]
         },
         {

@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Flex, Box } from '@chakra-ui/react';
 import '../styles/global.scss';
 
-const TopTab = props => {
+const NavBarTop = props => {
     return (
         <Box>
             <Flex
@@ -42,4 +42,4 @@ const TopTab = props => {
     );
 };
 
-export default TopTab;
+export default NavBarTop;
