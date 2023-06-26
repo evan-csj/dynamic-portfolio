@@ -53,7 +53,7 @@ const ChatBot = props => {
                 w={{ base: '100%', lg: '300px' }}
                 boxShadow="xl"
                 borderRadius="12px"
-                zIndex={{ base: '12', lg: '1' }}
+                zIndex='12'
             >
                 <Box
                     pos="relative"

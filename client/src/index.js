@@ -11,7 +11,7 @@ import '@fontsource/jost';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     // <React.StrictMode>
-    <ChakraProvider theme={theme} portalZIndex={5}>
+    <ChakraProvider theme={theme} portalZIndex={1}>
         <BrowserRouter>
             <App />
         </BrowserRouter>

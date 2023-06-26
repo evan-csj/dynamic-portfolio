@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
     Flex,
@@ -58,7 +58,7 @@ const Login = props => {
             w="100vw"
             bg="light.white"
             overflow="hidden"
-            zIndex="15"
+            zIndex="20"
             pos="fixed"
             top={0}
         >
