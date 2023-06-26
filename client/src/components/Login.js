@@ -122,7 +122,18 @@ const Login = props => {
                                     <Button
                                         size="sm"
                                         w="56px"
-                                        onClick={() => setShow(!show)}
+                                        bg="light.black"
+                                        color="light.white"
+                                        borderWidth="2px"
+                                        borderStyle="solid"
+                                        borderColor="light.black"
+                                        _hover={{}}
+                                        _active={{
+                                            bg: 'light.white',
+                                            color: 'light.black',
+                                        }}
+                                        onMouseDown={() => setShow(true)}
+                                        onMouseUp={() => setShow(false)}
                                     >
                                         {show ? 'Hide' : 'Show'}
                                     </Button>
