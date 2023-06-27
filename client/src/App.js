@@ -10,17 +10,15 @@ import Txn from './components/Transaction/Transaction';
 import ChatBot from './components/ChatBot/ChatBot';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
-import { Box } from '@chakra-ui/react';
 import { getFeedback } from './global/axios';
 
 function App() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [page, setPage] = useState('');
-    const [isLogin, setLogin] = useState(false);
     const [messages, setmessages] = useState([
         {
-            message: "Hi! I'm ChatBot",
+            message: "Hi! I'm an AI ChatBot",
             sender: 'Bot',
         },
         {
@@ -31,6 +29,10 @@ function App() {
 
     const changePage = path => {
         setPage(path);
+    };
+
+    const login = username => {
+        setUsername(username);
     };
 
     const addMessage = (text, sender) => {
@@ -56,11 +58,6 @@ function App() {
                     ]);
                 });
         }
-    };
-
-    const login = username => {
-        setLogin(true);
-        setUsername(username);
     };
 
     return (

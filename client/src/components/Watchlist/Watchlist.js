@@ -48,7 +48,9 @@ function Watchlist(props) {
     const symbolOptions = useRef([]);
 
     const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+    const [socketUrl, setSocketUrl] = useState(
+        `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
+    );
     const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
         onOpen: () => console.log('Link Start'),
         shouldReconnect: closeEvent => true,
