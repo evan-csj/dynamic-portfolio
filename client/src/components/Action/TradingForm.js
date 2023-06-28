@@ -88,6 +88,7 @@ const TradingForm = props => {
         setSymbol(selected.value);
         if (symbol !== '') wsChange('unsubscribe', symbol);
         wsChange('subscribe', selected.value);
+        setSubscribe([selected.value]);
     };
 
     // const handleSymbolChange = event => {
