@@ -123,7 +123,8 @@ const Profile = props => {
     const convertArray2Dict = array => {
         let dict = {};
         for (const item of array) {
-            dict[item.ticker] = item;
+            if (item.buy_shares - item.sell_shares > 0)
+                dict[item.ticker] = item;
         }
         return dict;
     };
