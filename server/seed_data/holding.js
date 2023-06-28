@@ -9,8 +9,8 @@ module.exports = [
     {
         user_id: 'evancheng',
         ticker: 'NVDA',
-        avg_price: 160,
-        buy_shares: 1.2,
+        avg_price: 200,
+        buy_shares: 2,
         sell_shares: 0,
     },
 ];

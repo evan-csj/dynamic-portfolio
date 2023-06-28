@@ -58,7 +58,6 @@ const Profile = props => {
         setSubscribe(keyList);
         for (const symbol of keyList) {
             sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
-            console.log('sub:', symbol);
         }
     };
 

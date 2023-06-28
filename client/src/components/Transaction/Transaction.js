@@ -21,6 +21,7 @@ function Transaction(props) {
     const [fundingList, setFundingList] = useState([]);
 
     useEffect(() => {
+        props.unsubscribeAll();
         const username = sessionStorage.getItem('userId');
 
         if (username === null) {

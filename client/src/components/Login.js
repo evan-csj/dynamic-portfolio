@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
     Flex,
@@ -51,6 +51,10 @@ const Login = props => {
             setUsernameCorrect(false);
         }
     };
+
+    useEffect(() => {
+        props.unsubscribeAll();
+    }, []);
 
     return (
         <Center
@@ -146,7 +150,7 @@ const Login = props => {
                             justifyContent="space-between"
                             alignItems="center"
                         >
-                            <Button
+                            {/* <Button
                                 flex="1"
                                 color="light.navy"
                                 borderColor="light.navy"
@@ -156,7 +160,7 @@ const Login = props => {
                                 _hover={{ bg: 'light.silver' }}
                             >
                                 <NavLink to={'/signup'}>Sign Up</NavLink>
-                            </Button>
+                            </Button> */}
                             <Button
                                 flex="1"
                                 color="light.white"

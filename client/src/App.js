@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import NavBarBot from './components/NavBarBot';
 import NavBarTop from './components/NavBarTop';
@@ -33,6 +33,7 @@ function App() {
     const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
         onOpen: () => console.log('Link Start'),
         onClose: () => console.log('You Lost'),
+        shouldReconnect: closeEvent => true,
     });
 
     const changePage = path => {
@@ -48,7 +49,6 @@ function App() {
             sendMessage(
                 JSON.stringify({ type: 'unsubscribe', symbol: symbol })
             );
-            console.log('unsub:', symbol);
         }
     };
 
@@ -77,12 +77,35 @@ function App() {
         }
     };
 
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            if (type === 'trade') {
+                const data = json.data;
+                const price = data[0].p;
+                const symbol = data[0].s;
+                console.log(symbol, price);
+            }
+        }
+    }, [lastMessage]);
+
     return (
         <>
             <NavBarTop page={page} changePage={changePage} />
             <Routes>
-                <Route path="/" element={<Login login={login} />} />
-                <Route path="/login" element={<Login login={login} />} />
+                <Route
+                    path="/"
+                    element={
+                        <Login login={login} unsubscribeAll={unsubscribeAll} />
+                    }
+                />
+                <Route
+                    path="/login"
+                    element={
+                        <Login login={login} unsubscribeAll={unsubscribeAll} />
+                    }
+                />
                 <Route path="/signup" element={<SignUp />} />
                 <Route
                     path="/profile"
@@ -109,13 +132,22 @@ function App() {
                         />
                     }
                 />
-                <Route path="/history" element={<Txn userId={username} />} />
+                <Route
+                    path="/history"
+                    element={
+                        <Txn
+                            userId={username}
+                            unsubscribeAll={unsubscribeAll}
+                        />
+                    }
+                />
                 <Route
                     path="/funding"
                     element={
                         <FundingForm
                             userId={username}
                             changePage={changePage}
+                            unsubscribeAll={unsubscribeAll}
                         />
                     }
                 />
