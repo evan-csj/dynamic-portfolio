@@ -31,7 +31,7 @@ import {
     putSymbolInfo,
 } from '../../global/axios';
 import '../../styles/global.scss';
-import useWebSocket from 'react-use-websocket';
+// import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
 
 const Profile = props => {
@@ -43,18 +43,22 @@ const Profile = props => {
     const [isPriceLoaded, setIsPriceLoaded] = useState(false);
     const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
+    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
-    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-        onOpen: () => console.log('Link Start'),
-        shouldReconnect: closeEvent => true,
-    });
+    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+    //     onOpen: () => console.log('Link Start'),
+    //     shouldReconnect: closeEvent => true,
+    // });
 
     const wsInitial = () => {
+        unsubscribeAll();
         const keyList = Object.keys(holdingList);
+        setSubscribe(keyList);
         for (const symbol of keyList) {
             sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
+            console.log('sub:', symbol);
         }
     };
 
