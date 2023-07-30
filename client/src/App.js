@@ -77,18 +77,18 @@ function App() {
         }
     };
 
-    useEffect(() => {
-        if (lastMessage !== null) {
-            const json = JSON.parse(lastMessage.data);
-            const type = json.type;
-            if (type === 'trade') {
-                const data = json.data;
-                const price = data[0].p;
-                const symbol = data[0].s;
-                console.log(symbol, price);
-            }
-        }
-    }, [lastMessage]);
+    // useEffect(() => {
+    //     if (lastMessage !== null) {
+    //         const json = JSON.parse(lastMessage.data);
+    //         const type = json.type;
+    //         if (type === 'trade') {
+    //             const data = json.data;
+    //             const price = data[0].p;
+    //             const symbol = data[0].s;
+    //             console.log(symbol, price);
+    //         }
+    //     }
+    // }, [lastMessage]);
 
     return (
         <>
