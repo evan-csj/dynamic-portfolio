@@ -13,6 +13,8 @@ import SignUp from './components/SignUp';
 import { getFeedback } from './global/axios';
 import useWebSocket from 'react-use-websocket';
 
+//some changes
+
 function App() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
