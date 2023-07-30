@@ -19,7 +19,7 @@ function PortfolioItem(props) {
     const [showTooltip, setShowTooltip] = useState(false);
 
     return (
-        <Grid className="grid-portfolio">
+        <Grid className="grid-portfolio" zIndex='1'>
             <GridItem fontWeight="bold">{ticker}</GridItem>
             <GridItem>
                 <Slider
@@ -51,13 +51,16 @@ function PortfolioItem(props) {
                         isOpen={showTooltip}
                         label={`${sliderValue}%`}
                     >
-                        <SliderThumb />
+                        <SliderThumb borderColor="light.yellow" borderWidth='2px'/>
                     </Tooltip>
                 </Slider>
             </GridItem>
             <GridItem textAlign="right">{pct}%</GridItem>
             <GridItem textAlign="right">
-                <CloseIcon cursor="pointer" onClick={() => props.delete(ticker)} />
+                <CloseIcon
+                    cursor="pointer"
+                    onClick={() => props.delete(ticker)}
+                />
             </GridItem>
         </Grid>
     );

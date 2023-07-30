@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 // import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -10,9 +11,11 @@ import '@fontsource/jost';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     // <React.StrictMode>
-        <ChakraProvider theme={theme} portalZIndex={5}>
+    <ChakraProvider theme={theme} portalZIndex={1}>
+        <BrowserRouter>
             <App />
-        </ChakraProvider>
+        </BrowserRouter>
+    </ChakraProvider>
     // </React.StrictMode>
 );
 

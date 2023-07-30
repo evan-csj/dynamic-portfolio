@@ -6,15 +6,15 @@ module.exports = [
         shares: 1,
         type: 'buy',
         order_status: 'approved',
-        currency: 'usd',
+        currency: 'USD',
     },
     {
         user_id: 'evancheng',
         ticker: 'NVDA',
         price: 200,
-        shares: 0.5,
+        shares: 2,
         type: 'buy',
         order_status: 'approved',
-        currency: 'usd',
+        currency: 'USD',
     },
 ];

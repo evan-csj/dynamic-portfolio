@@ -1,67 +1,76 @@
 const knex = require('knex')(require('../knexfile'));
-const priceController = require('./priceController');
+const dayjs = require('dayjs');
 
 const getWatchlist = async (req, res) => {
     const userId = req.params.userId;
     const watchlist = await knex('watchlist')
-        .select('id', 'user_id', 'ticker', 'price', 'currency')
+        .join('symbol', { 'symbol.symbol': 'watchlist.ticker' })
+        .select(
+            'watchlist.id',
+            'user_id',
+            'ticker',
+            'logo',
+            'price',
+            'prev_close',
+            'currency',
+            'updated_at'
+        )
         .where({ user_id: userId });
 
-    if (!watchlist) return res.status(400).json({ error: `User with id ${userId} not found` });
+    if (!watchlist)
+        return res
+            .status(400)
+            .json({ error: `User with id ${userId} not found` });
 
     return res.status(200).json(watchlist);
 };
 
-const getRTWatchlist = async (req, res) => {
-    const userId = req.params.userId;
-
-    try {
-        const watchlist = await knex('watchlist')
-            .select('id', 'user_id', 'ticker', 'price', 'currency')
-            .where({ user_id: userId });
-
-        if (!watchlist) return res.status(400).json({ error: `User with id ${userId} not found` });
-
-        const promises = watchlist.map(item => {
-            return priceController.getRTPrice(item.ticker);
-        });
-
-        Promise.allSettled(promises)
-            .then(response => {
-                const watchlistWithRTPrice = watchlist.map((item, index) => {
-                    item['price'] = response[index].value.price;
-                    return item;
-                });
-                return res.status(200).json(watchlistWithRTPrice);
-            })
-            .catch(_err => {
-                return res.status(429).json({ error: 'Some promises fail' });
-            });
-
-    } catch (error) {
-        return res.status(500).json({ error: 'Something went wrong' });
-    }
-};
-
 const addWatchItem = async (req, res) => {
-    const { user_id: userId, currency, price, ticker } = req.body;
+    const {
+        id,
+        user_id: userId,
+        ticker,
+        name,
+        exchange,
+        sector,
+        logo,
+        price,
+        prev_close,
+        currency,
+    } = req.body;
+
     const newWatchItem = {
-        id: `${userId}-${ticker}`,
+        id: id,
         user_id: userId,
         ticker: ticker,
-        price: price,
-        currency: currency,
     };
 
-    const watchlistItem = await knex('watchlist')
-        .where({ user_id: userId })
-        .andWhere({ ticker: ticker });
+    const updateStockInfo = {
+        name: name,
+        exchange: exchange,
+        sector: sector,
+        logo: logo,
+        price: price,
+        prev_close: prev_close,
+        currency: currency,
+        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    };
 
-    if (watchlistItem.length !== 0) {
-        return res.status(400).json({ error: `${ticker} already existed in ${userId} watchlist` });
-    } else {
-        await knex('watchlist').insert(newWatchItem);
-        return res.status(200).json(newWatchItem);
+    try {
+        await knex('symbol').update(updateStockInfo).where({ symbol: ticker });
+
+        const watchlistItem = await knex('watchlist').where({ id: id });
+
+        if (watchlistItem.length !== 0) {
+            return res.status(400).json({
+                error: `${ticker} already existed in ${userId} watchlist`,
+            });
+        } else {
+            await knex('watchlist').insert(newWatchItem);
+            return res.status(200).json(newWatchItem);
+        }
+    } catch (error) {
+        return res.status(500).json({ error: 'Something went wrong' });
     }
 };
 
@@ -74,10 +83,14 @@ const deleteWatchItem = async (req, res) => {
     } else {
         const { user_id: userId, ticker } = watchlistItem[0];
         await knex('watchlist').where({ id: itemId }).del();
-        return res
-            .status(200)
-            .json({ message: `${ticker} has been deleted from ${userId} watchlist` });
+        return res.status(200).json({
+            message: `${ticker} has been deleted from ${userId} watchlist`,
+        });
     }
 };
 
-module.exports = { getWatchlist, getRTWatchlist, addWatchItem, deleteWatchItem };
+module.exports = {
+    getWatchlist,
+    addWatchItem,
+    deleteWatchItem,
+};

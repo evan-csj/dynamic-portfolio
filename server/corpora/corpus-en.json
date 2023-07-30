@@ -1,0 +1,87 @@
+{
+    "name": "Corpus",
+    "locale": "en-US",
+    "data": [
+        {
+            "intent": "agent.acquaintance",
+            "utterances": ["describe yourself", "who are you"],
+            "answers": [
+                "I'm a Chatbot",
+                "I'm a Trading GPT",
+                "I'm your trading assistant"
+            ]
+        },
+        {
+            "intent": "agent.boss",
+            "utterances": ["master", "boss", "creater"],
+            "answers": [
+                "My boss is Evan",
+                "My master is Evan",
+                "Evan developed me",
+                "Evan created me"
+            ]
+        },
+        {
+            "intent": "agent.hobby",
+            "utterances": ["hobbies", "hobby"],
+            "answers": ["I love coding", "I love programming"]
+        },
+        {
+            "intent": "user.quote",
+            "utterances": [
+                "advice",
+                "wealth code",
+                "fortune password",
+                "money secret",
+                "rich key",
+                "financial success",
+                "wealthy key code"
+            ],
+            "answers": [
+                "Be fearful when others are greedy and be greed when others are fearful -- Warren Buffett",
+                "Know what you own and know why you own it -- Peter Lynch",
+                "Take a simple idea and take it seriously -- Charlie Munger"
+            ]
+        },
+        {
+            "intent": "nav.profile",
+            "utterances": ["profile", "balance", "holdings", "home"],
+            "answers": ["Here is profile page"]
+        },
+        {
+            "intent": "nav.watchlist",
+            "utterances": [
+                "candlestick chart",
+                "watchlist",
+                "statistics",
+                "stat"
+            ],
+            "answers": ["Here is watchlist page"]
+        },
+        {
+            "intent": "nav.trading",
+            "utterances": ["buy stocks", "sell stocks", "trade", "trading"],
+            "answers": ["Here is trading page"]
+        },
+        {
+            "intent": "nav.funding",
+            "utterances": ["deposit", "withdraw", "funding", "fund"],
+            "answers": ["Here is funding page"]
+        },
+        {
+            "intent": "nav.history",
+            "utterances": ["trading history", "funding history"],
+            "answers": ["Here is history page"]
+        },
+        {
+            "intent": "None",
+            "utterances": [
+                "I need advice",
+                "I need some advice",
+                "can you give me some advice?",
+                "what should I do?"
+            ],
+            "answers": ["Sorry, I don't understand"]
+        }
+    ]
+}

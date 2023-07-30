@@ -46,12 +46,14 @@
     padding: 4 * $unit;
 }
 
-.grid2 {
+.grid-watch {
     border-color: $light-grey;
     border-width: 0 0 1px;
     grid-template-rows: repeat(1, 1fr);
-    grid-template-columns: repeat(2, 1fr) 50px;
-    padding: 4 * $unit;
+    grid-template-columns: auto repeat(2, 1fr) auto;
+    align-items: center;
+    gap: 4 * $unit;
+    // padding: 4 * $unit;
 }
 
 .grid-portfolio {
@@ -64,4 +66,42 @@
 
 .nav-link:focus {
     outline: none;
+}
+
+.bounce-box {
+    &:hover {
+        .close {
+            animation: bounce 1s infinite;
+        }
+    }
+}
+
+@keyframes bounce {
+    0% {
+        bottom: 0px;
+        height: 55px;
+        animation-timing-function: ease-in;
+    }
+    10% {
+        bottom: 2px;
+        height: 60px;
+        animation-timing-function: ease-out;
+    }
+    40% {
+        bottom: 10px;
+        animation-timing-function: ease-in;
+    }
+    45% {
+        bottom: 10px;
+        animation-timing-function: ease-out;
+    }
+    50% {
+        bottom: 10px;
+        animation-timing-function: ease-in;
+    }
+    95% {
+        bottom: 1px;
+        height: 60px;
+        animation-timing-function: ease-in;
+    }
 }

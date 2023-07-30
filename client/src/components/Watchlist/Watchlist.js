@@ -1,59 +1,233 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import {
     Heading,
     Flex,
     Box,
     Center,
-    Tabs,
-    TabList,
-    Tab,
     FormControl,
     FormHelperText,
+    Tabs,
+    TabList,
+    TabPanels,
+    Tab,
+    TabPanel,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
     getWatchlist,
     getPriceHistory,
-    getRTWatchlist,
+    getLastPrice,
     getCurrency,
     getSymbols,
-    getRTPrice,
     postWatchItem,
     deleteWatchItem,
+    getCompanyProfile,
+    putSymbolPrice,
 } from '../../global/axios';
 import CandleStick from './CandleStick';
-import List from '../List';
+import Statistics from './Statistics';
+import ObjList from '../ObjList';
 import '../../styles/global.scss';
+// import useWebSocket from 'react-use-websocket';
+import dayjs from 'dayjs';
 
 function Watchlist(props) {
-    const [watchlist, setWatchlist] = useState([]);
-    const [watchlistRT, setWatchlistRT] = useState([]);
-    const [exRate, setExRate] = useState(0);
+    const navigate = useNavigate();
+    const [userId, setUserId] = useState(null);
+    const [watchlist, setWatchlist] = useState({});
+    const [isWatchlistLoaded, setIsWatchlistLoaded] = useState(false);
+    const [exRate, setExRate] = useState(1);
     const [candlestickData, setCandleStickData] = useState([]);
     const [chartScale, setChartScale] = useState('1Y');
     const [ticker, setTicker] = useState('');
     const [existing, setExising] = useState(false);
     const [searchTicker, setSearchTicker] = useState('');
+    const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
+    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
+
+    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    // const [socketUrl, setSocketUrl] = useState(
+    //     `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
+    // );
+    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+    //     onOpen: () => console.log('Link Start'),
+    //     shouldReconnect: closeEvent => true,
+    // });
+
+    const wsInitial = () => {
+        unsubscribeAll();
+        const keyList = Object.keys(watchlist);
+        setSubscribe(keyList);
+        for (const symbol of keyList) {
+            sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
+        }
+    };
+
+    const wsChange = useCallback(
+        (type, symbol) => {
+            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+        },
+        [sendMessage]
+    );
+
+    const updateWatchlist = async () => {
+        if (isWatchlistLoaded) {
+            let newWatchlist = {};
+            const keyList = Object.keys(watchlist);
+            for (let i = 0; i < keyList.length; i++) {
+                const ticker = keyList[i];
+                const watchItem = watchlist[ticker];
+                const diff = dayjs().diff(dayjs(watchItem.updated_at), 's');
+
+                if (diff > 60 || watchItem.price === 0) {
+                    const quote = await getLastPrice(ticker);
+                    const { c: currentPrice, pc: previousClose } = quote.data;
+                    watchItem.price = currentPrice;
+                    watchItem.prev_close = previousClose;
+                    await putSymbolPrice({
+                        symbol: ticker,
+                        price: currentPrice,
+                        prevClose: previousClose,
+                    });
+                }
+
+                newWatchlist[ticker] = watchItem;
+            }
+            setWatchlist(newWatchlist);
+        }
+    };
+
+    const updatePrice = (symbol, price) => {
+        let newWatchlist = { ...watchlist };
+        if (symbol in watchlist) {
+            newWatchlist[symbol].price = price;
+        }
+        setWatchlist(newWatchlist);
+    };
+
+    const convertArray2Dict = array => {
+        let dict = {};
+        for (const item of array) {
+            dict[item.ticker] = item;
+        }
+        return dict;
+    };
+
+    const changeTicker = symbol => {
+        setTicker(symbol);
+    };
+
+    const changeScale = scale => {
+        setChartScale(scale);
+    };
+
+    const findTicker = selected => {
+        setSearchTicker(selected.value);
+        if (selected.value in watchlist) {
+            setExising(true);
+        } else {
+            setExising(false);
+        }
+        return;
+    };
+
+    const addTicker = async () => {
+        if (searchTicker !== '' && !existing) {
+            const quote = await getLastPrice(searchTicker);
+            const profile = await getCompanyProfile(searchTicker);
+            const { c: currentPrice, pc: prevClose } = quote.data;
+            const { logo, name, exchange, finnhubIndustry, currency } =
+                profile.data;
+
+            let newWatchFE = {
+                id: `${userId}-${searchTicker}`,
+                user_id: userId,
+                logo: logo,
+                ticker: searchTicker,
+                price: currentPrice,
+                prev_close: prevClose,
+                currency: currency,
+            };
+
+            let newWatchBE = {
+                id: `${userId}-${searchTicker}`,
+                user_id: userId,
+                name: name,
+                exchange: exchange,
+                sector: finnhubIndustry,
+                logo: logo,
+                ticker: searchTicker,
+                price: currentPrice,
+                prev_close: prevClose,
+                currency: currency,
+            };
+
+            let newWatchlist = { ...watchlist };
+            newWatchlist[searchTicker] = newWatchFE;
+            setWatchlist(newWatchlist);
+            setTicker(searchTicker);
+            await postWatchItem(newWatchBE);
+            setSearchTicker('');
+            wsChange('subscribe', searchTicker);
+            setListLength(Object.keys(newWatchlist).length);
+            setSubscribe(Object.keys(newWatchlist));
+        }
+    };
+
+    const deleteItem = ticker => {
+        let newWatchlist = { ...watchlist };
+        if (ticker in watchlist) {
+            delete newWatchlist[ticker];
+            setWatchlist(newWatchlist);
+            deleteWatchItem(`${userId}-${ticker}`);
+            wsChange('unsubscribe', ticker);
+            setListLength(Object.keys(newWatchlist).length);
+            setSubscribe(Object.keys(newWatchlist));
+        }
+        return;
+    };
 
     useEffect(() => {
-        getWatchlist(props.userId).then(response => {
-            setWatchlist(response.data);
-            setTicker(response.data[0].ticker);
-        });
+        const username = sessionStorage.getItem('userId');
+        setUserId(username);
 
-        const watchlist = getRTWatchlist(props.userId);
-        const exchangeRate = getCurrency();
+        if (username === '') {
+            navigate('/');
+        } else {
+            getWatchlist(username).then(response => {
+                const dataObj = convertArray2Dict(response.data);
+                setWatchlist(dataObj);
+                setIsWatchlistLoaded(true);
+                setTicker(response.data[0].ticker);
+            });
+        }
+        // eslint-disable-next-line
+    }, []);
 
-        Promise.allSettled([watchlist, exchangeRate]).then(response => {
-            const watchlistRes = response[0].value.data;
-            const USD2CAD = response[1].value.data;
+    useEffect(() => {
+        if (isWatchlistLoaded) {
+            updateWatchlist();
+            wsInitial();
+        }
+        // eslint-disable-next-line
+    }, [isWatchlistLoaded]);
 
-            setWatchlistRT(watchlistRes);
-            setExRate(USD2CAD);
-        });
-    }, [props.userId]);
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            if (type === 'trade') {
+                const data = json.data;
+                const price = data[0].p;
+                const symbol = data[0].s;
+                updatePrice(symbol, price);
+            }
+        }
+        // eslint-disable-next-line
+    }, [lastMessage]);
 
     useEffect(() => {
         getSymbols().then(response => {
@@ -72,8 +246,17 @@ function Watchlist(props) {
         if (ticker === '') return;
         getPriceHistory(ticker, chartScale).then(response => {
             if (response.data.s !== 'ok') return;
-            const { c: close, h: high, l: low, o: open, t: time, v: volume } = response.data;
-            const lengths = [time, close, high, low, open, volume].map(arr => arr.length);
+            const {
+                c: close,
+                h: high,
+                l: low,
+                o: open,
+                t: time,
+                v: volume,
+            } = response.data;
+            const lengths = [time, close, high, low, open, volume].map(
+                arr => arr.length
+            );
             const isSame = lengths.every(len => len === lengths[0]);
             if (!isSame) return;
 
@@ -92,55 +275,11 @@ function Watchlist(props) {
         });
     }, [ticker, chartScale]);
 
-    const changeTicker = symbol => {
-        setTicker(symbol);
-    };
-
-    const changeScale = scale => {
-        setChartScale(scale);
-    };
-
-    const findTicker = selected => {
-        setSearchTicker(selected.value);
-        for (let i = 0; i < watchlistRT.length; i++) {
-            if (watchlistRT[i].ticker === selected.value) {
-                setExising(true);
-                return;
-            }
-        }
-        setExising(false);
-        return;
-    };
-
-    const addTicker = async () => {
-        if (searchTicker !== '' && !existing) {
-            const response = await getRTPrice(searchTicker);
-            const priceRT = response.data.price;
-            let newItem = {
-                id: `${props.userId}-${searchTicker}`,
-                user_id: props.userId,
-                ticker: searchTicker,
-                price: priceRT,
-                currency: 'usd',
-            };
-            const newWatchlistRT = [...watchlistRT, newItem];
-            setWatchlistRT(newWatchlistRT);
-            await postWatchItem(newItem);
-            setSearchTicker('');
-        }
-    };
-
-    const deleteItem = ticker => {
-        let newWatchlistRT = [];
-        for (let i = 0; i < watchlistRT.length; i++) {
-            if (watchlistRT[i].ticker !== ticker) newWatchlistRT.push(watchlistRT[i]);
-        }
-        setWatchlistRT(newWatchlistRT);
-        deleteWatchItem(`${props.userId}-${ticker}`);
-    };
-
     return (
-        <Flex className="flex-col" fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}>
+        <Flex
+            className="flex-col"
+            fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}
+        >
             <Center
                 bg="light.navy"
                 color="light.white"
@@ -148,7 +287,9 @@ function Watchlist(props) {
                 borderBottomColor="light.yellow"
                 borderBottomWidth={4}
             >
-                <Heading size={{ base: 'md', lg: 'lg' }}>{ticker || 'Watchlist'}</Heading>
+                <Heading size={{ base: 'md', lg: 'lg' }}>
+                    {ticker || 'Watchlist'}
+                </Heading>
             </Center>
 
             <Box
@@ -157,7 +298,9 @@ function Watchlist(props) {
                 w={{ xl: '1020px' }}
                 pt={4}
             >
-                <CandleStick data={candlestickData.length > 0 ? candlestickData : []}></CandleStick>
+                <CandleStick
+                    data={candlestickData.length > 0 ? candlestickData : []}
+                ></CandleStick>
             </Box>
             <Tabs
                 variant="unstyled"
@@ -173,7 +316,10 @@ function Watchlist(props) {
                         mx={4}
                         borderBottom="2px"
                         borderBottomColor="light.white"
-                        _selected={{ color: 'light.blue', borderBottomColor: 'light.blue' }}
+                        _selected={{
+                            color: 'light.blue',
+                            borderBottomColor: 'light.blue',
+                        }}
                         onClick={() => changeScale('1Y')}
                     >
                         1Y
@@ -183,7 +329,10 @@ function Watchlist(props) {
                         mx={4}
                         borderBottom="2px"
                         borderBottomColor="light.white"
-                        _selected={{ color: 'light.blue', borderBottomColor: 'light.blue' }}
+                        _selected={{
+                            color: 'light.blue',
+                            borderBottomColor: 'light.blue',
+                        }}
                         onClick={() => changeScale('5Y')}
                     >
                         5Y
@@ -197,10 +346,11 @@ function Watchlist(props) {
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
             >
-                <FormControl key={watchlistRT} py={4}>
+                <FormControl py={4}>
                     <Flex w="100%" gap={4} justifyContent="space-between">
                         <Box flex="1" zIndex={1}>
                             <Select
+                                key={listLength}
                                 placeholder="Type Symbol"
                                 options={symbolOptions.current}
                                 isRequired
@@ -221,23 +371,23 @@ function Watchlist(props) {
                         </Center>
                     </Flex>
                     {existing ? (
-                        <FormHelperText color="light.red">Already existing!</FormHelperText>
+                        <FormHelperText color="light.red">
+                            Already existing!
+                        </FormHelperText>
                     ) : (
                         <></>
                     )}
                 </FormControl>
-
-                <List
-                    key={0}
-                    type={'watchlist'}
-                    list={watchlistRT ? watchlistRT : watchlist}
-                    usd2cad={exRate}
-                    changeTicker={changeTicker}
-                    deleteTicker={deleteItem}
-                />
             </Flex>
 
-            {/* <Tabs isFitted variant="enclosed" px={4} pt={4} borderBottomColor="light.white">
+            <Tabs
+                isFitted
+                variant="enclosed"
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                borderBottomColor="light.white"
+            >
                 <TabList>
                     <Tab
                         borderBottomColor="light.yellow"
@@ -257,23 +407,30 @@ function Watchlist(props) {
                             borderBottomColor: 'light.white',
                         }}
                     >
-                        Summary
+                        Statistics
                     </Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel p={0}>
-                        <List
+                    <TabPanel key={0} p={0} pt={4}>
+                        <ObjList
                             key={0}
                             type={'watchlist'}
-                            list={watchlistRT ? watchlistRT.list : watchlist}
-                            usd2cad={watchlistRT ? watchlistRT.usd2cad : 1}
+                            list={watchlist}
+                            usd2cad={exRate}
                             changeTicker={changeTicker}
+                            deleteTicker={deleteItem}
                         />
                     </TabPanel>
-                    <TabPanel p={0}></TabPanel>
+                    <TabPanel key={1} p={0} pt={4}>
+                        {ticker ? (
+                            <Statistics key={ticker} ticker={ticker} />
+                        ) : (
+                            <></>
+                        )}
+                    </TabPanel>
                 </TabPanels>
-            </Tabs> */}
-            <Box h={20} />
+            </Tabs>
+            <Box h={48} />
         </Flex>
     );
 }

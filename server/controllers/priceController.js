@@ -2,34 +2,9 @@ const axios = require('axios');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
 require('dotenv').config();
-const { RAPIDAPI_KEY, EX_KEY, FINNHUB_KEY } = process.env;
+const { EX_KEY, FINNHUB_KEY } = process.env;
 
-const realstonks = symbol => {
-    return {
-        method: 'GET',
-        url: `https://realstonks.p.rapidapi.com/${symbol}`,
-        headers: {
-            'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
-        },
-    };
-};
-
-const twelveData = symbol => {
-    return {
-        method: 'GET',
-        url: 'https://twelve-data1.p.rapidapi.com/price',
-        params: {
-            symbol: `${symbol}`,
-            format: 'json',
-            outputsize: '30',
-        },
-        headers: {
-            'X-RapidAPI-Key': `${RAPIDAPI_KEY}`,
-        },
-    };
-};
-
-const finnHub = (symbol, resolution, from, to) => {
+const finnHubCandles = (symbol, resolution, from, to) => {
     return {
         method: 'GET',
         url: 'https://finnhub.io/api/v1/stock/candle',
@@ -45,32 +20,39 @@ const finnHub = (symbol, resolution, from, to) => {
     };
 };
 
-const getPriceHistory = async (req, res) => {
+const finnHubQuote = symbol => {
+    return {
+        method: 'GET',
+        url: 'https://finnhub.io/api/v1/quote',
+        params: {
+            symbol: symbol,
+        },
+        headers: {
+            'X-Finnhub-Token': FINNHUB_KEY,
+        },
+    };
+};
+
+const getCandles = async (req, res) => {
     const { ticker, resolution, from, to } = req.query;
 
     try {
-        const response = await axios.request(finnHub(ticker, resolution, from, to));
+        const response = await axios.request(
+            finnHubCandles(ticker, resolution, from, to)
+        );
         return res.status(200).json(response.data);
     } catch (error) {
         return res.status(404).json(error);
     }
 };
 
-const getRTPriceAPI = async (req, res) => {
+const getQuote = async (req, res) => {
+    const { ticker } = req.query;
     try {
-        const response = await axios.request(realstonks(req.params.ticker));
+        const response = await axios.request(finnHubQuote(ticker));
         return res.status(200).json(response.data);
     } catch (error) {
         return res.status(404).json(error);
-    }
-};
-
-const getRTPrice = async ticker => {
-    try {
-        const response = await axios.request(realstonks(ticker));
-        return response.data;
-    } catch (error) {
-        return error;
     }
 };
 
@@ -106,4 +88,4 @@ const getForex = async (_req, res) => {
     }
 };
 
-module.exports = { getRTPriceAPI, getRTPrice, getPriceHistory, getForex };
+module.exports = { getCandles, getQuote, getForex };
