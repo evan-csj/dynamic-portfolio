@@ -10,9 +10,9 @@ module.exports = [
         cash_cad: 50,
         dp: {
             AAPL: 25,
-            NVDA: 25,
+            HD: 25,
             COST: 25,
-            TSLA: 25,
+            F: 25,
         },
     },
 ];

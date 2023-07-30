@@ -23,7 +23,7 @@ import {
 } from '../../global/axios';
 import Balance from './Balance';
 import '../../styles/global.scss';
-import useWebSocket from 'react-use-websocket';
+// import useWebSocket from 'react-use-websocket';
 
 const TradingForm = props => {
     const typeOptions = [
@@ -47,13 +47,14 @@ const TradingForm = props => {
     const [currency, setCurrency] = useState('');
     const symbolOptions = useRef([]);
     const holdings = useRef(undefined);
+    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
-    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-        onOpen: () => console.log('Link Start'),
-        shouldReconnect: closeEvent => true,
-    });
+    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+    //     onOpen: () => console.log('Link Start'),
+    //     shouldReconnect: closeEvent => true,
+    // });
 
     const title = type === 'buy' ? 'Buy' : type === 'sell' ? 'Sell' : 'Trading';
     const handleTypeChange = selected => setType(selected.value);
@@ -87,6 +88,7 @@ const TradingForm = props => {
         setSymbol(selected.value);
         if (symbol !== '') wsChange('unsubscribe', symbol);
         wsChange('subscribe', selected.value);
+        setSubscribe([selected.value]);
     };
 
     // const handleSymbolChange = event => {
@@ -168,6 +170,7 @@ const TradingForm = props => {
     }, [holdings, symbol]);
 
     useEffect(() => {
+        unsubscribeAll();
         const username = sessionStorage.getItem('userId');
         setUserId(username);
 
@@ -192,7 +195,6 @@ const TradingForm = props => {
                 const data = json.data;
                 const price = data[0].p;
                 const symbol = data[0].s;
-                console.log(symbol, price);
                 setCurrentPrice(price);
             }
         }

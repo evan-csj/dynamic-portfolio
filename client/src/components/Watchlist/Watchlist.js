@@ -30,7 +30,7 @@ import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
-import useWebSocket from 'react-use-websocket';
+// import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
 
 function Watchlist(props) {
@@ -46,18 +46,21 @@ function Watchlist(props) {
     const [searchTicker, setSearchTicker] = useState('');
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
+    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
-    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    const [socketUrl, setSocketUrl] = useState(
-        `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
-    );
-    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-        onOpen: () => console.log('Link Start'),
-        shouldReconnect: closeEvent => true,
-    });
+    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+    // const [socketUrl, setSocketUrl] = useState(
+    //     `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
+    // );
+    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
+    //     onOpen: () => console.log('Link Start'),
+    //     shouldReconnect: closeEvent => true,
+    // });
 
     const wsInitial = () => {
+        unsubscribeAll();
         const keyList = Object.keys(watchlist);
+        setSubscribe(keyList);
         for (const symbol of keyList) {
             sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
         }
@@ -170,6 +173,7 @@ function Watchlist(props) {
             setSearchTicker('');
             wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
+            setSubscribe(Object.keys(newWatchlist));
         }
     };
 
@@ -181,6 +185,7 @@ function Watchlist(props) {
             deleteWatchItem(`${userId}-${ticker}`);
             wsChange('unsubscribe', ticker);
             setListLength(Object.keys(newWatchlist).length);
+            setSubscribe(Object.keys(newWatchlist));
         }
         return;
     };

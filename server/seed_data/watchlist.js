@@ -5,19 +5,19 @@ module.exports = [
     },
     {
         user_id: 'evancheng',
-        ticker: 'NVDA',
+        ticker: 'AMD',
     },
     {
         user_id: 'evancheng',
-        ticker: 'TSLA',
+        ticker: 'HD',
     },
     {
         user_id: 'evancheng',
-        ticker: 'AMZN',
+        ticker: 'COST',
     },
     {
         user_id: 'evancheng',
-        ticker: 'GOOG',
+        ticker: 'ZM',
     },
     {
         user_id: 'evancheng',
