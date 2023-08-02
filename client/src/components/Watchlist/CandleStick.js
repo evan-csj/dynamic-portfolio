@@ -17,7 +17,9 @@ const CandleStick = props => {
 
     useEffect(() => {
         const handleResize = () => {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+            chart.applyOptions({
+                width: chartContainerRef.current.clientWidth,
+            });
         };
 
         const chart = createChart(chartContainerRef.current, {
@@ -29,6 +31,9 @@ const CandleStick = props => {
             height: 300,
         });
         chart.timeScale().fitContent();
+        chart.timeScale().applyOptions({
+            timeVisible: true,
+        });
 
         const candlestickSeries = chart.addCandlestickSeries({
             upColor: '#26a69a',
@@ -46,7 +51,14 @@ const CandleStick = props => {
 
             chart.remove();
         };
-    }, [data, backgroundColor, lineColor, textColor, areaTopColor, areaBottomColor]);
+    }, [
+        data,
+        backgroundColor,
+        lineColor,
+        textColor,
+        areaTopColor,
+        areaBottomColor,
+    ]);
 
     return <div ref={chartContainerRef} />;
 };
