@@ -30,7 +30,6 @@ import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
-// import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
 
 function Watchlist(props) {
@@ -47,15 +46,6 @@ function Watchlist(props) {
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
-
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const [socketUrl, setSocketUrl] = useState(
-    //     `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
-    // );
-    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-    //     onOpen: () => console.log('Link Start'),
-    //     shouldReconnect: closeEvent => true,
-    // });
 
     const wsInitial = () => {
         unsubscribeAll();
@@ -303,40 +293,23 @@ function Watchlist(props) {
                 ></CandleStick>
             </Box>
             <Tabs
-                variant="unstyled"
+                variant="dateRange"
                 size="md"
                 px={{ base: '16px', lg: '32px', xl: '0' }}
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
                 color="light.grey"
+                defaultIndex={5}
             >
                 <TabList>
-                    <Tab
-                        px={0}
-                        mx={4}
-                        borderBottom="2px"
-                        borderBottomColor="light.white"
-                        _selected={{
-                            color: 'light.blue',
-                            borderBottomColor: 'light.blue',
-                        }}
-                        onClick={() => changeScale('1Y')}
-                    >
-                        1Y
-                    </Tab>
-                    <Tab
-                        px={0}
-                        mx={4}
-                        borderBottom="2px"
-                        borderBottomColor="light.white"
-                        _selected={{
-                            color: 'light.blue',
-                            borderBottomColor: 'light.blue',
-                        }}
-                        onClick={() => changeScale('5Y')}
-                    >
-                        5Y
-                    </Tab>
+                    <Tab onClick={() => changeScale('1D')}>1D</Tab>
+                    <Tab onClick={() => changeScale('5D')}>5D</Tab>
+                    <Tab onClick={() => changeScale('1M')}>1M</Tab>
+                    <Tab onClick={() => changeScale('3M')}>3M</Tab>
+                    <Tab onClick={() => changeScale('6M')}>6M</Tab>
+                    {/* <Tab onClick={() => changeScale('YTD')}>YTD</Tab> */}
+                    <Tab onClick={() => changeScale('1Y')}>1Y</Tab>
+                    <Tab onClick={() => changeScale('5Y')}>5Y</Tab>
                 </TabList>
             </Tabs>
 

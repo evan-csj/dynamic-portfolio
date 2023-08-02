@@ -1,5 +1,6 @@
 import { extendTheme } from '@chakra-ui/react';
 import { sliderTheme } from './slider';
+import { tabsTheme } from './tabs';
 import './global.scss';
 
 const theme = extendTheme({
@@ -19,7 +20,7 @@ const theme = extendTheme({
             grey: '#9BA4B5',
             green: '#0B8457',
             red: '#FF5F5F',
-            silver: '#F1F6F9'
+            silver: '#F1F6F9',
         },
         lightBG: {
             green: '#E5F9DB',
@@ -53,6 +54,7 @@ const theme = extendTheme({
                 },
             },
         },
+        Tabs: tabsTheme,
         Slider: sliderTheme,
     },
     shadows: {

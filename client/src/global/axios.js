@@ -54,15 +54,33 @@ const getWatchlist = async id => {
 
 const getPriceHistory = async (ticker, scale) => {
     const today = dayjs().unix();
-    const year = 31536000;
-    const factor = scale === '5Y' ? 5 : 1;
-    const resolution = scale === '5Y' ? 'W' : 'D';
+    const dayUnix = 60 * 60 * 24;
+    const monthUnix = dayUnix * 30;
+    const yearUnix = dayUnix * 365;
+    const dateRange = {
+        '1D': dayUnix,
+        '5D': dayUnix * 7,
+        '1M': monthUnix,
+        '3M': monthUnix * 3,
+        '6M': monthUnix * 6,
+        '1Y': yearUnix,
+        '5Y': yearUnix * 5,
+    };
+    const resolution = {
+        '1D': '1',
+        '5D': '5',
+        '1M': '30',
+        '3M': 'D',
+        '6M': 'D',
+        '1Y': 'D',
+        '5Y': 'W',
+    };
     try {
         const priceHistory = await axios.get(`${API_ADDRESS}/price/candles`, {
             params: {
                 ticker: ticker,
-                resolution: resolution,
-                from: today - factor * year,
+                resolution: resolution[scale],
+                from: today - dateRange[scale],
                 to: today,
             },
         });
