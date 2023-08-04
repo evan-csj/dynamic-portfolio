@@ -267,9 +267,8 @@ function Watchlist(props) {
             });
 
             const volumeData = time.map((time, i) => {
-                const offset = dayjs.unix(time).tz('America/Vancouver').$offset;
                 const newElement = {
-                    time: time + offset * 60,
+                    time: priceData[i].time,
                     value: volume[i],
                     color:
                         close[i] - open[i] >= 0
