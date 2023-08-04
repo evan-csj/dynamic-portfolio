@@ -31,8 +31,12 @@ import Statistics from './Statistics';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 function Watchlist(props) {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
     const navigate = useNavigate();
     const [userId, setUserId] = useState(null);
     const [watchlist, setWatchlist] = useState({});
@@ -251,8 +255,9 @@ function Watchlist(props) {
             if (!isSame) return;
 
             const priceData = time.map((time, i) => {
+                const offset = dayjs.unix(time).tz('America/Vancouver').$offset;
                 const newElement = {
-                    time: time,
+                    time: time + offset * 60,
                     open: open[i],
                     close: close[i],
                     high: high[i],
@@ -262,10 +267,10 @@ function Watchlist(props) {
             });
 
             const volumeData = time.map((time, i) => {
+                const offset = dayjs.unix(time).tz('America/Vancouver').$offset;
                 const newElement = {
-                    time: time,
+                    time: time + offset * 60,
                     value: volume[i],
-                    color: close[i] - open[i] >= 0 ? '#26a69a' : '#ef5350',
                     color:
                         close[i] - open[i] >= 0
                             ? 'rgba(38, 166, 154, 0.5)'

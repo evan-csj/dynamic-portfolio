@@ -35,12 +35,11 @@ const CandleStick = props => {
             upColor: 'rgba(38, 166, 154, 1)',
             downColor: 'rgba(239, 83, 80, 1)',
             borderVisible: false,
-            wickUpColor: '#26a69a',
-            wickDownColor: '#ef5350',
+            wickUpColor: 'rgba(38, 166, 154, 1)',
+            wickDownColor: 'rgba(239, 83, 80, 1)',
         });
 
         const volumeSeries = chart.addHistogramSeries({
-            opacity: 0.5,
             priceFormat: {
                 type: 'volume',
             },
