@@ -30,19 +30,41 @@ const CandleStick = props => {
             width: chartContainerRef.current.clientWidth,
             height: 300,
         });
-        chart.timeScale().fitContent();
-        chart.timeScale().applyOptions({
-            timeVisible: true,
-        });
 
         const candlestickSeries = chart.addCandlestickSeries({
-            upColor: '#26a69a',
-            downColor: '#ef5350',
+            upColor: 'rgba(38, 166, 154, 1)',
+            downColor: 'rgba(239, 83, 80, 1)',
             borderVisible: false,
             wickUpColor: '#26a69a',
             wickDownColor: '#ef5350',
         });
-        candlestickSeries.setData(data);
+
+        const volumeSeries = chart.addHistogramSeries({
+            opacity: 0.5,
+            priceFormat: {
+                type: 'volume',
+            },
+            priceScaleId: '',
+            scaleMargins: {
+                top: 0.7,
+                bottom: 0,
+            },
+        });
+
+        volumeSeries.priceScale().applyOptions({
+            scaleMargins: {
+                top: 0.7,
+                bottom: 0,
+            },
+        });
+
+        candlestickSeries.setData(data.priceData);
+        volumeSeries.setData(data.volumeData);
+
+        chart.timeScale().fitContent();
+        chart.timeScale().applyOptions({
+            timeVisible: true,
+        });
 
         window.addEventListener('resize', handleResize);
 

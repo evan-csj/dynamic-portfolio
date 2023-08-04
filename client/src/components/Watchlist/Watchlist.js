@@ -38,7 +38,7 @@ function Watchlist(props) {
     const [watchlist, setWatchlist] = useState({});
     const [isWatchlistLoaded, setIsWatchlistLoaded] = useState(false);
     const [exRate, setExRate] = useState(1);
-    const [candlestickData, setCandleStickData] = useState([]);
+    const [candlestickData, setCandleStickData] = useState(null);
     const [chartScale, setChartScale] = useState('1Y');
     const [ticker, setTicker] = useState('');
     const [existing, setExising] = useState(false);
@@ -250,7 +250,7 @@ function Watchlist(props) {
             const isSame = lengths.every(len => len === lengths[0]);
             if (!isSame) return;
 
-            const formattedData = time.map((time, i) => {
+            const priceData = time.map((time, i) => {
                 const newElement = {
                     time: time,
                     open: open[i],
@@ -261,7 +261,23 @@ function Watchlist(props) {
                 return newElement;
             });
 
-            setCandleStickData(formattedData);
+            const volumeData = time.map((time, i) => {
+                const newElement = {
+                    time: time,
+                    value: volume[i],
+                    color: close[i] - open[i] >= 0 ? '#26a69a' : '#ef5350',
+                    color:
+                        close[i] - open[i] >= 0
+                            ? 'rgba(38, 166, 154, 0.5)'
+                            : 'rgba(239, 83, 80, 0.5)',
+                };
+                return newElement;
+            });
+
+            setCandleStickData({
+                priceData: priceData,
+                volumeData: volumeData,
+            });
         });
     }, [ticker, chartScale]);
 
@@ -289,7 +305,14 @@ function Watchlist(props) {
                 pt={4}
             >
                 <CandleStick
-                    data={candlestickData.length > 0 ? candlestickData : []}
+                    data={
+                        candlestickData !== null
+                            ? candlestickData
+                            : {
+                                  priceData: [],
+                                  volumeData: [],
+                              }
+                    }
                 ></CandleStick>
             </Box>
             <Tabs
