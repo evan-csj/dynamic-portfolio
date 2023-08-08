@@ -120,6 +120,7 @@ const ChatBot = props => {
                                 mx="20px"
                                 fontSize="16px"
                                 pl="12px"
+                                disabled={false}
                                 borderRadius="30px"
                                 borderWidth="1px"
                                 borderStyle="solid"

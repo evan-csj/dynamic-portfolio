@@ -12,7 +12,9 @@ const getUser = async id => {
     try {
         const user = await axios.get(`${API_ADDRESS}/user/${id}`);
         return user;
-    } catch (err) {}
+    } catch (err) {
+        return err.response.data;
+    }
 };
 
 const getHoldings = async id => {
