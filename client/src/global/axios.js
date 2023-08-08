@@ -12,9 +12,7 @@ const getUser = async id => {
     try {
         const user = await axios.get(`${API_ADDRESS}/user/${id}`);
         return user;
-    } catch (err) {
-        return err.response.data;
-    }
+    } catch (err) {}
 };
 
 const getHoldings = async id => {
@@ -235,7 +233,9 @@ const getFeedback = async text => {
             newHeader
         );
         return response;
-    } catch (err) {}
+    } catch (err) {
+        return err.response;
+    }
 };
 
 const checkUserPassword = async login => {

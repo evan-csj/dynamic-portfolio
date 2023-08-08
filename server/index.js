@@ -15,8 +15,24 @@ const maxToken = 50;
 
 const apiLimiterMin = rateLimit({
     windowMs: 1 * 60 * 1000,
-    max: 10,
+    max: 5,
     message: 'Please wait a minute!',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const apiLimiterHr = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 60,
+    message: 'Please wait a hour!',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const apiLimiterDay = rateLimit({
+    windowMs: 24 * 60 * 60 * 1000,
+    max: 200,
+    message: 'Please wait a day!',
     standardHeaders: true,
     legacyHeaders: false,
 });
@@ -33,7 +49,7 @@ const statRoute = require('./routes/statRoute');
 
 app.use(cors());
 app.use(express.json());
-app.use('/user', apiLimiter, userRoute);
+app.use('/user', userRoute);
 app.use('/trade', tradeRoute);
 app.use('/holding', holdingRoute);
 app.use('/fund', fundRoute);
@@ -54,7 +70,7 @@ app.use('/stat', statRoute);
     const nlp = dock.get('nlp');
     await nlp.train();
 
-    app.post('/chatbot', apiLimiter, async (req, res) => {
+    app.post('/chatbot', apiLimiterMin, apiLimiterHr, apiLimiterDay, async (req, res) => {
         const text = req.body.text;
         const response = await nlp.process('en', text);
         if (response.intent !== 'None') {

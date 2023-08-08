@@ -60,12 +60,20 @@ function App() {
                     setmessages([
                         ...messages,
                         { message: text, sender: 'User' },
-                        { message: response.data.answer, sender: 'Bot' },
+                        {
+                            message:
+                                response.data.answer !== undefined
+                                    ? response.data.answer
+                                    : response.data,
+                            sender: 'Bot',
+                        },
                     ]);
-                    const intent = response.data.intent.split('.');
-                    if (intent[0] === 'nav') {
-                        navigate(`/${intent[1]}`);
-                        setPage(`${intent[1]}`);
+                    if (response.data.intent !== undefined) {
+                        const intent = response.data.intent.split('.');
+                        if (intent[0] === 'nav') {
+                            navigate(`/${intent[1]}`);
+                            setPage(`${intent[1]}`);
+                        }
                     }
                 })
                 .catch(_error => {
