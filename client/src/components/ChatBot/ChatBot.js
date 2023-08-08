@@ -5,7 +5,15 @@ import {
     ChatIcon,
     MinusIcon,
 } from '@chakra-ui/icons';
-import { Flex, Box, Center, Input, Circle } from '@chakra-ui/react';
+import {
+    Flex,
+    Box,
+    Center,
+    Input,
+    Circle,
+    InputGroup,
+    InputRightAddon,
+} from '@chakra-ui/react';
 import '../../styles/global.scss';
 import Message from './Message';
 
@@ -113,25 +121,37 @@ const ChatBot = props => {
                             h={{ base: '100px', lg: '70px' }}
                             w="100%"
                         >
-                            <Input
+                            <InputGroup
+                                size="sm"
                                 w="100%"
-                                h={{ base: '50px', lg: '30px' }}
-                                my="0"
-                                mx="20px"
                                 fontSize="16px"
-                                pl="12px"
-                                disabled={props.inputStatus}
-                                maxLength='50'
+                                mx="20px"
                                 borderRadius="30px"
                                 borderWidth="1px"
                                 borderStyle="solid"
                                 borderColor="light.grey"
                                 focusBorderColor="light.yellow"
-                                placeholder="Message"
-                                value={userMsg}
-                                onChange={e => handleMsgChange(e)}
-                                onKeyDown={e => handleKeyDown(e)}
-                            />
+                            >
+                                <Input
+                                    disabled={props.inputStatus}
+                                    h={{ base: '50px', lg: '30px' }}
+                                    maxLength="50"
+                                    borderLeftRadius="30px"
+                                    borderWidth="0px"
+                                    placeholder="Message"
+                                    value={userMsg}
+                                    onChange={e => handleMsgChange(e)}
+                                    onKeyDown={e => handleKeyDown(e)}
+                                />
+                                <InputRightAddon
+                                    h={{ base: '50px', lg: '30px' }}
+                                    color='light.grey'
+                                    bg="light.white"
+                                    children="50/50"
+                                    borderRightRadius="30px"
+                                    borderWidth="0px"
+                                />
+                            </InputGroup>
                         </Center>
                     </Flex>
                 </Box>

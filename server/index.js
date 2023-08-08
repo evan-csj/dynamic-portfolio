@@ -80,7 +80,7 @@ app.use('/stat', statRoute);
         async (req, res) => {
             const text = req.body.text;
             const encoded = encode(text);
-            if (encoded.length > 5) {
+            if (encoded.length > 50) {
                 return res.status(413).json('Input too large!');
             }
             const response = await nlp.process('en', text);
