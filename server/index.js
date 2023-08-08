@@ -1,11 +1,13 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const app = express();
+const { encode, decode } = require('gpt-3-encoder');
 const cors = require('cors');
 const { dockStart } = require('@nlpjs/basic');
 require('dotenv').config();
-const PORT = process.env.PORT || 8080;
 const { Configuration, OpenAIApi } = require('openai');
+
+const app = express();
+const PORT = process.env.PORT || 8080;
 const openai = new OpenAIApi(
     new Configuration({
         apiKey: process.env.OPENAI_KEY,
@@ -70,39 +72,49 @@ app.use('/stat', statRoute);
     const nlp = dock.get('nlp');
     await nlp.train();
 
-    app.post('/chatbot', apiLimiterMin, apiLimiterHr, apiLimiterDay, async (req, res) => {
-        const text = req.body.text;
-        const response = await nlp.process('en', text);
-        if (response.intent !== 'None') {
-            res.status(200).json({
-                intent: response.intent,
-                answer: response.answer,
-            });
-        } else {
-            openai
-                .createChatCompletion({
-                    model: 'gpt-3.5-turbo',
-                    messages: [
-                        {
-                            role: 'system',
-                            content: `Please answer the question in financial field in ${maxToken} tokens. If you cannot, just say I don't know.`,
-                        },
-                        {
-                            role: 'user',
-                            content: text,
-                        },
-                    ],
-                    max_tokens: maxToken,
-                })
-                .then(response => {
-                    const gptRes = response.data.choices[0].message.content;
-                    res.status(200).json({
-                        intent: 'gpt',
-                        answer: gptRes,
-                    });
+    app.post(
+        '/chatbot',
+        apiLimiterMin,
+        apiLimiterHr,
+        apiLimiterDay,
+        async (req, res) => {
+            const text = req.body.text;
+            const encoded = encode(text);
+            if (encoded.length > 5) {
+                return res.status(413).json('Input too large!');
+            }
+            const response = await nlp.process('en', text);
+            if (response.intent !== 'None') {
+                res.status(200).json({
+                    intent: response.intent,
+                    answer: response.answer,
                 });
+            } else {
+                openai
+                    .createChatCompletion({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `Please answer the question in financial field in ${maxToken} tokens. If you cannot, just say I don't know. Otherwise, say No`,
+                            },
+                            {
+                                role: 'user',
+                                content: text,
+                            },
+                        ],
+                        max_tokens: maxToken,
+                    })
+                    .then(response => {
+                        const gptRes = response.data.choices[0].message.content;
+                        res.status(200).json({
+                            intent: 'gpt',
+                            answer: gptRes,
+                        });
+                    });
+            }
         }
-    });
+    );
 })();
 
 app.listen(PORT, () => {
