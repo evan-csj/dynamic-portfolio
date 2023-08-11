@@ -17,10 +17,13 @@ import {
 import '../../styles/global.scss';
 import Message from './Message';
 
+const maxInputLen = 50;
+
 const ChatBot = props => {
     const msgListRef = useRef(undefined);
     const [isOpen, setIsOpen] = useState(false);
     const [userMsg, setUserMsg] = useState('');
+    const [inputLen, setInputLen] = useState(0);
 
     const handleKeyDown = e => {
         if (e.key === 'Enter' && e.target.value !== '') {
@@ -48,6 +51,10 @@ const ChatBot = props => {
                 block: 'end',
             });
     });
+
+    useEffect(() => {
+        setInputLen(userMsg.length)
+    }, [userMsg])
 
     return (
         <Box>
@@ -130,24 +137,28 @@ const ChatBot = props => {
                                 borderWidth="1px"
                                 borderStyle="solid"
                                 borderColor="light.grey"
-                                focusBorderColor="light.yellow"
+                                _focusWithin={{
+                                    boxShadow: '0 0 0 2px #ffce63',
+                                    borderColor: 'light.yellow',
+                                }}
                             >
                                 <Input
+                                    placeholder="Message"
                                     disabled={props.inputStatus}
                                     h={{ base: '50px', lg: '30px' }}
                                     maxLength="50"
                                     borderLeftRadius="30px"
                                     borderWidth="0px"
-                                    placeholder="Message"
+                                    focusBorderColor="transparent"
                                     value={userMsg}
                                     onChange={e => handleMsgChange(e)}
                                     onKeyDown={e => handleKeyDown(e)}
                                 />
                                 <InputRightAddon
                                     h={{ base: '50px', lg: '30px' }}
-                                    color='light.grey'
+                                    color="light.grey"
                                     bg="light.white"
-                                    children="50/50"
+                                    children={`${inputLen}/${maxInputLen}`}
                                     borderRightRadius="30px"
                                     borderWidth="0px"
                                 />
