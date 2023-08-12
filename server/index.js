@@ -15,28 +15,35 @@ const openai = new OpenAIApi(
 );
 const maxToken = 50;
 
+const customKeyGenerator = (_req, _res) => {
+    return 'global';
+};
+
 const apiLimiterMin = rateLimit({
     windowMs: 1 * 60 * 1000,
     max: 5,
-    message: 'Please wait a minute!',
+    message: 'Please wait for a minute!',
     standardHeaders: true,
     legacyHeaders: false,
+    keyGenerator: customKeyGenerator,
 });
 
 const apiLimiterHr = rateLimit({
     windowMs: 60 * 60 * 1000,
     max: 60,
-    message: 'Please wait a hour!',
+    message: 'Please wait for a hour!',
     standardHeaders: true,
     legacyHeaders: false,
+    keyGenerator: customKeyGenerator,
 });
 
 const apiLimiterDay = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,
     max: 200,
-    message: 'Please wait a day!',
+    message: 'Please wait for a day!',
     standardHeaders: true,
     legacyHeaders: false,
+    keyGenerator: customKeyGenerator,
 });
 
 const userRoute = require('./routes/userRoute');
