@@ -233,7 +233,9 @@ const getFeedback = async text => {
             newHeader
         );
         return response;
-    } catch (err) {}
+    } catch (err) {
+        return err.response;
+    }
 };
 
 const checkUserPassword = async login => {

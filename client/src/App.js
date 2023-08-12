@@ -18,6 +18,7 @@ function App() {
     const [username, setUsername] = useState('');
     const [page, setPage] = useState('');
     const [subscribe, setSubscribe] = useState([]);
+    const [waitForRes, setWaitForRes] = useState(false);
     const [messages, setmessages] = useState([
         {
             message: "Hi! I'm an AI ChatBot",
@@ -55,17 +56,24 @@ function App() {
     const addMessage = (text, sender) => {
         setmessages([...messages, { message: text, sender: sender }]);
         if (sender === 'User') {
+            setWaitForRes(true);
             getFeedback(text)
                 .then(response => {
+                    setWaitForRes(false);
                     setmessages([
                         ...messages,
                         { message: text, sender: 'User' },
-                        { message: response.data.answer, sender: 'Bot' },
+                        {
+                            message: response.data.answer || response.data,
+                            sender: 'Bot',
+                        },
                     ]);
-                    const intent = response.data.intent.split('.');
-                    if (intent[0] === 'nav') {
-                        navigate(`/${intent[1]}`);
-                        setPage(`${intent[1]}`);
+                    if (response.data.intent !== undefined) {
+                        const intent = response.data.intent.split('.');
+                        if (intent[0] === 'nav') {
+                            navigate(`/${intent[1]}`);
+                            setPage(`${intent[1]}`);
+                        }
                     }
                 })
                 .catch(_error => {
@@ -165,7 +173,11 @@ function App() {
                     }
                 />
             </Routes>
-            <ChatBot messages={messages} addMessage={addMessage} />
+            <ChatBot
+                messages={messages}
+                addMessage={addMessage}
+                inputStatus={waitForRes}
+            />
             <NavBarBot page={page} changePage={changePage} />
         </>
     );
