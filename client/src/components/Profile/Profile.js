@@ -17,6 +17,7 @@ import {
     TabPanels,
     Tab,
     TabPanel,
+    Skeleton,
 } from '@chakra-ui/react';
 import ObjList from '../ObjList';
 import Portfolio from './Portfolio';
@@ -31,7 +32,6 @@ import {
     putSymbolInfo,
 } from '../../global/axios';
 import '../../styles/global.scss';
-// import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
 
 const Profile = props => {
@@ -44,13 +44,6 @@ const Profile = props => {
     const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
-
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-    //     onOpen: () => console.log('Link Start'),
-    //     shouldReconnect: closeEvent => true,
-    // });
 
     const wsInitial = () => {
         unsubscribeAll();
@@ -260,9 +253,29 @@ const Profile = props => {
                         <Heading
                             color="light.yellow"
                             size={{ base: 'md', md: 'lg', lg: 'xl' }}
+                            mt="8px"
                         >
-                            {userData ? userData.firstName : 'FirstName'}{' '}
-                            {userData ? userData.lastName : 'LastName'}
+                            {userData ? (
+                                <Flex gap="16px">
+                                    <Box>{userData.firstName}</Box>
+                                    <Box>{userData.lastName}</Box>
+                                </Flex>
+                            ) : (
+                                <Flex gap="16px">
+                                    <Skeleton
+                                        w="fit-content"
+                                        borderRadius="24px"
+                                    >
+                                        XXXXX
+                                    </Skeleton>
+                                    <Skeleton
+                                        w="fit-content"
+                                        borderRadius="24px"
+                                    >
+                                        XXXXXXXX
+                                    </Skeleton>
+                                </Flex>
+                            )}
                         </Heading>
                     </Box>
                     <Text color="light.white">

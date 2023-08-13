@@ -7,7 +7,9 @@ const SkeletonDollar = props => {
             {props.condition ? (
                 '$' + props.value.toFixed(2)
             ) : (
-                <Skeleton w="75%">0</Skeleton>
+                <Skeleton w="65%" borderRadius="12px">
+                    0
+                </Skeleton>
             )}
         </Flex>
     );
