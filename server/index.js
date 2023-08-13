@@ -56,7 +56,12 @@ const portfolioRoute = require('./routes/portfolioRoute');
 const symbolRoute = require('./routes/symbolRoute');
 const statRoute = require('./routes/statRoute');
 
-app.use(cors());
+app.use(
+    cors({
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    })
+);
 app.use(express.json());
 app.use('/user', userRoute);
 app.use('/trade', tradeRoute);
