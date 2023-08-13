@@ -12,6 +12,7 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import { getFeedback } from './global/axios';
 import useWebSocket from 'react-use-websocket';
+import { Flex, SkeletonCircle } from '@chakra-ui/react';
 
 function App() {
     const navigate = useNavigate();
@@ -54,7 +55,26 @@ function App() {
     };
 
     const addMessage = (text, sender) => {
-        setmessages([...messages, { message: text, sender: sender }]);
+        setmessages([
+            ...messages,
+            { message: text, sender: sender },
+            {
+                message: (
+                    <Flex alignItems='end' dir="row" gap="8px" h="16px">
+                        <SkeletonCircle w="8px" h="8px">
+                            X
+                        </SkeletonCircle>
+                        <SkeletonCircle w="8px" h="8px">
+                            X
+                        </SkeletonCircle>
+                        <SkeletonCircle w="8px" h="8px">
+                            X
+                        </SkeletonCircle>
+                    </Flex>
+                ),
+                sender: 'Bot',
+            },
+        ]);
         if (sender === 'User') {
             setWaitForRes(true);
             getFeedback(text)
