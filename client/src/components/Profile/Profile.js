@@ -34,6 +34,57 @@ import {
 import '../../styles/global.scss';
 import dayjs from 'dayjs';
 
+const quotes = [
+    {
+        statement:
+            "The best investment you can make is an investment in yourself. The more you learn, the more you'll earn.",
+        name: 'Warren Buffett',
+    },
+    {
+        statement:
+            'Be fearful when others are greedy and be greed when others are fearful.',
+        name: 'Warren Buffett',
+    },
+    {
+        statement:
+            'Wide diversification is only required when investors do not understand what they are doing.',
+        name: 'Warren Buffett',
+    },
+    {
+        statement: 'Never invest in a business you cannot understand.',
+        name: 'Warren Buffett',
+    },
+    {
+        statement:
+            'The key to making money in stocks is not to get scared out of them.',
+        name: 'Peter Lynch',
+    },
+    {
+        statement:
+            "The basic story remains simple and never ending. Stock aren't lottery tickets. There's a company attached to every share.",
+        name: 'Peter Lynch',
+    },
+    {
+        statement: 'Know what you own and know why you own it.',
+        name: 'Peter Lynch',
+    },
+    {
+        statement:
+            'The big money is not in the buying or selling, but in the waiting.',
+        name: 'Charlie Munger',
+    },
+    {
+        statement:
+            'Simplicity has a way of improving performance by enabling us to better understand what we are doing.',
+        name: 'Charlie Munger',
+    },
+    {
+        statement:
+            'Spend each day trying to be a little wise than you were when you wake up.',
+        name: 'Charlie Munger',
+    },
+];
+
 const Profile = props => {
     const navigate = useNavigate();
     const [userId, setUserId] = useState(null);
@@ -43,6 +94,9 @@ const Profile = props => {
     const [isPriceLoaded, setIsPriceLoaded] = useState(false);
     const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
+    const [quoteIndex, setQuoteIndex] = useState(
+        Math.floor(Math.random() * quotes.length)
+    );
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -213,12 +267,22 @@ const Profile = props => {
         }
     }, [exRate, userData, holdingList, isPriceLoaded]);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setQuoteIndex(Math.floor(Math.random() * quotes.length));
+        }, 10000);
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
     const cashCAD = userData ? userData.cashCAD : 0;
     const cashUSD = userData ? userData.cashUSD : 0;
     const equityCAD = accountDetail ? accountDetail.equityCAD : 0;
     const equityUSD = accountDetail ? accountDetail.equityUSD : 0;
     const equityTotal = accountDetail ? accountDetail.equityTotal : 0;
     const usd2cad = accountDetail ? accountDetail.usd2cad : 1;
+    const quote = quotes[quoteIndex];
 
     return (
         <Flex
@@ -278,12 +342,9 @@ const Profile = props => {
                             )}
                         </Heading>
                     </Box>
-                    <Text color="light.white">
-                        "Be fearful when others are greedy and be greed when
-                        others are fearful."
-                    </Text>
-                    <Text color="light.white" alignSelf="end">
-                        -- -- Warren Buffett
+                    <Text color="light.white">{quote.statement}</Text>
+                    <Text color="light.white" alignSelf="end" fontWeight="bold">
+                        ---- ---- {quote.name}
                     </Text>
                 </Flex>
             </Flex>
@@ -296,7 +357,8 @@ const Profile = props => {
                 w={{ xl: '1020px' }}
             >
                 <Heading
-                    py={4}
+                    pt={{ base: '16px', lg: '32px' }}
+                    pb="16px"
                     color="light.black"
                     size={{ base: 'sm', md: 'md', lg: 'lg' }}
                 >
