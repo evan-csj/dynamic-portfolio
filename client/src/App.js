@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import NavBarBot from './components/NavBarBot';
-import NavBarTop from './components/NavBarTop';
+import NavBar from './components/NavBar';
 import FundingForm from './components/Action/FundingForm';
 import TradingForm from './components/Action/TradingForm';
 import Profile from './components/Profile/Profile';
@@ -60,7 +59,7 @@ function App() {
             { message: text, sender: sender },
             {
                 message: (
-                    <Flex alignItems='end' dir="row" gap="8px" h="16px">
+                    <Flex alignItems="end" dir="row" gap="8px" h="16px">
                         <SkeletonCircle w="8px" h="8px">
                             X
                         </SkeletonCircle>
@@ -120,7 +119,11 @@ function App() {
 
     return (
         <>
-            <NavBarTop page={page} changePage={changePage} />
+            <NavBar
+                page={page}
+                changePage={changePage}
+                display={{ base: 'none', xl: 'block' }}
+            />
             <Routes>
                 <Route
                     path="/"
@@ -198,7 +201,11 @@ function App() {
                 addMessage={addMessage}
                 inputStatus={waitForRes}
             />
-            <NavBarBot page={page} changePage={changePage} />
+            <NavBar
+                page={page}
+                changePage={changePage}
+                display={{ base: 'block', xl: 'none' }}
+            />
         </>
     );
 }

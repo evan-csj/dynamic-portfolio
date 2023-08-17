@@ -9,6 +9,7 @@ import {
     DrawerBody,
     DrawerOverlay,
     DrawerContent,
+    Circle,
 } from '@chakra-ui/react';
 import {
     Profile,
@@ -31,7 +32,77 @@ const NavBarBot = props => {
     });
 
     return (
-        <Box>
+        <Box display={props.display}>
+            <Flex
+                justifyContent="space-between"
+                bg="light.white"
+                w="1020px"
+                mx="auto"
+                py={2}
+                display={{ base: 'none', xl: 'flex' }}
+                zIndex={10}
+                fontSize="18px"
+            >
+                <Flex gap={4} justifyContent="flex-start">
+                    <Box
+                        color={
+                            navSelect === 'profile'
+                                ? 'light.yellow'
+                                : 'light.black'
+                        }
+                        _hover={{ color: 'light.yellow' }}
+                    >
+                        <NavLink to="/profile">Home</NavLink>
+                    </Box>
+                    <Box
+                        color={
+                            navSelect === 'watchlist'
+                                ? 'light.yellow'
+                                : 'light.black'
+                        }
+                        _hover={{ color: 'light.yellow' }}
+                    >
+                        <NavLink to="/watchlist">Watchlist</NavLink>
+                    </Box>
+
+                    <Box _hover={{ color: 'light.yellow' }}>
+                        <NavLink to="/funding">Funding</NavLink>
+                    </Box>
+
+                    <Box _hover={{ color: 'light.yellow' }}>
+                        <NavLink to="/trading">Trading</NavLink>
+                    </Box>
+
+                    <Box
+                        color={
+                            navSelect === 'history'
+                                ? 'light.yellow'
+                                : 'light.black'
+                        }
+                        _hover={{ color: 'light.yellow' }}
+                    >
+                        <NavLink to="/history">History</NavLink>
+                    </Box>
+                </Flex>
+                <Flex gap={4} justifyContent="flex-end">
+                    <Circle
+                        size={{ base: '36px', lg: '32px' }}
+                        bg="light.yellow"
+                    />
+                    <Box _hover={{ color: 'light.yellow' }}>
+                        <NavLink
+                            to="/login"
+                            onClick={() => {
+                                onClose();
+                                sessionStorage.clear();
+                            }}
+                        >
+                            Logout
+                        </NavLink>
+                    </Box>
+                </Flex>
+            </Flex>
+
             <Flex
                 bg="light.white"
                 shadow={isOpen ? '' : 'mainTab'}
