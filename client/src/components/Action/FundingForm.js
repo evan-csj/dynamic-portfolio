@@ -122,8 +122,8 @@ const FundingForm = props => {
         <Flex
             className="flex-col"
             px={{ base: '16px', lg: '32px', xl: '0' }}
-            mx={{ xl: 'auto' }}
-            w={{ xl: '1020px' }}
+            mx={{ xl: '0' }}
+            w={{ xl: '100%' }}
             pt={12}
             gap={8}
         >

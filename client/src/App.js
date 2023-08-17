@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import FundingForm from './components/Action/FundingForm';
@@ -123,6 +123,11 @@ function App() {
                 page={page}
                 changePage={changePage}
                 display={{ base: 'none', xl: 'block' }}
+                userId={username}
+                sendMessage={sendMessage}
+                lastMessage={lastMessage}
+                setSubscribe={setSubscribe}
+                unsubscribeAll={unsubscribeAll}
             />
             <Routes>
                 <Route

@@ -21,10 +21,28 @@ import {
     Trading,
 } from '../styles/icons';
 import '../styles/global.scss';
+import FundingForm from './Action/FundingForm';
+import TradingForm from './Action/TradingForm';
 
 const NavBarBot = props => {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const {
+        isOpen: isFundingOpen,
+        onOpen: fundingOpen,
+        onClose: fundingClose,
+    } = useDisclosure();
+    const {
+        isOpen: isTradingOpen,
+        onOpen: tradingOpen,
+        onClose: tradingClose,
+    } = useDisclosure();
     const [navSelect, setNavSelect] = useState(undefined);
+    const username = props.username;
+    const changePage = props.changePage;
+    const sendMessage = props.sendMessage;
+    const lastMessage = props.lastMessage;
+    const setSubscribe = props.setSubscribe;
+    const unsubscribeAll = props.unsubscribeAll;
 
     useEffect(() => {
         const pathname = window.location.pathname;
@@ -66,11 +84,15 @@ const NavBarBot = props => {
                     </Box>
 
                     <Box _hover={{ color: 'light.yellow' }}>
-                        <NavLink to="/funding">Funding</NavLink>
+                        <Box cursor="pointer" onClick={fundingOpen}>
+                            Funding
+                        </Box>
                     </Box>
 
                     <Box _hover={{ color: 'light.yellow' }}>
-                        <NavLink to="/trading">Trading</NavLink>
+                        <Box cursor="pointer" onClick={tradingOpen}>
+                            Trading
+                        </Box>
                     </Box>
 
                     <Box
@@ -245,6 +267,51 @@ const NavBarBot = props => {
                             </NavLink>
                         </Flex>
                         <Box h={16} />
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+
+            <Drawer
+                placement={'right'}
+                onClose={fundingClose}
+                isOpen={isFundingOpen}
+                size="md"
+            >
+                <DrawerOverlay
+                    zIndex={1}
+                    display={{ base: 'none', xl: 'block' }}
+                />
+                <DrawerContent shadow="none">
+                    <DrawerBody display={{ base: 'none', xl: 'block' }}>
+                        <FundingForm
+                            userId={username}
+                            changePage={changePage}
+                            unsubscribeAll={unsubscribeAll}
+                        />
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+
+            <Drawer
+                placement={'right'}
+                onClose={tradingClose}
+                isOpen={isTradingOpen}
+                size="md"
+            >
+                <DrawerOverlay
+                    zIndex={1}
+                    display={{ base: 'none', xl: 'block' }}
+                />
+                <DrawerContent shadow="none">
+                    <DrawerBody display={{ base: 'none', xl: 'block' }}>
+                        <TradingForm
+                            userId={username}
+                            changePage={changePage}
+                            sendMessage={sendMessage}
+                            lastMessage={lastMessage}
+                            setSubscribe={setSubscribe}
+                            unsubscribeAll={unsubscribeAll}
+                        />
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
