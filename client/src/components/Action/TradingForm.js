@@ -129,6 +129,7 @@ const TradingForm = props => {
             postTrading(newTrade);
             props.changePage('profile');
             navigate('/profile');
+            props.closeDrawer();
         }
     };
 

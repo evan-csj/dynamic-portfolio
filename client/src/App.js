@@ -177,29 +177,6 @@ function App() {
                         />
                     }
                 />
-                <Route
-                    path="/funding"
-                    element={
-                        <FundingForm
-                            userId={username}
-                            changePage={changePage}
-                            unsubscribeAll={unsubscribeAll}
-                        />
-                    }
-                />
-                <Route
-                    path="/trading"
-                    element={
-                        <TradingForm
-                            userId={username}
-                            changePage={changePage}
-                            sendMessage={sendMessage}
-                            lastMessage={lastMessage}
-                            setSubscribe={setSubscribe}
-                            unsubscribeAll={unsubscribeAll}
-                        />
-                    }
-                />
             </Routes>
             <ChatBot
                 messages={messages}
@@ -210,6 +187,11 @@ function App() {
                 page={page}
                 changePage={changePage}
                 display={{ base: 'block', xl: 'none' }}
+                userId={username}
+                sendMessage={sendMessage}
+                lastMessage={lastMessage}
+                setSubscribe={setSubscribe}
+                unsubscribeAll={unsubscribeAll}
             />
         </>
     );

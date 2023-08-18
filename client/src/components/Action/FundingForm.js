@@ -115,6 +115,7 @@ const FundingForm = props => {
             postFunding(newFunding);
             props.changePage('profile');
             navigate('/profile');
+            props.closeDrawer();
         }
     };
 

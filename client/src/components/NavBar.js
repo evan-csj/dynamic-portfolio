@@ -9,6 +9,7 @@ import {
     DrawerBody,
     DrawerOverlay,
     DrawerContent,
+    DrawerCloseButton,
     Circle,
 } from '@chakra-ui/react';
 import {
@@ -24,7 +25,13 @@ import '../styles/global.scss';
 import FundingForm from './Action/FundingForm';
 import TradingForm from './Action/TradingForm';
 
-const NavBarBot = props => {
+const NavBar = props => {
+    const username = props.username;
+    const changePage = props.changePage;
+    const sendMessage = props.sendMessage;
+    const lastMessage = props.lastMessage;
+    const setSubscribe = props.setSubscribe;
+    const unsubscribeAll = props.unsubscribeAll;
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
         isOpen: isFundingOpen,
@@ -37,17 +44,17 @@ const NavBarBot = props => {
         onClose: tradingClose,
     } = useDisclosure();
     const [navSelect, setNavSelect] = useState(undefined);
-    const username = props.username;
-    const changePage = props.changePage;
-    const sendMessage = props.sendMessage;
-    const lastMessage = props.lastMessage;
-    const setSubscribe = props.setSubscribe;
-    const unsubscribeAll = props.unsubscribeAll;
 
     useEffect(() => {
         const pathname = window.location.pathname;
         if (pathname[0] === '/') setNavSelect(pathname.split('/')[1]);
     });
+
+    const closeDrawer = () => {
+        fundingClose();
+        tradingClose();
+        onClose();
+    };
 
     return (
         <Box display={props.display}>
@@ -115,7 +122,7 @@ const NavBarBot = props => {
                         <NavLink
                             to="/login"
                             onClick={() => {
-                                onClose();
+                                closeDrawer();
                                 sessionStorage.clear();
                             }}
                         >
@@ -147,7 +154,7 @@ const NavBarBot = props => {
                     <NavLink
                         to="/profile"
                         onClick={() => {
-                            onClose();
+                            closeDrawer();
                             props.changePage('profile');
                         }}
                     >
@@ -166,12 +173,13 @@ const NavBarBot = props => {
                         <CandleStick
                             variant="btn"
                             onClick={() => {
-                                onClose();
+                                closeDrawer();
                                 props.changePage('watchlist');
                             }}
                         />
                     </NavLink>
                 </Box>
+
                 <Box
                     color={
                         navSelect === 'trading' || navSelect === 'funding'
@@ -192,7 +200,7 @@ const NavBarBot = props => {
                     <NavLink
                         to="/history"
                         onClick={() => {
-                            onClose();
+                            closeDrawer();
                             props.changePage('history');
                         }}
                     >
@@ -204,7 +212,7 @@ const NavBarBot = props => {
                     <NavLink
                         to="/login"
                         onClick={() => {
-                            onClose();
+                            closeDrawer();
                             sessionStorage.clear();
                         }}
                     >
@@ -219,15 +227,17 @@ const NavBarBot = props => {
                     <DrawerBody display={{ xl: 'none' }}>
                         <Flex
                             className="flex-col"
-                            pt={4}
+                            w="fit-content"
+                            py={4}
+                            gap={4}
                             fontSize={{ base: '12px', md: '14px', lg: '16px' }}
                         >
-                            <NavLink
-                                to="/funding"
-                                className="nav-link"
+                            <Box
+                                className="no-outline"
+                                cursor="pointer"
                                 onClick={() => {
+                                    fundingOpen();
                                     onClose();
-                                    props.changePage('funding');
                                 }}
                             >
                                 <Flex
@@ -241,13 +251,13 @@ const NavBarBot = props => {
                                         <Text>Deposit or withdraw funds</Text>
                                     </Box>
                                 </Flex>
-                            </NavLink>
-                            <NavLink
-                                to="/trading"
-                                className="nav-link"
+                            </Box>
+                            <Box
+                                className="no-outline"
+                                cursor="pointer"
                                 onClick={() => {
                                     onClose();
-                                    props.changePage('trading');
+                                    tradingOpen();
                                 }}
                             >
                                 <Flex
@@ -264,7 +274,7 @@ const NavBarBot = props => {
                                         </Text>
                                     </Box>
                                 </Flex>
-                            </NavLink>
+                            </Box>
                         </Flex>
                         <Box h={16} />
                     </DrawerBody>
@@ -272,38 +282,35 @@ const NavBarBot = props => {
             </Drawer>
 
             <Drawer
-                placement={'right'}
+                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
                 onClose={fundingClose}
                 isOpen={isFundingOpen}
-                size="md"
+                size={{ base: 'full', xl: 'md' }}
             >
-                <DrawerOverlay
-                    zIndex={1}
-                    display={{ base: 'none', xl: 'block' }}
-                />
-                <DrawerContent shadow="none">
-                    <DrawerBody display={{ base: 'none', xl: 'block' }}>
+                <DrawerOverlay zIndex={1} />
+                <DrawerContent>
+                    <DrawerCloseButton />
+                    <DrawerBody>
                         <FundingForm
                             userId={username}
                             changePage={changePage}
                             unsubscribeAll={unsubscribeAll}
+                            closeDrawer={closeDrawer}
                         />
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
 
             <Drawer
-                placement={'right'}
+                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
                 onClose={tradingClose}
                 isOpen={isTradingOpen}
-                size="md"
+                size={{ base: 'full', xl: 'md' }}
             >
-                <DrawerOverlay
-                    zIndex={1}
-                    display={{ base: 'none', xl: 'block' }}
-                />
-                <DrawerContent shadow="none">
-                    <DrawerBody display={{ base: 'none', xl: 'block' }}>
+                <DrawerOverlay zIndex={1} />
+                <DrawerContent>
+                    <DrawerCloseButton />
+                    <DrawerBody>
                         <TradingForm
                             userId={username}
                             changePage={changePage}
@@ -311,6 +318,7 @@ const NavBarBot = props => {
                             lastMessage={lastMessage}
                             setSubscribe={setSubscribe}
                             unsubscribeAll={unsubscribeAll}
+                            closeDrawer={closeDrawer}
                         />
                     </DrawerBody>
                 </DrawerContent>
@@ -319,4 +327,4 @@ const NavBarBot = props => {
     );
 };
 
-export default NavBarBot;
+export default NavBar;
