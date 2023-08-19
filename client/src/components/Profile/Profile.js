@@ -94,9 +94,7 @@ const Profile = props => {
     const [isPriceLoaded, setIsPriceLoaded] = useState(false);
     const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
-    const [quoteIndex, setQuoteIndex] = useState(
-        Math.floor(Math.random() * quotes.length)
-    );
+    const [quoteIndex, setQuoteIndex] = useState(0);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -268,12 +266,7 @@ const Profile = props => {
     }, [exRate, userData, holdingList, isPriceLoaded]);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setQuoteIndex(Math.floor(Math.random() * quotes.length));
-        }, 10000);
-        return () => {
-            clearInterval(interval);
-        };
+        setQuoteIndex(Math.floor(Math.random() * quotes.length));
     }, []);
 
     const cashCAD = userData ? userData.cashCAD : 0;
