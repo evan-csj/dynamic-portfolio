@@ -1,60 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import {
-    Text,
-    Flex,
-    Box,
-    useDisclosure,
-    Drawer,
-    DrawerBody,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerCloseButton,
-    Circle,
-} from '@chakra-ui/react';
-import {
-    Profile,
-    CandleStick,
-    History,
-    Logout,
-    Fund,
-    Funding,
-    Trading,
-} from '../styles/icons';
+import { Flex, Box, Circle } from '@chakra-ui/react';
+import { Profile, CandleStick, History, Logout, Fund } from '../styles/icons';
 import '../styles/global.scss';
-import FundingForm from './Action/FundingForm';
-import TradingForm from './Action/TradingForm';
 
 const NavBar = props => {
-    const username = props.username;
-    const changePage = props.changePage;
-    const sendMessage = props.sendMessage;
-    const lastMessage = props.lastMessage;
-    const setSubscribe = props.setSubscribe;
-    const unsubscribeAll = props.unsubscribeAll;
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const {
-        isOpen: isFundingOpen,
-        onOpen: fundingOpen,
-        onClose: fundingClose,
-    } = useDisclosure();
-    const {
-        isOpen: isTradingOpen,
-        onOpen: tradingOpen,
-        onClose: tradingClose,
-    } = useDisclosure();
     const [navSelect, setNavSelect] = useState(undefined);
+    const isOpen = props.isOpen;
+    const openFunding = props.openFunding;
+    const openTrading = props.openTrading;
+    const openDrawer = props.openDrawer;
+    const closeAllDrawer = props.closeAllDrawer;
 
     useEffect(() => {
         const pathname = window.location.pathname;
         if (pathname[0] === '/') setNavSelect(pathname.split('/')[1]);
     });
-
-    const closeDrawer = () => {
-        fundingClose();
-        tradingClose();
-        onClose();
-    };
 
     return (
         <Box display={props.display}>
@@ -91,13 +52,13 @@ const NavBar = props => {
                     </Box>
 
                     <Box _hover={{ color: 'light.yellow' }}>
-                        <Box cursor="pointer" onClick={fundingOpen}>
+                        <Box cursor="pointer" onClick={openFunding}>
                             Funding
                         </Box>
                     </Box>
 
                     <Box _hover={{ color: 'light.yellow' }}>
-                        <Box cursor="pointer" onClick={tradingOpen}>
+                        <Box cursor="pointer" onClick={openTrading}>
                             Trading
                         </Box>
                     </Box>
@@ -122,7 +83,7 @@ const NavBar = props => {
                         <NavLink
                             to="/login"
                             onClick={() => {
-                                closeDrawer();
+                                closeAllDrawer();
                                 sessionStorage.clear();
                             }}
                         >
@@ -154,7 +115,7 @@ const NavBar = props => {
                     <NavLink
                         to="/profile"
                         onClick={() => {
-                            closeDrawer();
+                            closeAllDrawer();
                             props.changePage('profile');
                         }}
                     >
@@ -173,7 +134,7 @@ const NavBar = props => {
                         <CandleStick
                             variant="btn"
                             onClick={() => {
-                                closeDrawer();
+                                closeAllDrawer();
                                 props.changePage('watchlist');
                             }}
                         />
@@ -188,7 +149,7 @@ const NavBar = props => {
                     }
                     _hover={{ color: 'light.yellow' }}
                 >
-                    <Fund variant="btn" onClick={onOpen} />
+                    <Fund variant="btn" onClick={openDrawer} />
                 </Box>
 
                 <Box
@@ -200,7 +161,7 @@ const NavBar = props => {
                     <NavLink
                         to="/history"
                         onClick={() => {
-                            closeDrawer();
+                            closeAllDrawer();
                             props.changePage('history');
                         }}
                     >
@@ -212,7 +173,7 @@ const NavBar = props => {
                     <NavLink
                         to="/login"
                         onClick={() => {
-                            closeDrawer();
+                            closeAllDrawer();
                             sessionStorage.clear();
                         }}
                     >
@@ -220,109 +181,6 @@ const NavBar = props => {
                     </NavLink>
                 </Box>
             </Flex>
-
-            <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
-                <DrawerOverlay zIndex={1} display={{ xl: 'none' }} />
-                <DrawerContent shadow="none" borderTopRadius={20}>
-                    <DrawerBody display={{ xl: 'none' }}>
-                        <Flex
-                            className="flex-col"
-                            w="fit-content"
-                            py={4}
-                            gap={4}
-                            fontSize={{ base: '12px', md: '14px', lg: '16px' }}
-                        >
-                            <Box
-                                className="no-outline"
-                                cursor="pointer"
-                                onClick={() => {
-                                    fundingOpen();
-                                    onClose();
-                                }}
-                            >
-                                <Flex
-                                    alignItems="center"
-                                    gap={4}
-                                    _hover={{ color: 'light.yellow' }}
-                                >
-                                    <Funding boxSize={8} />
-                                    <Box>
-                                        <Text>Funding</Text>
-                                        <Text>Deposit or withdraw funds</Text>
-                                    </Box>
-                                </Flex>
-                            </Box>
-                            <Box
-                                className="no-outline"
-                                cursor="pointer"
-                                onClick={() => {
-                                    onClose();
-                                    tradingOpen();
-                                }}
-                            >
-                                <Flex
-                                    alignItems="center"
-                                    gap={4}
-                                    _hover={{ color: 'light.yellow' }}
-                                >
-                                    <Trading boxSize={8} />
-                                    <Box>
-                                        <Text>Trading</Text>
-                                        <Text>
-                                            Buy or sell S&P 500 and NASDAQ 100
-                                            stocks
-                                        </Text>
-                                    </Box>
-                                </Flex>
-                            </Box>
-                        </Flex>
-                        <Box h={16} />
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
-
-            <Drawer
-                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
-                onClose={fundingClose}
-                isOpen={isFundingOpen}
-                size={{ base: 'full', xl: 'md' }}
-            >
-                <DrawerOverlay zIndex={1} />
-                <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerBody>
-                        <FundingForm
-                            userId={username}
-                            changePage={changePage}
-                            unsubscribeAll={unsubscribeAll}
-                            closeDrawer={closeDrawer}
-                        />
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
-
-            <Drawer
-                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
-                onClose={tradingClose}
-                isOpen={isTradingOpen}
-                size={{ base: 'full', xl: 'md' }}
-            >
-                <DrawerOverlay zIndex={1} />
-                <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerBody>
-                        <TradingForm
-                            userId={username}
-                            changePage={changePage}
-                            sendMessage={sendMessage}
-                            lastMessage={lastMessage}
-                            setSubscribe={setSubscribe}
-                            unsubscribeAll={unsubscribeAll}
-                            closeDrawer={closeDrawer}
-                        />
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
         </Box>
     );
 };

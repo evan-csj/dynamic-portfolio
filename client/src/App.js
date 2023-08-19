@@ -11,7 +11,19 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import { getFeedback } from './global/axios';
 import useWebSocket from 'react-use-websocket';
-import { Flex, SkeletonCircle } from '@chakra-ui/react';
+import {
+    Flex,
+    SkeletonCircle,
+    Text,
+    Box,
+    useDisclosure,
+    Drawer,
+    DrawerBody,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
+} from '@chakra-ui/react';
+import { Funding, Trading } from './styles/icons';
 
 function App() {
     const navigate = useNavigate();
@@ -19,6 +31,17 @@ function App() {
     const [page, setPage] = useState('');
     const [subscribe, setSubscribe] = useState([]);
     const [waitForRes, setWaitForRes] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const {
+        isOpen: isFundingOpen,
+        onOpen: fundingOpen,
+        onClose: fundingClose,
+    } = useDisclosure();
+    const {
+        isOpen: isTradingOpen,
+        onOpen: tradingOpen,
+        onClose: tradingClose,
+    } = useDisclosure();
     const [messages, setmessages] = useState([
         {
             message: "Hi! I'm an AI ChatBot",
@@ -104,6 +127,12 @@ function App() {
         }
     };
 
+    const closeAllDrawer = () => {
+        fundingClose();
+        tradingClose();
+        onClose();
+    };
+
     // useEffect(() => {
     //     if (lastMessage !== null) {
     //         const json = JSON.parse(lastMessage.data);
@@ -123,11 +152,11 @@ function App() {
                 page={page}
                 changePage={changePage}
                 display={{ base: 'none', xl: 'block' }}
-                userId={username}
-                sendMessage={sendMessage}
-                lastMessage={lastMessage}
-                setSubscribe={setSubscribe}
-                unsubscribeAll={unsubscribeAll}
+                isOpen={isOpen}
+                openDrawer={onOpen}
+                openFunding={fundingOpen}
+                openTrading={tradingOpen}
+                closeAllDrawer={closeAllDrawer}
             />
             <Routes>
                 <Route
@@ -187,12 +216,114 @@ function App() {
                 page={page}
                 changePage={changePage}
                 display={{ base: 'block', xl: 'none' }}
-                userId={username}
-                sendMessage={sendMessage}
-                lastMessage={lastMessage}
-                setSubscribe={setSubscribe}
-                unsubscribeAll={unsubscribeAll}
+                isOpen={isOpen}
+                openDrawer={onOpen}
+                openFunding={fundingOpen}
+                openTrading={tradingOpen}
+                closeAllDrawer={closeAllDrawer}
             />
+            <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
+                <DrawerOverlay zIndex={1} display={{ xl: 'none' }} />
+                <DrawerContent shadow="none" borderTopRadius={20}>
+                    <DrawerBody display={{ xl: 'none' }}>
+                        <Flex
+                            className="flex-col"
+                            w="fit-content"
+                            py={4}
+                            gap={4}
+                            fontSize={{ base: '12px', md: '14px', lg: '16px' }}
+                        >
+                            <Box
+                                className="no-outline"
+                                cursor="pointer"
+                                onClick={() => {
+                                    fundingOpen();
+                                    onClose();
+                                }}
+                            >
+                                <Flex
+                                    alignItems="center"
+                                    gap={4}
+                                    _hover={{ color: 'light.yellow' }}
+                                >
+                                    <Funding boxSize={8} />
+                                    <Box>
+                                        <Text>Funding</Text>
+                                        <Text>Deposit or withdraw funds</Text>
+                                    </Box>
+                                </Flex>
+                            </Box>
+                            <Box
+                                className="no-outline"
+                                cursor="pointer"
+                                onClick={() => {
+                                    onClose();
+                                    tradingOpen();
+                                }}
+                            >
+                                <Flex
+                                    alignItems="center"
+                                    gap={4}
+                                    _hover={{ color: 'light.yellow' }}
+                                >
+                                    <Trading boxSize={8} />
+                                    <Box>
+                                        <Text>Trading</Text>
+                                        <Text>
+                                            Buy or sell S&P 500 and NASDAQ 100
+                                            stocks
+                                        </Text>
+                                    </Box>
+                                </Flex>
+                            </Box>
+                        </Flex>
+                        <Box h={16} />
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+
+            <Drawer
+                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
+                onClose={fundingClose}
+                isOpen={isFundingOpen}
+                size={{ base: 'full', xl: 'md' }}
+            >
+                <DrawerOverlay zIndex={1} />
+                <DrawerContent>
+                    <DrawerCloseButton />
+                    <DrawerBody>
+                        <FundingForm
+                            userId={username}
+                            changePage={changePage}
+                            unsubscribeAll={unsubscribeAll}
+                            closeDrawer={closeAllDrawer}
+                        />
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+
+            <Drawer
+                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
+                onClose={tradingClose}
+                isOpen={isTradingOpen}
+                size={{ base: 'full', xl: 'md' }}
+            >
+                <DrawerOverlay zIndex={1} />
+                <DrawerContent>
+                    <DrawerCloseButton />
+                    <DrawerBody>
+                        <TradingForm
+                            userId={username}
+                            changePage={changePage}
+                            sendMessage={sendMessage}
+                            lastMessage={lastMessage}
+                            setSubscribe={setSubscribe}
+                            unsubscribeAll={unsubscribeAll}
+                            closeDrawer={closeAllDrawer}
+                        />
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
         </>
     );
 }
