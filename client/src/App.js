@@ -29,6 +29,7 @@ function App() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [page, setPage] = useState('');
+    const [toggle, setToggle] = useState(false);
     const [subscribe, setSubscribe] = useState([]);
     const [waitForRes, setWaitForRes] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -176,6 +177,7 @@ function App() {
                     path="/profile"
                     element={
                         <Profile
+                            toggle={toggle}
                             userId={username}
                             changePage={changePage}
                             sendMessage={sendMessage}
@@ -201,6 +203,7 @@ function App() {
                     path="/history"
                     element={
                         <Txn
+                            toggle={toggle}
                             userId={username}
                             unsubscribeAll={unsubscribeAll}
                         />
@@ -297,6 +300,8 @@ function App() {
                             changePage={changePage}
                             unsubscribeAll={unsubscribeAll}
                             closeDrawer={closeAllDrawer}
+                            toggle={toggle}
+                            updateToggle={setToggle}
                         />
                     </DrawerBody>
                 </DrawerContent>
@@ -320,6 +325,8 @@ function App() {
                             setSubscribe={setSubscribe}
                             unsubscribeAll={unsubscribeAll}
                             closeDrawer={closeAllDrawer}
+                            toggle={toggle}
+                            updateToggle={setToggle}
                         />
                     </DrawerBody>
                 </DrawerContent>

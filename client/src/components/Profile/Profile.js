@@ -207,7 +207,7 @@ const Profile = props => {
             });
         }
         // eslint-disable-next-line
-    }, []);
+    }, [props.toggle]);
 
     useEffect(() => {
         if (isHoldingLoaded) {

@@ -113,9 +113,12 @@ const FundingForm = props => {
                 currency: account,
             };
             postFunding(newFunding);
-            props.changePage('profile');
-            navigate('/profile');
             props.closeDrawer();
+            if (props.toggle) {
+                props.updateToggle(false);
+            } else {
+                props.updateToggle(true);
+            }
         }
     };
 

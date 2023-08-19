@@ -127,9 +127,12 @@ const TradingForm = props => {
                 currency: currency,
             };
             postTrading(newTrade);
-            props.changePage('profile');
-            navigate('/profile');
             props.closeDrawer();
+            if (props.toggle) {
+                props.updateToggle(false);
+            } else {
+                props.updateToggle(true);
+            }
         }
     };
 

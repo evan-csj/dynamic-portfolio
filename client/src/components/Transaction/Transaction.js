@@ -35,7 +35,7 @@ function Transaction(props) {
             });
         }
         // eslint-disable-next-line
-    }, []);
+    }, [props.toggle]);
 
     return (
         <Flex
