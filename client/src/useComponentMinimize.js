@@ -8,7 +8,7 @@ const useComponentMinimize = initialIsMinimized => {
 
     const handleHideDropdown = event => {
         if (event.key === 'Escape') {
-            setIsComponentMinimized(false);
+            setIsComponentMinimized(true);
         }
     };
 
