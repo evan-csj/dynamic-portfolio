@@ -10,7 +10,12 @@ const newHeader = {
 
 const getUser = async id => {
     try {
-        const user = await axios.get(`${API_ADDRESS}/user/${id}`);
+        const token = sessionStorage.getItem('authToken');
+        const user = await axios.get(`${API_ADDRESS}/user/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return user;
     } catch (err) {}
 };
@@ -250,7 +255,9 @@ const checkUserPassword = async login => {
             newHeader
         );
         return isCorrect;
-    } catch (err) {}
+    } catch (err) {
+        return err.response;
+    }
 };
 
 export {

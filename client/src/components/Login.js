@@ -20,8 +20,8 @@ const Login = props => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [isUsernameCorrect, setUsernameCorrect] = useState(true);
-    const [isPasswordCorrect, setPasswordCorrect] = useState(true);
+    const [isUsernameCorrect, setIsUsernameCorrect] = useState(true);
+    const [isPasswordCorrect, setIsPasswordCorrect] = useState(true);
     const [show, setShow] = useState(false);
     const rotateDeg = 25;
     const shiftDis = 20;
@@ -30,8 +30,8 @@ const Login = props => {
         const input = event.target.value;
         const noSpace = input.replace(' ', '');
         setFc(noSpace);
-        setUsernameCorrect(true);
-        setPasswordCorrect(true);
+        setIsUsernameCorrect(true);
+        setIsPasswordCorrect(true);
     };
 
     const handleLogin = async () => {
@@ -40,20 +40,23 @@ const Login = props => {
             username: username,
             password: password,
         });
-        if (response) {
-            setPasswordCorrect(response.data);
-            if (response.data) {
-                sessionStorage.setItem('userId', username);
-                navigate('/profile');
-                props.login(username);
-            }
-        } else {
-            setUsernameCorrect(false);
+        const validatedUsername = username.toLowerCase();
+
+        if (response.status === 404) setIsUsernameCorrect(false);
+        if (response.status === 403) setIsPasswordCorrect(false);
+        if (response.status === 200) {
+            setIsUsernameCorrect(true);
+            setIsPasswordCorrect(true);
+            sessionStorage.setItem('userId', validatedUsername);
+            sessionStorage.setItem('authToken', response.data);
+            navigate('/profile');
+            props.login(validatedUsername);
         }
     };
 
     useEffect(() => {
         props.unsubscribeAll();
+        // eslint-disable-next-line
     }, []);
 
     return (
