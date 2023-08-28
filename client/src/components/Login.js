@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
 import {
     Flex,
     Box,
@@ -25,6 +26,8 @@ const Login = props => {
     const [show, setShow] = useState(false);
     const rotateDeg = 25;
     const shiftDis = 20;
+    const google = window.google;
+    const GOOGLE_ID = process.env.REACT_APP_GOOGLE_ID;
 
     const handleChange = (event, setFc) => {
         const input = event.target.value;
@@ -54,8 +57,31 @@ const Login = props => {
         }
     };
 
+    const handleGoogleLogin = response => {
+        console.log(jwt_decode(response.credential));
+    };
+
     useEffect(() => {
         props.unsubscribeAll();
+        // eslint-disable-next-line
+    }, []);
+    useEffect(() => {
+        google.accounts.id.initialize({
+            client_id: GOOGLE_ID,
+            callback: handleGoogleLogin,
+        });
+
+        google.accounts.id.renderButton(
+            document.getElementById('google-signin'),
+            {
+                type: 'standard',
+                shape: 'pill',
+                theme: 'outline',
+                size: 'large',
+                logo_alignment: 'left',
+                width: '320px',
+            }
+        );
         // eslint-disable-next-line
     }, []);
 
@@ -102,7 +128,7 @@ const Login = props => {
                                     handleChange(event, setUsername)
                                 }
                             ></Input>
-                            <Box h="24px" />
+                            <Box h="16px" />
                             <FormLabel>Password</FormLabel>
                             <InputGroup>
                                 <Input
@@ -150,6 +176,7 @@ const Login = props => {
                         <Flex
                             w="100%"
                             gap="16px"
+                            direction="column"
                             justifyContent="space-between"
                             alignItems="center"
                         >
@@ -165,7 +192,7 @@ const Login = props => {
                                 <NavLink to={'/signup'}>Sign Up</NavLink>
                             </Button> */}
                             <Button
-                                flex="1"
+                                w="100%"
                                 color="light.white"
                                 bg="light.navy"
                                 borderWidth="2px"
@@ -180,6 +207,7 @@ const Login = props => {
                             >
                                 Login
                             </Button>
+                            <Box id="google-signin"></Box>
                         </Flex>
                     </Flex>
                 </Center>

@@ -1,12 +1,10 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { encode } = require('gpt-3-encoder');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { dockStart } = require('@nlpjs/basic');
 require('dotenv').config();
 const { Configuration, OpenAIApi } = require('openai');
-const { authorize } = require('./middlewares/authorize');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
