@@ -5,7 +5,7 @@ const cors = require('cors');
 const expressSession = require('express-session');
 const helmet = require('helmet');
 const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { dockStart } = require('@nlpjs/basic');
 require('dotenv').config();
 const { Configuration, OpenAIApi } = require('openai');
@@ -83,9 +83,9 @@ app.use(
 passport.use(
     new GoogleStrategy(
         {
-            clientID: process.env.GOOGLE_ID,
-            clientSecret: process.env.GOOGLE_SECRET,
-            callbackURL: 'http://localhost:3000',
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
         },
         (_accessToken, _refreshToken, profile, done) => {
             console.log('Github', profile);
