@@ -3,9 +3,19 @@ const passport = require('passport');
 require('dotenv').config();
 
 router.get('/github', passport.authenticate('github'));
+router.get('/google', passport.authenticate('google'));
 router.get(
     '/github/callback',
     passport.authenticate('github', {
+        failureRedirect: `${process.env.CLIENT_URL}/auth-fail`,
+    }),
+    (_req, res) => {
+        res.redirect('http://localhost:8080/auth/success-callback');
+    }
+);
+router.get(
+    '/google/callback',
+    passport.authenticate('google', {
         failureRedirect: `${process.env.CLIENT_URL}/auth-fail`,
     }),
     (_req, res) => {
@@ -33,10 +43,10 @@ router.get('/logout', (req, res) => {
 
 router.get('/success-callback', (req, res) => {
     if (req.user) {
-        console.log('good')
+        console.log('good');
         res.status(200).json(req.user);
     } else {
-        console.log('bad')
+        console.log('bad');
         res.status(401).json({ message: 'User is not logged in' });
     }
 });

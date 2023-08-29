@@ -90,7 +90,37 @@ passport.use(
             callbackURL: process.env.GITHUB_CALLBACK_URL,
             scope: ['profile', 'email'],
         },
-        async (_accessToken, _refreshToken, profile, done) => {
+        (_accessToken, _refreshToken, profile, done) => {
+            const testProfile = 'evancheng';
+            knex('user')
+                .select('id')
+                .where('id', testProfile)
+                .then(data => {
+                    if (data.length === 0) {
+                        console.log(
+                            `The user with user ${testProfile} is not found!`
+                        );
+                    } else {
+                        done(null, data[0]);
+                    }
+                })
+                .catch(err => {
+                    console.log(`Error retrieving user ${testProfile} ${err}`);
+                });
+        }
+    )
+);
+
+passport.use(
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            scope: ['profile', 'email'],
+        },
+        (_accessToken, _refreshToken, profile, done) => {
+            console.log(profile)
             const testProfile = 'evancheng';
             knex('user')
                 .select('id')
@@ -152,61 +182,61 @@ app.use('/symbols', symbolRoute);
 app.use('/stat', statRoute);
 app.use('/auth', authRoute);
 
-// (async () => {
-//     const dockConfiguration = {
-//         settings: {
-//             nlp: { corpora: ['./corpora/corpus-en.json'] },
-//         },
-//         use: ['Basic', 'ConsoleConnector'],
-//     };
-//     const dock = await dockStart(dockConfiguration);
-//     const nlp = dock.get('nlp');
-//     await nlp.train();
+(async () => {
+    const dockConfiguration = {
+        settings: {
+            nlp: { corpora: ['./corpora/corpus-en.json'] },
+        },
+        use: ['Basic', 'ConsoleConnector'],
+    };
+    const dock = await dockStart(dockConfiguration);
+    const nlp = dock.get('nlp');
+    await nlp.train();
 
-//     app.post(
-//         '/chatbot',
-//         apiLimiterMin,
-//         apiLimiterHr,
-//         apiLimiterDay,
-//         async (req, res) => {
-//             const text = req.body.text;
-//             const encoded = encode(text);
-//             if (encoded.length > 50) {
-//                 return res.status(413).json('Input too large!');
-//             }
-//             const response = await nlp.process('en', text);
-//             if (response.intent !== 'None') {
-//                 res.status(200).json({
-//                     intent: response.intent,
-//                     answer: response.answer,
-//                 });
-//             } else {
-//                 openai
-//                     .createChatCompletion({
-//                         model: 'gpt-3.5-turbo',
-//                         messages: [
-//                             {
-//                                 role: 'system',
-//                                 content: `Please answer the question in financial field in ${maxToken} tokens. If you cannot, just say I don't know. Otherwise, say No`,
-//                             },
-//                             {
-//                                 role: 'user',
-//                                 content: text,
-//                             },
-//                         ],
-//                         max_tokens: maxToken,
-//                     })
-//                     .then(response => {
-//                         const gptRes = response.data.choices[0].message.content;
-//                         res.status(200).json({
-//                             intent: 'gpt',
-//                             answer: gptRes,
-//                         });
-//                     });
-//             }
-//         }
-//     );
-// })();
+    app.post(
+        '/chatbot',
+        apiLimiterMin,
+        apiLimiterHr,
+        apiLimiterDay,
+        async (req, res) => {
+            const text = req.body.text;
+            const encoded = encode(text);
+            if (encoded.length > 50) {
+                return res.status(413).json('Input too large!');
+            }
+            const response = await nlp.process('en', text);
+            if (response.intent !== 'None') {
+                res.status(200).json({
+                    intent: response.intent,
+                    answer: response.answer,
+                });
+            } else {
+                openai
+                    .createChatCompletion({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `Please answer the question in financial field in ${maxToken} tokens. If you cannot, just say I don't know. Otherwise, say No`,
+                            },
+                            {
+                                role: 'user',
+                                content: text,
+                            },
+                        ],
+                        max_tokens: maxToken,
+                    })
+                    .then(response => {
+                        const gptRes = response.data.choices[0].message.content;
+                        res.status(200).json({
+                            intent: 'gpt',
+                            answer: gptRes,
+                        });
+                    });
+            }
+        }
+    );
+})();
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
