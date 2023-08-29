@@ -2,6 +2,10 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { encode } = require('gpt-3-encoder');
 const cors = require('cors');
+const expressSession = require('express-session');
+const helmet = require('helmet');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20');
 const { dockStart } = require('@nlpjs/basic');
 require('dotenv').config();
 const { Configuration, OpenAIApi } = require('openai');
@@ -55,14 +59,49 @@ const watchlistRoute = require('./routes/watchlistRoute');
 const portfolioRoute = require('./routes/portfolioRoute');
 const symbolRoute = require('./routes/symbolRoute');
 const statRoute = require('./routes/statRoute');
+const authRoute = require('./routes/auth');
 
+app.use(express.json());
+app.use(helmet());
+app.use(
+    expressSession({
+        secret: process.env.JWT_SECRET,
+        resave: false,
+        saveUninitialized: true,
+    })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(
     cors({
         origin: 'http://localhost:3000',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true,
     })
 );
-app.use(express.json());
+
+passport.use(
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_ID,
+            clientSecret: process.env.GOOGLE_SECRET,
+            callbackURL: 'http://localhost:3000',
+        },
+        (_accessToken, _refreshToken, profile, done) => {
+            console.log('Github', profile);
+        }
+    )
+);
+
+passport.serializeUser((user, done) => {
+    console.log('serializeUser', user);
+    done(null, user.id);
+});
+
+passport.deserializeUser((userId, done) => {
+    console.log('deserializeUser', userId);
+});
+
 app.use('/user', userRoute);
 app.use('/trade', tradeRoute);
 app.use('/holding', holdingRoute);
@@ -72,63 +111,64 @@ app.use('/watchlist', watchlistRoute);
 app.use('/portfolio', portfolioRoute);
 app.use('/symbols', symbolRoute);
 app.use('/stat', statRoute);
+app.use('/auth', authRoute);
 
-(async () => {
-    const dockConfiguration = {
-        settings: {
-            nlp: { corpora: ['./corpora/corpus-en.json'] },
-        },
-        use: ['Basic', 'ConsoleConnector'],
-    };
-    const dock = await dockStart(dockConfiguration);
-    const nlp = dock.get('nlp');
-    await nlp.train();
+// (async () => {
+//     const dockConfiguration = {
+//         settings: {
+//             nlp: { corpora: ['./corpora/corpus-en.json'] },
+//         },
+//         use: ['Basic', 'ConsoleConnector'],
+//     };
+//     const dock = await dockStart(dockConfiguration);
+//     const nlp = dock.get('nlp');
+//     await nlp.train();
 
-    app.post(
-        '/chatbot',
-        apiLimiterMin,
-        apiLimiterHr,
-        apiLimiterDay,
-        async (req, res) => {
-            const text = req.body.text;
-            const encoded = encode(text);
-            if (encoded.length > 50) {
-                return res.status(413).json('Input too large!');
-            }
-            const response = await nlp.process('en', text);
-            if (response.intent !== 'None') {
-                res.status(200).json({
-                    intent: response.intent,
-                    answer: response.answer,
-                });
-            } else {
-                openai
-                    .createChatCompletion({
-                        model: 'gpt-3.5-turbo',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: `Please answer the question in financial field in ${maxToken} tokens. If you cannot, just say I don't know. Otherwise, say No`,
-                            },
-                            {
-                                role: 'user',
-                                content: text,
-                            },
-                        ],
-                        max_tokens: maxToken,
-                    })
-                    .then(response => {
-                        const gptRes = response.data.choices[0].message.content;
-                        res.status(200).json({
-                            intent: 'gpt',
-                            answer: gptRes,
-                        });
-                    });
-            }
-        }
-    );
-})();
+//     app.post(
+//         '/chatbot',
+//         apiLimiterMin,
+//         apiLimiterHr,
+//         apiLimiterDay,
+//         async (req, res) => {
+//             const text = req.body.text;
+//             const encoded = encode(text);
+//             if (encoded.length > 50) {
+//                 return res.status(413).json('Input too large!');
+//             }
+//             const response = await nlp.process('en', text);
+//             if (response.intent !== 'None') {
+//                 res.status(200).json({
+//                     intent: response.intent,
+//                     answer: response.answer,
+//                 });
+//             } else {
+//                 openai
+//                     .createChatCompletion({
+//                         model: 'gpt-3.5-turbo',
+//                         messages: [
+//                             {
+//                                 role: 'system',
+//                                 content: `Please answer the question in financial field in ${maxToken} tokens. If you cannot, just say I don't know. Otherwise, say No`,
+//                             },
+//                             {
+//                                 role: 'user',
+//                                 content: text,
+//                             },
+//                         ],
+//                         max_tokens: maxToken,
+//                     })
+//                     .then(response => {
+//                         const gptRes = response.data.choices[0].message.content;
+//                         res.status(200).json({
+//                             intent: 'gpt',
+//                             answer: gptRes,
+//                         });
+//                     });
+//             }
+//         }
+//     );
+// })();
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`🚀 Server is running on port ${PORT}`);
 });
