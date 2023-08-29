@@ -6,9 +6,11 @@ const expressSession = require('express-session');
 const helmet = require('helmet');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GitHubStrategy = require('passport-github2').Strategy;
 const { dockStart } = require('@nlpjs/basic');
 require('dotenv').config();
 const { Configuration, OpenAIApi } = require('openai');
+const knex = require('knex')(require('./knexfile'));
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -81,25 +83,62 @@ app.use(
 );
 
 passport.use(
-    new GoogleStrategy(
+    new GitHubStrategy(
         {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            clientID: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            callbackURL: process.env.GITHUB_CALLBACK_URL,
+            scope: ['profile', 'email'],
         },
-        (_accessToken, _refreshToken, profile, done) => {
-            console.log('Github', profile);
+        async (_accessToken, _refreshToken, profile, done) => {
+            const testProfile = 'evancheng';
+            knex('user')
+                .select('id')
+                .where('id', testProfile)
+                .then(data => {
+                    if (data.length === 0) {
+                        console.log(
+                            `The user with user ${testProfile} is not found!`
+                        );
+                    } else {
+                        done(null, data[0]);
+                    }
+                })
+                .catch(err => {
+                    console.log(`Error retrieving user ${testProfile} ${err}`);
+                });
         }
     )
 );
 
 passport.serializeUser((user, done) => {
-    console.log('serializeUser', user);
+    console.log('serializeUser: ', user);
     done(null, user.id);
 });
 
 passport.deserializeUser((userId, done) => {
     console.log('deserializeUser', userId);
+    knex('user')
+        .select(
+            'id',
+            'user_email',
+            'first_name',
+            'last_name',
+            'cash_usd',
+            'cash_cad',
+            'dp'
+        )
+        .where('id', userId)
+        .then(data => {
+            if (data.length === 0) {
+                console.log(`The user with user ${userId} is not found!`);
+            } else {
+                done(null, data[0]);
+            }
+        })
+        .catch(err => {
+            console.log(`Error retrieving user ${userId} ${err}`);
+        });
 });
 
 app.use('/user', userRoute);
