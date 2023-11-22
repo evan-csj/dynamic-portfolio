@@ -17,6 +17,11 @@ import { checkUserPassword } from '../global/axios';
 import logo from '../assets/logo.svg';
 import '../styles/global.scss';
 
+import axios from 'axios';
+import LoginButton from './LoginButton';
+import LogoutButton from './LogoutButton';
+const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+
 const Login = props => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
@@ -28,6 +33,10 @@ const Login = props => {
     const shiftDis = 20;
     const google = window.google;
     const GOOGLE_ID = process.env.REACT_APP_GOOGLE_ID;
+
+    const [isAuthenticating, setIsAuthenticating] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [profileData, setProfileData] = useState(null);
 
     const handleChange = (event, setFc) => {
         const input = event.target.value;
@@ -65,25 +74,49 @@ const Login = props => {
         props.unsubscribeAll();
         // eslint-disable-next-line
     }, []);
-    useEffect(() => {
-        google.accounts.id.initialize({
-            client_id: GOOGLE_ID,
-            callback: handleGoogleLogin,
-        });
+    // useEffect(() => {
+    //     google.accounts.id.initialize({
+    //         client_id: GOOGLE_ID,
+    //         callback: handleGoogleLogin,
+    //     });
 
-        google.accounts.id.renderButton(
-            document.getElementById('google-signin'),
-            {
-                type: 'standard',
-                shape: 'pill',
-                theme: 'outline',
-                size: 'large',
-                logo_alignment: 'left',
-                width: '320px',
-            }
-        );
-        // eslint-disable-next-line
-    }, []);
+    //     google.accounts.id.renderButton(
+    //         document.getElementById('google-signin'),
+    //         {
+    //             type: 'standard',
+    //             shape: 'pill',
+    //             theme: 'outline',
+    //             size: 'large',
+    //             logo_alignment: 'left',
+    //             width: '320px',
+    //         }
+    //     );
+    //     // eslint-disable-next-line
+    // }, []);
+
+    // useEffect(() => {
+    //     // Send a GET request for profile information
+    //     // If user is currently logged in, we will get profile data, if they are not logged in, we will get 401 (Unauthorized) that we can handle in `.catch`
+    //     // Note that we need to use `withCredentials` in order to pass the cookie to a server
+    //     axios
+    //         .get(`${SERVER_URL}/auth/profile`, { withCredentials: true })
+    //         .then(res => {
+    //             // Update the state: done authenticating, user is logged in, set the profile data
+    //             setIsAuthenticating(false);
+    //             setIsLoggedIn(true);
+    //             setProfileData(res.data);
+    //         })
+    //         .catch(err => {
+    //             // If we are getting back 401 (Unauthorized) back from the server, means we need to log in
+    //             if (err.response.status === 401) {
+    //                 // Update the state: done authenticating, user is not logged in
+    //                 setIsAuthenticating(false);
+    //                 setIsLoggedIn(false);
+    //             } else {
+    //                 console.log('Error authenticating', err);
+    //             }
+    //         });
+    // }, []);
 
     return (
         <Center
@@ -208,6 +241,8 @@ const Login = props => {
                                 Login
                             </Button>
                             <Box id="google-signin"></Box>
+                            <LoginButton />
+                            <LogoutButton />
                         </Flex>
                     </Flex>
                 </Center>

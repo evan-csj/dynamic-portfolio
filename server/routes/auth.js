@@ -10,6 +10,7 @@ router.get(
         failureRedirect: `${process.env.CLIENT_URL}/auth-fail`,
     }),
     (_req, res) => {
+        console.log(res)
         res.redirect('http://localhost:8080/auth/success-callback');
     }
 );
@@ -43,10 +44,8 @@ router.get('/logout', (req, res) => {
 
 router.get('/success-callback', (req, res) => {
     if (req.user) {
-        console.log('good');
         res.status(200).json(req.user);
     } else {
-        console.log('bad');
         res.status(401).json({ message: 'User is not logged in' });
     }
 });

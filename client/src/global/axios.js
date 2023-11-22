@@ -22,7 +22,12 @@ const getUser = async id => {
 
 const getHoldings = async id => {
     try {
-        const holdings = await axios.get(`${API_ADDRESS}/holding/user/${id}`);
+        const token = sessionStorage.getItem('authToken');
+        const holdings = await axios.get(`${API_ADDRESS}/holding/user/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return holdings;
     } catch (err) {}
 };
@@ -50,8 +55,14 @@ const getCurrency = async () => {
 
 const getWatchlist = async id => {
     try {
+        const token = sessionStorage.getItem('authToken');
         const watchlist = await axios.get(
-            `${API_ADDRESS}/watchlist/user/${id}`
+            `${API_ADDRESS}/watchlist/user/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
         );
         return watchlist;
     } catch (err) {}

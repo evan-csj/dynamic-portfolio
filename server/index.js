@@ -120,7 +120,7 @@ passport.use(
             scope: ['profile', 'email'],
         },
         (_accessToken, _refreshToken, profile, done) => {
-            console.log(profile)
+            console.log(profile);
             const testProfile = 'evancheng';
             knex('user')
                 .select('id')
@@ -142,12 +142,12 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-    console.log('serializeUser: ', user);
+    // console.log('serializeUser: ', user);
     done(null, user.id);
 });
 
 passport.deserializeUser((userId, done) => {
-    console.log('deserializeUser', userId);
+    // console.log('deserializeUser', userId);
     knex('user')
         .select(
             'id',

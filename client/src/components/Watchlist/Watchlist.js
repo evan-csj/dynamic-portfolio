@@ -192,10 +192,14 @@ function Watchlist(props) {
             navigate('/');
         } else {
             getWatchlist(username).then(response => {
-                const dataObj = convertArray2Dict(response.data);
-                setWatchlist(dataObj);
-                setIsWatchlistLoaded(true);
-                setTicker(response.data[0].ticker);
+                if (response) {
+                    const dataObj = convertArray2Dict(response.data);
+                    setWatchlist(dataObj);
+                    setIsWatchlistLoaded(true);
+                    setTicker(response.data[0].ticker);
+                } else {
+                    navigate('/');
+                }
             });
         }
         // eslint-disable-next-line
