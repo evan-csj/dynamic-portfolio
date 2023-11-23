@@ -34,7 +34,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
-function Watchlist(props) {
+const Watchlist = props => {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     const navigate = useNavigate();
@@ -437,6 +437,6 @@ function Watchlist(props) {
             <Box h={48} />
         </Flex>
     );
-}
+};
 
 export default Watchlist;

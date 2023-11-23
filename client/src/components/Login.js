@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,NavLink } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import {
     Flex,
@@ -18,8 +18,7 @@ import logo from '../assets/logo.svg';
 import '../styles/global.scss';
 
 import axios from 'axios';
-import LoginButton from './LoginButton';
-import LogoutButton from './LogoutButton';
+import { GitHubLogin } from '../styles/icons';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const Login = props => {
@@ -208,7 +207,7 @@ const Login = props => {
                         </FormControl>
                         <Flex
                             w="100%"
-                            gap="16px"
+                            gap="8px"
                             direction="column"
                             justifyContent="space-between"
                             alignItems="center"
@@ -241,8 +240,9 @@ const Login = props => {
                                 Login
                             </Button>
                             <Box id="google-signin"></Box>
-                            <LoginButton />
-                            <LogoutButton />
+                            <NavLink to={`${SERVER_URL}/auth/github`}>
+                                <GitHubLogin w={8} h={8} />
+                            </NavLink>
                         </Flex>
                     </Flex>
                 </Center>

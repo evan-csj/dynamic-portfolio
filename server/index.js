@@ -61,7 +61,7 @@ const watchlistRoute = require('./routes/watchlistRoute');
 const portfolioRoute = require('./routes/portfolioRoute');
 const symbolRoute = require('./routes/symbolRoute');
 const statRoute = require('./routes/statRoute');
-const authRoute = require('./routes/auth');
+const authRoute = require('./routes/authRoute');
 
 app.use(express.json());
 app.use(helmet());
