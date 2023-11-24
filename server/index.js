@@ -2,7 +2,8 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { encode } = require('gpt-3-encoder');
 const cors = require('cors');
-const expressSession = require('express-session');
+const session = require('express-session');
+// const MySQLStore = require('express-mysql-session')(session);
 const helmet = require('helmet');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -66,14 +67,20 @@ const authRoute = require('./routes/authRoute');
 app.use(express.json());
 app.use(helmet());
 app.use(
-    expressSession({
+    session({
         secret: process.env.JWT_SECRET,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
+        cookie: {
+            secure: false,
+            maxAge: 24 * 60 * 60 * 1000,
+        },
     })
 );
 app.use(passport.initialize());
 app.use(passport.session());
+require('./passport-setup');
+
 app.use(
     cors({
         origin: 'http://localhost:3000',
@@ -82,95 +89,37 @@ app.use(
     })
 );
 
-passport.use(
-    new GitHubStrategy(
-        {
-            clientID: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            callbackURL: process.env.GITHUB_CALLBACK_URL,
-            scope: ['profile', 'email'],
-        },
-        (_accessToken, _refreshToken, profile, done) => {
-            const testProfile = 'evancheng';
-            knex('user')
-                .select('id')
-                .where('id', testProfile)
-                .then(data => {
-                    if (data.length === 0) {
-                        console.log(
-                            `The user with user ${testProfile} is not found!`
-                        );
-                    } else {
-                        done(null, data[0]);
-                    }
-                })
-                .catch(err => {
-                    console.log(`Error retrieving user ${testProfile} ${err}`);
-                });
-        }
-    )
-);
+// passport.use(
+//     new GoogleStrategy(
+//         {
+//             clientID: process.env.GOOGLE_CLIENT_ID,
+//             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//             callbackURL: process.env.GOOGLE_CALLBACK_URL,
+//             scope: ['profile', 'email'],
+//         },
+//         (_accessToken, _refreshToken, profile, done) => {
+//             console.log(profile);
+//             const testProfile = 'evancheng';
+//             knex('user')
+//                 .select('id')
+//                 .where('id', testProfile)
+//                 .then(data => {
+//                     if (data.length === 0) {
+//                         console.log(
+//                             `The user with user ${testProfile} is not found!`
+//                         );
+//                     } else {
+//                         done(null, data[0]);
+//                     }
+//                 })
+//                 .catch(err => {
+//                     console.log(`Error retrieving user ${testProfile} ${err}`);
+//                 });
+//         }
+//     )
+// );
 
-passport.use(
-    new GoogleStrategy(
-        {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL,
-            scope: ['profile', 'email'],
-        },
-        (_accessToken, _refreshToken, profile, done) => {
-            console.log(profile);
-            const testProfile = 'evancheng';
-            knex('user')
-                .select('id')
-                .where('id', testProfile)
-                .then(data => {
-                    if (data.length === 0) {
-                        console.log(
-                            `The user with user ${testProfile} is not found!`
-                        );
-                    } else {
-                        done(null, data[0]);
-                    }
-                })
-                .catch(err => {
-                    console.log(`Error retrieving user ${testProfile} ${err}`);
-                });
-        }
-    )
-);
-
-passport.serializeUser((user, done) => {
-    // console.log('serializeUser: ', user);
-    done(null, user.id);
-});
-
-passport.deserializeUser((userId, done) => {
-    // console.log('deserializeUser', userId);
-    knex('user')
-        .select(
-            'id',
-            'user_email',
-            'first_name',
-            'last_name',
-            'cash_usd',
-            'cash_cad',
-            'dp'
-        )
-        .where('id', userId)
-        .then(data => {
-            if (data.length === 0) {
-                console.log(`The user with user ${userId} is not found!`);
-            } else {
-                done(null, data[0]);
-            }
-        })
-        .catch(err => {
-            console.log(`Error retrieving user ${userId} ${err}`);
-        });
-});
-
+app.use('/auth', authRoute);
 app.use('/user', userRoute);
 app.use('/trade', tradeRoute);
 app.use('/holding', holdingRoute);
@@ -180,7 +129,6 @@ app.use('/watchlist', watchlistRoute);
 app.use('/portfolio', portfolioRoute);
 app.use('/symbols', symbolRoute);
 app.use('/stat', statRoute);
-app.use('/auth', authRoute);
 
 (async () => {
     const dockConfiguration = {
@@ -237,6 +185,28 @@ app.use('/auth', authRoute);
         }
     );
 })();
+
+// Middleware to check if the user is authenticated
+function isAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/');
+}
+
+app.get('/logout', (req, res) => {
+    req.logout(error => {
+        if (error) {
+            return res.status(500).json({
+                message: 'Server error, please try again later',
+                error: error,
+            });
+        } else {
+            console.log('logout success');
+        }
+        res.redirect(process.env.CLIENT_URL);
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);

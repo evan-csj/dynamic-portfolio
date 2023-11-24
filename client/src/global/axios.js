@@ -10,11 +10,9 @@ const newHeader = {
 
 const getUser = async id => {
     try {
-        const token = sessionStorage.getItem('authToken');
+        // const token = sessionStorage.getItem('authToken');
         const user = await axios.get(`${API_ADDRESS}/user/${id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true,
         });
         return user;
     } catch (err) {}
@@ -271,6 +269,12 @@ const checkUserPassword = async login => {
     }
 };
 
+const logout = () => {
+    try {
+        axios.get(`${API_ADDRESS}/auth/logout`);
+    } catch (err) {}
+};
+
 export {
     getUser,
     getHoldings,
@@ -294,4 +298,5 @@ export {
     deleteWatchItem,
     getFeedback,
     checkUserPassword,
+    logout,
 };

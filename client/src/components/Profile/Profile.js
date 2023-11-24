@@ -184,32 +184,51 @@ const Profile = props => {
         const username = sessionStorage.getItem('userId');
         setUserId(username);
 
-        if (username === null) {
-            navigate('/');
-        } else {
-            getUser(username).then(response => {
-                if (response) {
-                    const { first_name, last_name, cash_cad, cash_usd, dp } =
-                        response.data;
-                    const user = {
-                        firstName: first_name,
-                        lastName: last_name,
-                        cashCAD: cash_cad,
-                        cashUSD: cash_usd,
-                        dp: dp,
-                    };
-                    setUserData(user);
-                } else {
-                    navigate('/');
-                }
-            });
+        // if (username === null) {
+        //     navigate('/');
+        // } else {
+        //     getUser(username).then(response => {
+        //         if (response) {
+        //             const { first_name, last_name, cash_cad, cash_usd, dp } =
+        //                 response.data;
+        //             const user = {
+        //                 firstName: first_name,
+        //                 lastName: last_name,
+        //                 cashCAD: cash_cad,
+        //                 cashUSD: cash_usd,
+        //                 dp: dp,
+        //             };
+        //             setUserData(user);
+        //         } else {
+        //             navigate('/');
+        //         }
+        //     });
 
-            getHoldings(username).then(response => {
-                const dataObj = convertArray2Dict(response.data);
-                setHoldingList(dataObj);
-                setIsHoldingLoaded(true);
-            });
-        }
+        //     getHoldings(username).then(response => {
+        //         const dataObj = convertArray2Dict(response.data);
+        //         setHoldingList(dataObj);
+        //         setIsHoldingLoaded(true);
+        //     });
+        // }
+
+        getUser('evancheng').then(response => {
+            const { first_name, last_name, cash_cad, cash_usd, dp } =
+                response.data;
+            const user = {
+                firstName: first_name,
+                lastName: last_name,
+                cashCAD: cash_cad,
+                cashUSD: cash_usd,
+                dp: dp,
+            };
+            setUserData(user);
+        });
+
+        getHoldings('evancheng').then(response => {
+            const dataObj = convertArray2Dict(response.data);
+            setHoldingList(dataObj);
+            setIsHoldingLoaded(true);
+        });
         // eslint-disable-next-line
     }, [props.toggle]);
 

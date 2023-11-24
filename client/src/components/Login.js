@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate,NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import {
     Flex,
@@ -15,6 +15,8 @@ import {
 } from '@chakra-ui/react';
 import { checkUserPassword } from '../global/axios';
 import logo from '../assets/logo.svg';
+import githubLogo1 from '../assets/github-mark.png';
+import githubLogo2 from '../assets/GitHub_Logo.png';
 import '../styles/global.scss';
 
 import axios from 'axios';
@@ -241,7 +243,16 @@ const Login = props => {
                             </Button>
                             <Box id="google-signin"></Box>
                             <NavLink to={`${SERVER_URL}/auth/github`}>
-                                <GitHubLogin w={8} h={8} />
+                                <Flex dir="row" gap="0" h={8}>
+                                    <Image
+                                        src={githubLogo1}
+                                        alt="github-logo"
+                                    />
+                                    <Image
+                                        src={githubLogo2}
+                                        alt="github-logo"
+                                    />
+                                </Flex>
                             </NavLink>
                         </Flex>
                     </Flex>

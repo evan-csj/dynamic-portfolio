@@ -3,6 +3,7 @@ const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 
 const singleUser = (req, res) => {
+    console.log('user auth', req.isAuthenticated());
     knex('user')
         .select(
             'id',

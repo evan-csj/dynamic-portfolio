@@ -20,4 +20,13 @@ const authorize = (req, res, next) => {
     });
 };
 
-module.exports = { authorize };
+const isAuth = (req, res, next) => {
+    console.log('isAuth', req.isAuthenticated());
+    if (req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+
+module.exports = { authorize, isAuth };
