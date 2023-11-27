@@ -5,6 +5,7 @@ const { authorize, isAuth } = require('../middlewares/authorize');
 router.route('/').put(userController.checkUser).post(userController.addUser);
 
 router.route('/:username').get(userController.singleUser);
+router.route('/').get(userController.singleUser);
 // .put(userController.editUser)
 // .delete(userController.deleteUser);
 

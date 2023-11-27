@@ -1,6 +1,7 @@
 module.exports = [
     {
         id: 'evancheng',
+        github_username: 'evan-csj',
         password:
             '$argon2id$v=19$m=65536,t=3,p=4$gHNPAgN4fkU2WLuUAkEzcQ$pdXHvQ4ucXNasvYhDvTr+IGvyB1jkKpYKHR4YvWN1SY',
         user_email: 'evancheng2014@gmail.com',

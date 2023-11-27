@@ -1,5 +1,6 @@
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
+const knex = require('knex')(require('./knexfile'));
 
 passport.use(
     new GitHubStrategy(
@@ -19,6 +20,19 @@ passport.serializeUser((user, done) => {
     done(null, user);
 });
 
-passport.deserializeUser((obj, done) => {
-    done(null, obj);
+passport.deserializeUser(async (sessionObj, done) => {
+    const githubUsername = sessionObj.username;
+    try {
+        const user = await knex('user')
+            .select('id', 'github_username')
+            .where('github_username', githubUsername)
+            .first();
+        if (user) {
+            done(null, user.id);
+        } else {
+            done(new Error(`${githubUsername} is not found!`));
+        }
+    } catch (error) {
+        done(error);
+    }
 });

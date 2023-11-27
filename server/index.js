@@ -98,7 +98,6 @@ app.use(
 //             scope: ['profile', 'email'],
 //         },
 //         (_accessToken, _refreshToken, profile, done) => {
-//             console.log(profile);
 //             const testProfile = 'evancheng';
 //             knex('user')
 //                 .select('id')

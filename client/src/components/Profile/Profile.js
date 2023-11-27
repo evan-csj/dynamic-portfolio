@@ -211,7 +211,7 @@ const Profile = props => {
         //     });
         // }
 
-        getUser('evancheng').then(response => {
+        getUser('').then(response => {
             const { first_name, last_name, cash_cad, cash_usd, dp } =
                 response.data;
             const user = {
