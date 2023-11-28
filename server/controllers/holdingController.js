@@ -17,7 +17,13 @@ const selectHolding = userId =>
         .where('user_id', userId);
 
 const getHolding = (req, res) => {
-    const userId = req.params.userId;
+    let userId = '';
+    if (req.params.userId) {
+        userId = req.params.userId;
+    } else if (req.user) {
+        userId = req.user;
+    }
+    
     selectHolding(userId)
         .then(data => {
             if (data.length === 0) {

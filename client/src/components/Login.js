@@ -61,7 +61,7 @@ const Login = props => {
             setIsUsernameCorrect(true);
             setIsPasswordCorrect(true);
             sessionStorage.setItem('userId', validatedUsername);
-            sessionStorage.setItem('authToken', response.data);
+            sessionStorage.setItem('JWT', response.data);
             navigate('/profile');
             props.login(validatedUsername);
         }

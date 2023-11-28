@@ -1,27 +1,43 @@
 const knex = require('knex')(require('../knexfile'));
 const { v1 } = require('uuid');
 
-const getFundHistory = (req, res) => {
-    knex('fund')
-        .select('*')
-        .where('user_id', req.params.userId)
-        .orderBy('created_at', 'desc')
-        .then(data => {
-            if (data.length === 0) {
-                return res
-                    .status(404)
-                    .json(
-                        `The holding with user id ${req.params.userId} is not found!`
-                    );
-            } else {
-                res.status(200).json(data);
-            }
-        })
-        .catch(err => {
-            res.status(400).json(
-                `Error retrieving user id ${req.params.userId} ${err}`
-            );
-        });
+const getFundHistory = async (req, res) => {
+    let userId = '';
+    if (req.params.userId) {
+        userId = req.params.userId;
+    } else if (req.user) {
+        userId = req.user;
+    }
+
+    try {
+        const fundHistory = await knex('fund')
+            .select('*')
+            .where('user_id', userId)
+            .orderBy('created_at', 'desc');
+        if (!fundHistory) {
+            return res
+                .status(404)
+                .json(`The holding with user id ${userId} is not found!`);
+        } else {
+            return res.status(200).json(fundHistory);
+        }
+    } catch (error) {
+        res.status(400).json(`Error retrieving user id ${userId} ${error}`);
+    }
+
+    // knex('fund')
+    //     .where('user_id', userId)
+    //     .orderBy('created_at', 'desc')
+    //     .then(data => {
+    //         if (data.length === 0) {
+
+    //         } else {
+    //             res.status(200).json(data);
+    //         }
+    //     })
+    //     .catch(err => {
+
+    //     });
 };
 
 const changeFund = async (req, res) => {

@@ -2,41 +2,38 @@ const knex = require('knex')(require('../knexfile'));
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 
-const singleUser = (req, res) => {
+const singleUser = async (req, res) => {
     let userId = '';
-    if (req.params.username) {
-        userId = req.params.username;
+    if (req.params.userId) {
+        userId = req.params.userId;
     } else if (req.user) {
         userId = req.user;
     }
 
-    knex('user')
-        .select(
-            'id',
-            'user_email',
-            'first_name',
-            'last_name',
-            'cash_usd',
-            'cash_cad',
-            'dp'
-        )
-        .where('id', userId)
-        .then(data => {
-            if (data.length === 0) {
-                return res
-                    .status(404)
-                    .json(
-                        `The user with username ${userId} is not found!`
-                    );
-            } else {
-                res.status(200).json(data[0]);
-            }
-        })
-        .catch(err => {
-            res.status(400).json(
-                `Error retrieving user ${userId} ${err}`
-            );
-        });
+    try {
+        const user = await knex('user')
+            .select(
+                'id',
+                'user_email',
+                'first_name',
+                'last_name',
+                'cash_usd',
+                'cash_cad',
+                'dp'
+            )
+            .where('id', userId)
+            .first();
+
+        if (!user) {
+            return res
+                .status(404)
+                .json(`The user with username ${userId} is not found!`);
+        } else {
+            return res.status(200).json(user);
+        }
+    } catch (error) {
+        return res.status(400).json(`Error retrieving user ${userId} ${error}`);
+    }
 };
 
 const addUser = (req, res) => {

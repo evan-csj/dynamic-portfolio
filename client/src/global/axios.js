@@ -10,26 +10,34 @@ const newHeader = {
 
 const axiosStandard = axios.create({
     withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
 const getUser = async id => {
     try {
-        // const token = sessionStorage.getItem('authToken');
+        const token = sessionStorage.getItem('JWT');
         const user = await axiosStandard.get(`${API_ADDRESS}/user/${id}`, {
-            withCredentials: true,
+            headers: {
+                JWT: `Bearer ${token}`,
+            },
         });
         return user;
-    } catch (err) {}
+    } catch (err) {
+        console.error('Error:', err);
+        return;
+    }
 };
 
 const getHoldings = async id => {
     try {
-        const token = sessionStorage.getItem('authToken');
+        const token = sessionStorage.getItem('JWT');
         const holdings = await axiosStandard.get(
             `${API_ADDRESS}/holding/user/${id}`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    JWT: `Bearer ${token}`,
                 },
             }
         );
@@ -141,8 +149,7 @@ const putSymbolInfo = async symbolInfo => {
     try {
         const response = await axiosStandard.put(
             `${API_ADDRESS}/symbols/info`,
-            symbolInfo,
-            newHeader
+            symbolInfo
         );
         return response;
     } catch (err) {}
@@ -152,8 +159,7 @@ const putSymbolPrice = async symbolPrice => {
     try {
         const response = await axiosStandard.put(
             `${API_ADDRESS}/symbols/price`,
-            symbolPrice,
-            newHeader
+            symbolPrice
         );
         return response;
     } catch (err) {}
@@ -205,8 +211,7 @@ const putPortfolio = async (id, dp) => {
     try {
         const response = await axiosStandard.put(
             `${API_ADDRESS}/portfolio/user/${id}`,
-            dp,
-            newHeader
+            dp
         );
         return response;
     } catch (err) {}
@@ -216,8 +221,7 @@ const postFunding = async funding => {
     try {
         const newFunding = await axiosStandard.post(
             `${API_ADDRESS}/fund`,
-            funding,
-            newHeader
+            funding
         );
         return newFunding;
     } catch (err) {}
@@ -227,8 +231,7 @@ const postTrading = async trading => {
     try {
         const newTrading = await axiosStandard.post(
             `${API_ADDRESS}/trade`,
-            trading,
-            newHeader
+            trading
         );
         return newTrading;
     } catch (err) {}
@@ -238,8 +241,7 @@ const postWatchItem = async item => {
     try {
         const newItem = await axiosStandard.post(
             `${API_ADDRESS}/watchlist`,
-            item,
-            newHeader
+            item
         );
         return newItem;
     } catch (err) {}
@@ -262,8 +264,7 @@ const getFeedback = async text => {
     try {
         const response = await axiosStandard.post(
             `${API_ADDRESS}/chatbot`,
-            newMessage,
-            newHeader
+            newMessage
         );
         return response;
     } catch (err) {
@@ -279,8 +280,7 @@ const checkUserPassword = async login => {
     try {
         const isCorrect = await axiosStandard.put(
             `${API_ADDRESS}/user`,
-            userInput,
-            newHeader
+            userInput
         );
         return isCorrect;
     } catch (err) {

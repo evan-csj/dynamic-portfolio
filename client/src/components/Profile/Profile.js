@@ -181,37 +181,13 @@ const Profile = props => {
     }, []);
 
     useEffect(() => {
-        const username = sessionStorage.getItem('userId');
-        setUserId(username);
+        const userIdSession = sessionStorage.getItem('userId');
+        if (userIdSession) {
+            setUserId(userIdSession);
+        }
 
-        // if (username === null) {
-        //     navigate('/');
-        // } else {
-        //     getUser(username).then(response => {
-        //         if (response) {
-        //             const { first_name, last_name, cash_cad, cash_usd, dp } =
-        //                 response.data;
-        //             const user = {
-        //                 firstName: first_name,
-        //                 lastName: last_name,
-        //                 cashCAD: cash_cad,
-        //                 cashUSD: cash_usd,
-        //                 dp: dp,
-        //             };
-        //             setUserData(user);
-        //         } else {
-        //             navigate('/');
-        //         }
-        //     });
-
-        //     getHoldings(username).then(response => {
-        //         const dataObj = convertArray2Dict(response.data);
-        //         setHoldingList(dataObj);
-        //         setIsHoldingLoaded(true);
-        //     });
-        // }
-
-        getUser('').then(response => {
+        const username = userIdSession ?? '';
+        getUser(username).then(response => {
             const { first_name, last_name, cash_cad, cash_usd, dp } =
                 response.data;
             const user = {
@@ -224,7 +200,7 @@ const Profile = props => {
             setUserData(user);
         });
 
-        getHoldings('evancheng').then(response => {
+        getHoldings(username).then(response => {
             const dataObj = convertArray2Dict(response.data);
             setHoldingList(dataObj);
             setIsHoldingLoaded(true);
