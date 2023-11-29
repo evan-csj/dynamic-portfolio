@@ -24,24 +24,17 @@ const getFundHistory = async (req, res) => {
     } catch (error) {
         res.status(400).json(`Error retrieving user id ${userId} ${error}`);
     }
-
-    // knex('fund')
-    //     .where('user_id', userId)
-    //     .orderBy('created_at', 'desc')
-    //     .then(data => {
-    //         if (data.length === 0) {
-
-    //         } else {
-    //             res.status(200).json(data);
-    //         }
-    //     })
-    //     .catch(err => {
-
-    //     });
 };
 
 const changeFund = async (req, res) => {
-    const { user_id: userId, type, currency, amount } = req.body;
+    const { type, currency, amount } = req.body;
+    const userId = req.body.userId ? req.body.userId : req.user || '';
+    const newFunding = {
+        user_id: userId,
+        type: type,
+        amount: amount,
+        currency: currency,
+    };
     const validCurrency = ['usd', 'cad'];
     const validType = ['deposit', 'withdraw'];
 
@@ -87,8 +80,8 @@ const changeFund = async (req, res) => {
         await knex('user')
             .update({ cash_usd: cashUSD, cash_cad: cashCAD })
             .where({ id: userId });
-        const newFund = { id: v1(), ...req.body };
-        await knex('fund').insert(newFund);
+        const newFundingHistory = { id: v1(), ...newFunding };
+        await knex('fund').insert(newFundingHistory);
 
         return res.status(200).json({ cash_usd: cashUSD, cash_cad: cashCAD });
     } catch (error) {

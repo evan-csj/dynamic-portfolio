@@ -108,7 +108,7 @@ const FundingForm = props => {
     const handleSubmit = () => {
         if (type !== '' && account !== '' && notZero && enoughFund()) {
             const newFunding = {
-                user_id: userId,
+                userId: userId,
                 amount: numberValue,
                 type: type,
                 currency: account,
