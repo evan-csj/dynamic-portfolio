@@ -5,7 +5,6 @@ const isAuth = (req, res, next) => {
     if (req.isAuthenticated()) {
         next();
     } else {
-        console.log(req.headers.jwt)
         if (!req.headers.jwt) {
             return res.status(401).json('No token found');
             // return res.redirect(`${process.env.CLIENT_URL}/login`);
@@ -16,7 +15,6 @@ const isAuth = (req, res, next) => {
             authTokenArray.length !== 2
         ) {
             return res.status(401).json('Invalid token');
-            // return res.redirect(`${process.env.CLIENT_URL}/login`);
         }
         jwt.verify(
             authTokenArray[1],
@@ -24,7 +22,6 @@ const isAuth = (req, res, next) => {
             (err, decoded) => {
                 if (err) {
                     return res.status(401).json('The token is expired or invalid');
-                    // return res.redirect(`${process.env.CLIENT_URL}/login`);
                 }
                 req.jwtPayload = decoded;
                 next();

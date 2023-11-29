@@ -184,6 +184,8 @@ const Profile = props => {
         const userIdSession = sessionStorage.getItem('userId');
         if (userIdSession) {
             setUserId(userIdSession);
+        }else{
+            setUserId('');
         }
 
         const username = userIdSession ?? '';

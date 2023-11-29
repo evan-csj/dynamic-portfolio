@@ -91,16 +91,17 @@ const FundingForm = props => {
 
     useEffect(() => {
         props.unsubscribeAll();
-        const username = sessionStorage.getItem('userId');
-        setUserId(username);
-
-        if (username === null) {
-            navigate('/');
+        const userIdSession = sessionStorage.getItem('userId');
+        if (userIdSession) {
+            setUserId(userIdSession);
         } else {
-            getUser(username).then(response => {
-                setUserData(response.data);
-            });
+            setUserId('');
         }
+
+        const username = userIdSession ?? '';
+        getUser(username).then(response => {
+            setUserData(response.data);
+        });
         // eslint-disable-next-line
     }, []);
 

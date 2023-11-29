@@ -72,7 +72,7 @@ const checkUser = async (req, res) => {
                         loginTime: Date.now(),
                     },
                     process.env.JWT_SECRET,
-                    { expiresIn: 10 }
+                    { expiresIn: '1d' }
                 );
                 return res.status(200).json(token);
             } else {
