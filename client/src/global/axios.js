@@ -237,7 +237,7 @@ const postTrading = async trading => {
     } catch (err) {}
 };
 
-const postWatchItem = async item => {
+const addWatchItem = async item => {
     try {
         const newItem = await axiosStandard.post(
             `${API_ADDRESS}/watchlist`,
@@ -247,10 +247,11 @@ const postWatchItem = async item => {
     } catch (err) {}
 };
 
-const deleteWatchItem = async id => {
+const deleteWatchItem = async item => {
     try {
-        const deleteItem = await axiosStandard.delete(
-            `${API_ADDRESS}/watchlist/${id}`
+        const deleteItem = await axiosStandard.put(
+            `${API_ADDRESS}/watchlist`,
+            item
         );
         return deleteItem;
     } catch (err) {}
@@ -313,7 +314,7 @@ export {
     putPortfolio,
     postFunding,
     postTrading,
-    postWatchItem,
+    addWatchItem,
     deleteWatchItem,
     getFeedback,
     checkUserPassword,

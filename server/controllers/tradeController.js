@@ -3,12 +3,7 @@ const knex = require('knex')(require('../knexfile'));
 const update = require('./update');
 
 const getTradeHistory = async (req, res) => {
-    let userId = '';
-    if (req.params.userId) {
-        userId = req.params.userId;
-    } else if (req.user) {
-        userId = req.user;
-    }
+    const userId = req.params.userId || req.user || '';
 
     try {
         const tradeHistory = await knex('trade')
@@ -25,27 +20,19 @@ const getTradeHistory = async (req, res) => {
     } catch (error) {
         return res.status(400).json(`Error retrieving user ${userId} ${error}`);
     }
-
-    // knex('trade')
-    //     .select('*')
-    //     .where('user_id', req.params.userId)
-    //     .orderBy('created_at', 'desc')
-    //     .then(data => {
-    //         if (data.length === 0) {
-    //             return res
-    //                 .status(404)
-    //                 .json(`The trade history with user id ${req.params.userId} is not found!`);
-    //         } else {
-    //             res.status(200).json(data);
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.status(400).json(`Error retrieving user ${req.params.username} ${err}`);
-    //     });
 };
 
 const addTrade = async (req, res) => {
-    const { user_id: userId, type, currency, price, shares, ticker } = req.body;
+    const { type, currency, price, shares, ticker } = req.body;
+    const userId = req.body.userId ? req.body.userId : req.user || '';
+    const newTrading = {
+        user_id: userId,
+        type,
+        currency,
+        price,
+        shares,
+        ticker,
+    };
     const validType = ['buy', 'sell'];
     const validCurrency = ['USD', 'CAD'];
 
@@ -146,9 +133,9 @@ const addTrade = async (req, res) => {
             .where({ user_id: userId })
             .andWhere({ ticker: ticker });
 
-        const newTrade = { id: v1(), ...req.body };
-        newTrade.order_status = 'approved';
-        await knex('trade').insert(newTrade);
+        const newTradingHistory = { id: v1(), ...newTrading };
+        newTradingHistory.order_status = 'approved';
+        await knex('trade').insert(newTradingHistory);
 
         return res.status(200).json({
             user: { id: userId, cash_usd: cashUSD, cash_cad: cashCAD },

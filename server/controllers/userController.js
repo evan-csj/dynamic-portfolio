@@ -3,12 +3,7 @@ const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 
 const singleUser = async (req, res) => {
-    let userId = '';
-    if (req.params.userId) {
-        userId = req.params.userId;
-    } else if (req.user) {
-        userId = req.user;
-    }
+    const userId = req.params.userId || req.user || '';
 
     try {
         const user = await knex('user')

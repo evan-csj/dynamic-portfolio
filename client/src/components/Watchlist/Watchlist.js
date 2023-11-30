@@ -21,7 +21,7 @@ import {
     getLastPrice,
     getCurrency,
     getSymbols,
-    postWatchItem,
+    addWatchItem,
     deleteWatchItem,
     getCompanyProfile,
     putSymbolPrice,
@@ -136,34 +136,31 @@ const Watchlist = props => {
             const { logo, name, exchange, finnhubIndustry, currency } =
                 profile.data;
 
-            let newWatchFE = {
-                id: `${userId}-${searchTicker}`,
-                user_id: userId,
-                logo: logo,
+            const newWatchItemFE = {
+                logo,
                 ticker: searchTicker,
                 price: currentPrice,
                 prev_close: prevClose,
-                currency: currency,
+                currency,
             };
 
-            let newWatchBE = {
-                id: `${userId}-${searchTicker}`,
-                user_id: userId,
-                name: name,
-                exchange: exchange,
+            const newWatchItemBE = {
+                userId,
+                name,
+                exchange,
                 sector: finnhubIndustry,
-                logo: logo,
+                logo,
                 ticker: searchTicker,
                 price: currentPrice,
-                prev_close: prevClose,
-                currency: currency,
+                prevClose,
+                currency,
             };
 
             let newWatchlist = { ...watchlist };
-            newWatchlist[searchTicker] = newWatchFE;
+            newWatchlist[searchTicker] = newWatchItemFE;
             setWatchlist(newWatchlist);
             setTicker(searchTicker);
-            await postWatchItem(newWatchBE);
+            await addWatchItem(newWatchItemBE);
             setSearchTicker('');
             wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
@@ -171,37 +168,38 @@ const Watchlist = props => {
         }
     };
 
-    const deleteItem = ticker => {
+    const deleteItem = async ticker => {
         let newWatchlist = { ...watchlist };
+        const item = {
+            userId,
+            ticker,
+        };
+        
         if (ticker in watchlist) {
             delete newWatchlist[ticker];
             setWatchlist(newWatchlist);
-            deleteWatchItem(`${userId}-${ticker}`);
+            await deleteWatchItem(item);
             wsChange('unsubscribe', ticker);
             setListLength(Object.keys(newWatchlist).length);
             setSubscribe(Object.keys(newWatchlist));
         }
-        return;
     };
 
     useEffect(() => {
-        const username = sessionStorage.getItem('userId');
+        const userIdSession = sessionStorage.getItem('userId');
+        const username = userIdSession ?? '';
         setUserId(username);
 
-        if (username === '') {
-            navigate('/');
-        } else {
-            getWatchlist(username).then(response => {
-                if (response) {
-                    const dataObj = convertArray2Dict(response.data);
-                    setWatchlist(dataObj);
-                    setIsWatchlistLoaded(true);
-                    setTicker(response.data[0].ticker);
-                } else {
-                    navigate('/');
-                }
-            });
-        }
+        getWatchlist(username).then(response => {
+            if (response) {
+                const dataObj = convertArray2Dict(response.data);
+                setWatchlist(dataObj);
+                setIsWatchlistLoaded(true);
+                setTicker(response.data[0].ticker);
+            } else {
+                navigate('/');
+            }
+        });
         // eslint-disable-next-line
     }, []);
 

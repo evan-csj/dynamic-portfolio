@@ -185,14 +185,6 @@ app.use('/stat', statRoute);
     );
 })();
 
-// Middleware to check if the user is authenticated
-function isAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/');
-}
-
 app.get('/logout', (req, res) => {
     req.logout(error => {
         if (error) {

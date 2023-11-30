@@ -182,13 +182,9 @@ const Profile = props => {
 
     useEffect(() => {
         const userIdSession = sessionStorage.getItem('userId');
-        if (userIdSession) {
-            setUserId(userIdSession);
-        }else{
-            setUserId('');
-        }
-
         const username = userIdSession ?? '';
+        setUserId(username);
+        
         getUser(username).then(response => {
             const { first_name, last_name, cash_cad, cash_usd, dp } =
                 response.data;

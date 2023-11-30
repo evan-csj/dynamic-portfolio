@@ -2,12 +2,7 @@ const knex = require('knex')(require('../knexfile'));
 const { v1 } = require('uuid');
 
 const getFundHistory = async (req, res) => {
-    let userId = '';
-    if (req.params.userId) {
-        userId = req.params.userId;
-    } else if (req.user) {
-        userId = req.user;
-    }
+    const userId = req.params.userId || req.user || '';
 
     try {
         const fundHistory = await knex('fund')
@@ -31,9 +26,9 @@ const changeFund = async (req, res) => {
     const userId = req.body.userId ? req.body.userId : req.user || '';
     const newFunding = {
         user_id: userId,
-        type: type,
-        amount: amount,
-        currency: currency,
+        type,
+        amount,
+        currency,
     };
     const validCurrency = ['usd', 'cad'];
     const validType = ['deposit', 'withdraw'];
