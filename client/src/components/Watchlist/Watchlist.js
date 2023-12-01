@@ -174,7 +174,7 @@ const Watchlist = props => {
             userId,
             ticker,
         };
-        
+
         if (ticker in watchlist) {
             delete newWatchlist[ticker];
             setWatchlist(newWatchlist);
@@ -191,14 +191,10 @@ const Watchlist = props => {
         setUserId(username);
 
         getWatchlist(username).then(response => {
-            if (response) {
-                const dataObj = convertArray2Dict(response.data);
-                setWatchlist(dataObj);
-                setIsWatchlistLoaded(true);
-                setTicker(response.data[0].ticker);
-            } else {
-                navigate('/');
-            }
+            const dataObj = convertArray2Dict(response.data);
+            setWatchlist(dataObj);
+            setIsWatchlistLoaded(true);
+            setTicker(response.data[0].ticker);
         });
         // eslint-disable-next-line
     }, []);
@@ -238,51 +234,61 @@ const Watchlist = props => {
         });
     }, []);
 
+    // useEffect(() => {
+    //     if (ticker === '') return;
+    //     getPriceHistory(ticker, chartScale).then(response => {
+    //         if (response.data.s !== 'ok') return;
+    //         const {
+    //             c: close,
+    //             h: high,
+    //             l: low,
+    //             o: open,
+    //             t: time,
+    //             v: volume,
+    //         } = response.data;
+    //         const lengths = [time, close, high, low, open, volume].map(
+    //             arr => arr.length
+    //         );
+    //         const isSame = lengths.every(len => len === lengths[0]);
+    //         if (!isSame) return;
+
+    //         const priceData = time.map((time, i) => {
+    //             const offset = dayjs.unix(time).tz('America/Vancouver').$offset;
+    //             const newElement = {
+    //                 time: time + offset * 60,
+    //                 open: open[i],
+    //                 close: close[i],
+    //                 high: high[i],
+    //                 low: low[i],
+    //             };
+    //             return newElement;
+    //         });
+
+    //         const volumeData = time.map((time, i) => {
+    //             const newElement = {
+    //                 time: priceData[i].time,
+    //                 value: volume[i],
+    //                 color:
+    //                     close[i] - open[i] >= 0
+    //                         ? 'rgba(38, 166, 154, 0.5)'
+    //                         : 'rgba(239, 83, 80, 0.5)',
+    //             };
+    //             return newElement;
+    //         });
+
+    //         setCandleStickData({
+    //             priceData: priceData,
+    //             volumeData: volumeData,
+    //         });
+    //     });
+    // }, [ticker, chartScale]);
+
     useEffect(() => {
         if (ticker === '') return;
         getPriceHistory(ticker, chartScale).then(response => {
-            if (response.data.s !== 'ok') return;
-            const {
-                c: close,
-                h: high,
-                l: low,
-                o: open,
-                t: time,
-                v: volume,
-            } = response.data;
-            const lengths = [time, close, high, low, open, volume].map(
-                arr => arr.length
-            );
-            const isSame = lengths.every(len => len === lengths[0]);
-            if (!isSame) return;
-
-            const priceData = time.map((time, i) => {
-                const offset = dayjs.unix(time).tz('America/Vancouver').$offset;
-                const newElement = {
-                    time: time + offset * 60,
-                    open: open[i],
-                    close: close[i],
-                    high: high[i],
-                    low: low[i],
-                };
-                return newElement;
-            });
-
-            const volumeData = time.map((time, i) => {
-                const newElement = {
-                    time: priceData[i].time,
-                    value: volume[i],
-                    color:
-                        close[i] - open[i] >= 0
-                            ? 'rgba(38, 166, 154, 0.5)'
-                            : 'rgba(239, 83, 80, 0.5)',
-                };
-                return newElement;
-            });
-
             setCandleStickData({
-                priceData: priceData,
-                volumeData: volumeData,
+                priceData: response.data.ohlc,
+                volumeData: response.data.v,
             });
         });
     }, [ticker, chartScale]);

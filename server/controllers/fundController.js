@@ -80,7 +80,6 @@ const changeFund = async (req, res) => {
 
         return res.status(200).json({ cash_usd: cashUSD, cash_cad: cashCAD });
     } catch (error) {
-        console.error(error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };

@@ -1,12 +1,7 @@
 const knex = require('knex')(require('../knexfile'));
 
 const updatePortfolio = async (req, res) => {
-    let userId = '';
-    if (req.params.userId) {
-        userId = req.params.userId;
-    } else if (req.user) {
-        userId = req.user;
-    }
+    const userId = req.params.userId || req.user || '';
     
     const dp = req.body;
     try {
