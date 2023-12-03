@@ -334,7 +334,7 @@ const Watchlist = props => {
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
                 color="light.grey"
-                defaultIndex={5}
+                defaultIndex={6}
             >
                 <TabList>
                     <Tab onClick={() => changeScale('1D')}>1D</Tab>
@@ -342,7 +342,7 @@ const Watchlist = props => {
                     <Tab onClick={() => changeScale('1M')}>1M</Tab>
                     <Tab onClick={() => changeScale('3M')}>3M</Tab>
                     <Tab onClick={() => changeScale('6M')}>6M</Tab>
-                    {/* <Tab onClick={() => changeScale('YTD')}>YTD</Tab> */}
+                    <Tab onClick={() => changeScale('YTD')}>YTD</Tab>
                     <Tab onClick={() => changeScale('1Y')}>1Y</Tab>
                     <Tab onClick={() => changeScale('5Y')}>5Y</Tab>
                 </TabList>

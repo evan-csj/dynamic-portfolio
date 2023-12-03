@@ -2,23 +2,7 @@ const axios = require('axios');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
 require('dotenv').config();
-const { EX_KEY, FINNHUB_KEY, ALPHA_VANTAGE_RAPID } = process.env;
-
-// const finnHubCandles = (symbol, resolution, from, to) => {
-//     return {
-//         method: 'GET',
-//         url: 'https://finnhub.io/api/v1/stock/candle',
-//         params: {
-//             symbol: symbol,
-//             resolution: resolution,
-//             from: from,
-//             to: to,
-//         },
-//         headers: {
-//             'X-Finnhub-Token': FINNHUB_KEY,
-//         },
-//     };
-// };
+const { EX_KEY, FINNHUB_KEY, POLYGON_KEY, ALPHA_VANTAGE_RAPID } = process.env;
 
 const finnHubQuote = symbol => {
     return {
@@ -33,65 +17,110 @@ const finnHubQuote = symbol => {
     };
 };
 
-const alphaVantage = symbol => {
+const polygonAggs = (ticker, multiplier, timespan, from, to) => {
     return {
         method: 'GET',
-        url: 'https://alpha-vantage.p.rapidapi.com/query',
+        url: `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${multiplier}/${timespan}/${from}/${to}`,
         params: {
-            function: 'TIME_SERIES_DAILY',
-            symbol: symbol,
-            outputsize: 'compact',
-            datatype: 'json',
-        },
-        headers: {
-            'X-RapidAPI-Key': ALPHA_VANTAGE_RAPID,
-            'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
+            adjusted: 'true',
+            sort: 'asc',
+            limit: '5000',
+            apikey: POLYGON_KEY,
         },
     };
 };
 
-// const getCandles = async (req, res) => {
-//     const { ticker, resolution, from, to } = req.query;
+// const alphaVantage = symbol => {
+//     return {
+//         method: 'GET',
+//         url: 'https://alpha-vantage.p.rapidapi.com/query',
+//         params: {
+//             function: 'TIME_SERIES_DAILY',
+//             symbol: symbol,
+//             outputsize: 'full',
+//             datatype: 'json',
+//         },
+//         headers: {
+//             'X-RapidAPI-Key': ALPHA_VANTAGE_RAPID,
+//             'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
+//         },
+//     };
+// };
+
+// const getCandlesLong = async (req, res) => {
+//     const { ticker } = req.query;
+//     console.log(ticker)
 
 //     try {
-//         const response = await axios.request(
-//             finnHubCandles(ticker, resolution, from, to)
-//         );
-//         return res.status(200).json(response.data);
+//         const response = await axios.request(alphaVantage(ticker));
+//         const responseData = response.data['Time Series (Daily)'];
+
+//         let ohlcArray = [];
+//         let volumeArray = [];
+//         for (const [date, data] of Object.entries(responseData)) {
+//             const time = dayjs(date).unix();
+//             const open = parseFloat(data['1. open']);
+//             const high = parseFloat(data['2. high']);
+//             const low = parseFloat(data['3. low']);
+//             const close = parseFloat(data['4. close']);
+//             const volume = parseInt(data['5. volume']);
+//             const color =
+//                 close - open >= 0
+//                     ? 'rgba(38, 166, 154, 0.5)'
+//                     : 'rgba(239, 83, 80, 0.5)';
+//             ohlcArray.unshift({
+//                 time,
+//                 open,
+//                 high,
+//                 low,
+//                 close,
+//             });
+//             volumeArray.unshift({
+//                 time,
+//                 value: volume,
+//                 color,
+//             });
+//         }
+
+//         return res.status(200).json({ ohlc: ohlcArray, v: volumeArray });
 //     } catch (error) {
 //         return res.status(404).json(error);
 //     }
 // };
 
 const getCandles = async (req, res) => {
-    const { ticker, resolution, from, to } = req.query;
+    const { ticker, multiplier, timespan, from, to } = req.query;
 
     try {
-        const response = await axios.request(alphaVantage(ticker));
-        const responseData = response.data['Time Series (Daily)'];
+        const response = await axios.request(
+            polygonAggs(ticker, multiplier, timespan, from, to)
+        );
 
+        const resultArray = response.data.results;
         let ohlcArray = [];
         let volumeArray = [];
-        for (const [date, data] of Object.entries(responseData)) {
-            const time = dayjs(date).unix();
-            const open = parseFloat(data['1. open']);
-            const high = parseFloat(data['2. high']);
-            const low = parseFloat(data['3. low']);
-            const close = parseFloat(data['4. close']);
-            const volume = parseInt(data['5. volume']);
+
+        for (const {
+            o: open,
+            h: high,
+            l: low,
+            c: close,
+            v: volume,
+            t: time,
+        } of resultArray) {
             const color =
                 close - open >= 0
                     ? 'rgba(38, 166, 154, 0.5)'
                     : 'rgba(239, 83, 80, 0.5)';
-            ohlcArray.unshift({
-                time,
+            ohlcArray.push({
+                time: time / 1000,
                 open,
                 high,
                 low,
                 close,
             });
-            volumeArray.unshift({
-                time,
+            volumeArray.push({
+                time: time / 1000,
                 value: volume,
                 color,
             });

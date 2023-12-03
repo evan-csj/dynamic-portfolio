@@ -86,40 +86,80 @@ const getWatchlist = async id => {
 };
 
 const getPriceHistory = async (ticker, scale) => {
-    const today = dayjs().unix();
-    const dayUnix = 60 * 60 * 24;
-    const monthUnix = dayUnix * 30;
-    const yearUnix = dayUnix * 365;
-    const dateRange = {
-        '1D': dayUnix,
-        '5D': dayUnix * 7,
-        '1M': monthUnix,
-        '3M': monthUnix * 3,
-        '6M': monthUnix * 6,
-        '1Y': yearUnix,
-        '5Y': yearUnix * 5,
+    const currentMoment = dayjs();
+    const currentYear = currentMoment.year();
+    const currentMonth = currentMoment.month();
+    const dayOfWeek = currentMoment.day();
+    const currentHour = currentMoment.hour();
+    const currentMinute = currentMoment.minute();
+
+    const multiplier = {
+        '1D': 1,
+        '5D': 5,
+        '1M': 1,
+        '3M': 1,
+        '6M': 1,
+        YTD: 1,
+        '1Y': 1,
+        '5Y': 1,
+        ALL: 1,
     };
-    const resolution = {
-        '1D': '1',
-        '5D': '5',
-        '1M': '30',
-        '3M': 'D',
-        '6M': 'D',
-        '1Y': 'D',
-        '5Y': 'W',
+
+    const timespan = {
+        '1D': 'minute',
+        '5D': 'minute',
+        '1M': 'day',
+        '3M': 'day',
+        '6M': 'day',
+        YTD: 'day',
+        '1Y': 'day',
+        '5Y': 'week',
+        ALL: 'month',
     };
+
+    const isOpen = !(
+        currentHour < 6 ||
+        (currentHour === 6 && currentMinute < 30) ||
+        dayOfWeek === 0 ||
+        dayOfWeek === 6
+    );
+
+    const lastOpenDayOfWeek = isOpen
+        ? dayOfWeek
+        : dayOfWeek === 0 || dayOfWeek === 1
+        ? -2
+        : dayOfWeek - 1;
+
+    const fromDate = {
+        '1D': currentMoment.day(lastOpenDayOfWeek).format('YYYY-MM-DD'),
+        '5D': currentMoment.day(dayOfWeek - 7).format('YYYY-MM-DD'),
+        '1M': currentMoment.month(currentMonth - 1).format('YYYY-MM-DD'),
+        '3M': currentMoment.month(currentMonth - 3).format('YYYY-MM-DD'),
+        '6M': currentMoment.month(currentMonth - 6).format('YYYY-MM-DD'),
+        YTD: `${currentYear}-01-01`,
+        '1Y': currentMoment.year(currentYear - 1).format('YYYY-MM-DD'),
+        '5Y': currentMoment.year(currentYear - 5).format('YYYY-MM-DD'),
+        ALL: '1970-01-01',
+    };
+
+    const toDate = currentMoment.format('YYYY-MM-DD');
+
+    const candlesParameters = {
+        ticker,
+        multiplier: multiplier[scale],
+        timespan: timespan[scale],
+        from: fromDate[scale],
+        to: toDate,
+    };
+
     try {
         const priceHistory = await axiosStandard.get(
             `${API_ADDRESS}/price/candles`,
             {
-                params: {
-                    ticker: ticker,
-                    resolution: resolution[scale],
-                    from: today - dateRange[scale],
-                    to: today,
-                },
+                params: candlesParameters,
             }
         );
+
         return priceHistory;
     } catch (err) {}
 };
