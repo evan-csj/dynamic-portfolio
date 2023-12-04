@@ -47,8 +47,14 @@ const getHoldings = async id => {
 
 const getTrading = async id => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const trades = await axiosStandard.get(
-            `${API_ADDRESS}/trade/user/${id}`
+            `${API_ADDRESS}/trade/user/${id}`,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return trades;
     } catch (err) {}
@@ -56,8 +62,14 @@ const getTrading = async id => {
 
 const getFunding = async id => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const funding = await axiosStandard.get(
-            `${API_ADDRESS}/fund/user/${id}`
+            `${API_ADDRESS}/fund/user/${id}`,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return funding;
     } catch (err) {}
@@ -65,19 +77,24 @@ const getFunding = async id => {
 
 const getCurrency = async () => {
     try {
-        const exRate = await axiosStandard.get(`${API_ADDRESS}/price/forex`);
+        const token = sessionStorage.getItem('JWT');
+        const exRate = await axiosStandard.get(`${API_ADDRESS}/price/forex`, {
+            headers: {
+                JWT: `Bearer ${token}`,
+            },
+        });
         return exRate;
     } catch (err) {}
 };
 
 const getWatchlist = async id => {
     try {
-        const token = sessionStorage.getItem('authToken');
+        const token = sessionStorage.getItem('JWT');
         const watchlist = await axiosStandard.get(
             `${API_ADDRESS}/watchlist/user/${id}`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    JWT: `Bearer ${token}`,
                 },
             }
         );
@@ -141,10 +158,14 @@ const getPriceHistory = async (ticker, scale) => {
     };
 
     try {
+        const token = sessionStorage.getItem('JWT');
         const priceHistory = await axiosStandard.get(
             `${API_ADDRESS}/price/candles`,
             {
                 params: candlesParameters,
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
             }
         );
 
@@ -234,11 +255,15 @@ const getPriceHistory = async (ticker, scale) => {
 
 const getLastPrice = async ticker => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const lastPrice = await axiosStandard.get(
             `${API_ADDRESS}/price/quote`,
             {
                 params: {
                     ticker: ticker,
+                },
+                headers: {
+                    JWT: `Bearer ${token}`,
                 },
             }
         );
@@ -248,16 +273,27 @@ const getLastPrice = async ticker => {
 
 const getSymbols = async () => {
     try {
-        const symbols = await axiosStandard.get(`${API_ADDRESS}/symbols`);
+        const token = sessionStorage.getItem('JWT');
+        const symbols = await axiosStandard.get(`${API_ADDRESS}/symbols`, {
+            headers: {
+                JWT: `Bearer ${token}`,
+            },
+        });
         return symbols;
     } catch (err) {}
 };
 
 const putSymbolInfo = async symbolInfo => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.put(
             `${API_ADDRESS}/symbols/info`,
-            symbolInfo
+            symbolInfo,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return response;
     } catch (err) {}
@@ -265,9 +301,15 @@ const putSymbolInfo = async symbolInfo => {
 
 const putSymbolPrice = async symbolPrice => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.put(
             `${API_ADDRESS}/symbols/price`,
-            symbolPrice
+            symbolPrice,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return response;
     } catch (err) {}
@@ -275,8 +317,14 @@ const putSymbolPrice = async symbolPrice => {
 
 const getPortfolio = async id => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const portfolio = await axiosStandard.get(
-            `${API_ADDRESS}/portfolio/user/${id}`
+            `${API_ADDRESS}/portfolio/user/${id}`,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return portfolio;
     } catch (err) {}
@@ -284,9 +332,13 @@ const getPortfolio = async id => {
 
 const getCompanyProfile = async ticker => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const profile = await axiosStandard.get(`${API_ADDRESS}/stat/profile`, {
             params: {
                 ticker: ticker,
+            },
+            headers: {
+                JWT: `Bearer ${token}`,
             },
         });
         return profile;
@@ -295,9 +347,13 @@ const getCompanyProfile = async ticker => {
 
 const getEps = async ticker => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const eps = await axiosStandard.get(`${API_ADDRESS}/stat/eps`, {
             params: {
                 ticker: ticker,
+            },
+            headers: {
+                JWT: `Bearer ${token}`,
             },
         });
         return eps;
@@ -306,9 +362,13 @@ const getEps = async ticker => {
 
 const getTrends = async ticker => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const eps = await axiosStandard.get(`${API_ADDRESS}/stat/trends`, {
             params: {
                 ticker: ticker,
+            },
+            headers: {
+                JWT: `Bearer ${token}`,
             },
         });
         return eps;
@@ -317,9 +377,15 @@ const getTrends = async ticker => {
 
 const putPortfolio = async (id, dp) => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.put(
             `${API_ADDRESS}/portfolio/user/${id}`,
-            dp
+            dp,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return response;
     } catch (err) {}
@@ -327,9 +393,15 @@ const putPortfolio = async (id, dp) => {
 
 const postFunding = async funding => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const newFunding = await axiosStandard.post(
             `${API_ADDRESS}/fund`,
-            funding
+            funding,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return newFunding;
     } catch (err) {}
@@ -337,9 +409,15 @@ const postFunding = async funding => {
 
 const postTrading = async trading => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const newTrading = await axiosStandard.post(
             `${API_ADDRESS}/trade`,
-            trading
+            trading,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return newTrading;
     } catch (err) {}
@@ -347,9 +425,15 @@ const postTrading = async trading => {
 
 const addWatchItem = async item => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const newItem = await axiosStandard.post(
             `${API_ADDRESS}/watchlist`,
-            item
+            item,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return newItem;
     } catch (err) {}
@@ -357,9 +441,15 @@ const addWatchItem = async item => {
 
 const deleteWatchItem = async item => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const deleteItem = await axiosStandard.put(
             `${API_ADDRESS}/watchlist`,
-            item
+            item,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return deleteItem;
     } catch (err) {}
@@ -371,9 +461,15 @@ const getFeedback = async text => {
     };
 
     try {
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.post(
             `${API_ADDRESS}/chatbot`,
-            newMessage
+            newMessage,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return response;
     } catch (err) {

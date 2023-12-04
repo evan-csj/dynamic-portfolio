@@ -17,6 +17,7 @@ const getFundHistory = async (req, res) => {
             return res.status(200).json(fundHistory);
         }
     } catch (error) {
+        console.error(error);
         res.status(400).json(`Error retrieving user id ${userId} ${error}`);
     }
 };
@@ -80,6 +81,7 @@ const changeFund = async (req, res) => {
 
         return res.status(200).json({ cash_usd: cashUSD, cash_cad: cashCAD });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };

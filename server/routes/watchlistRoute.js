@@ -1,11 +1,11 @@
 const router = require('express').Router();
 const watchlistController = require('../controllers/watchlistController');
-const { authorize } = require('../middlewares/authentication');
+const { isAuth } = require('../middlewares/authentication');
 
-router.route('/user/:userId?').get(watchlistController.getWatchlist);
+router.route('/user/:userId?').get(isAuth, watchlistController.getWatchlist);
 router
     .route('/')
-    .post(watchlistController.addWatchItem)
-    .put(watchlistController.deleteWatchItem);
+    .post(isAuth, watchlistController.addWatchItem)
+    .put(isAuth, watchlistController.deleteWatchItem);
 
 module.exports = router;

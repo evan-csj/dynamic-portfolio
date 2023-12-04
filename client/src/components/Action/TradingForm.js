@@ -118,13 +118,13 @@ const TradingForm = props => {
             quantity !== ''
         ) {
             const newTrade = {
-                user_id: userId,
+                userId,
                 ticker: symbol,
                 price: currentPrice,
                 shares: Number(quantity),
-                type: type,
-                order_status: 'pending',
-                currency: currency,
+                type,
+                orderStatus: 'pending',
+                currency,
             };
             postTrading(newTrade);
             props.closeDrawer();

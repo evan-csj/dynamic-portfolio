@@ -27,6 +27,7 @@ const getWatchlist = async (req, res) => {
             return res.status(200).json(watchlist);
         }
     } catch (error) {
+        console.error(error);
         return res.status(400).json(`Error retrieving user ${userId} ${error}`);
     }
 };
@@ -73,6 +74,7 @@ const addWatchItem = async (req, res) => {
             return res.status(200).json(newWatchItem);
         }
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
@@ -98,6 +100,7 @@ const deleteWatchItem = async (req, res) => {
             });
         }
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };

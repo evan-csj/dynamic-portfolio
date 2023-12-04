@@ -188,6 +188,7 @@ app.use('/stat', statRoute);
 app.get('/logout', (req, res) => {
     req.logout(error => {
         if (error) {
+            console.error(error);
             return res.status(500).json({
                 message: 'Server error, please try again later',
                 error: error,

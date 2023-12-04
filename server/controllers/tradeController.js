@@ -18,12 +18,13 @@ const getTradeHistory = async (req, res) => {
             return res.status(200).json(tradeHistory);
         }
     } catch (error) {
+        console.error(error);
         return res.status(400).json(`Error retrieving user ${userId} ${error}`);
     }
 };
 
 const addTrade = async (req, res) => {
-    const { type, currency, price, shares, ticker } = req.body;
+    const { type, currency, price, shares, ticker, orderStatus } = req.body;
     const userId = req.body.userId ? req.body.userId : req.user || '';
     const newTrading = {
         user_id: userId,
@@ -32,6 +33,7 @@ const addTrade = async (req, res) => {
         price,
         shares,
         ticker,
+        order_status: orderStatus,
     };
     const validType = ['buy', 'sell'];
     const validCurrency = ['USD', 'CAD'];
@@ -91,6 +93,7 @@ const addTrade = async (req, res) => {
             sell_shares: sellShares,
             avg_price: avgPrice,
         } = holdingData || { buy_shares: 0, sell_shares: 0, avg_price: 0 };
+        let newAvg = avgPrice;
 
         const amountRequired = price * shares;
         const sharesHold = buyShares - sellShares;
@@ -148,6 +151,7 @@ const addTrade = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
