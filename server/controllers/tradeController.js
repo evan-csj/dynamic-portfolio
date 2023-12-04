@@ -2,27 +2,37 @@ const { v1 } = require('uuid');
 const knex = require('knex')(require('../knexfile'));
 const update = require('./update');
 
-const tradeHistory = (req, res) => {
-    knex('trade')
-        .select('*')
-        .where('user_id', req.params.userId)
-        .orderBy('created_at', 'desc')
-        .then(data => {
-            if (data.length === 0) {
-                return res
-                    .status(404)
-                    .json(`The trade history with user id ${req.params.userId} is not found!`);
-            } else {
-                res.status(200).json(data);
-            }
-        })
-        .catch(err => {
-            res.status(400).json(`Error retrieving user ${req.params.username} ${err}`);
-        });
+const getTradeHistory = async (req, res) => {
+    const userId = req.params.userId || req.user || '';
+
+    try {
+        const tradeHistory = await knex('trade')
+            .select('*')
+            .where('user_id', userId)
+            .orderBy('created_at', 'desc');
+        if (!tradeHistory) {
+            return res
+                .status(404)
+                .json(`The trade history with user id ${userId} is not found!`);
+        } else {
+            return res.status(200).json(tradeHistory);
+        }
+    } catch (error) {
+        return res.status(400).json(`Error retrieving user ${userId} ${error}`);
+    }
 };
 
 const addTrade = async (req, res) => {
-    const { user_id: userId, type, currency, price, shares, ticker } = req.body;
+    const { type, currency, price, shares, ticker } = req.body;
+    const userId = req.body.userId ? req.body.userId : req.user || '';
+    const newTrading = {
+        user_id: userId,
+        type,
+        currency,
+        price,
+        shares,
+        ticker,
+    };
     const validType = ['buy', 'sell'];
     const validCurrency = ['USD', 'CAD'];
 
@@ -48,7 +58,10 @@ const addTrade = async (req, res) => {
             .where({ id: userId })
             .first();
 
-        if (!userData) return res.status(404).json({ error: `User with id ${userId} not found` });
+        if (!userData)
+            return res
+                .status(404)
+                .json({ error: `User with id ${userId} not found` });
 
         const holdingData = await knex('holding')
             .select('buy_shares', 'sell_shares', 'avg_price')
@@ -57,7 +70,9 @@ const addTrade = async (req, res) => {
             .first();
 
         if (!holdingData && type === 'sell') {
-            return res.status(404).json({ error: `Ticker ${ticker} not found` });
+            return res
+                .status(404)
+                .json({ error: `Ticker ${ticker} not found` });
         } else if (!holdingData && type === 'buy') {
             const newHolding = {
                 id: userId + '-' + ticker,
@@ -105,7 +120,9 @@ const addTrade = async (req, res) => {
             if (currency === 'CAD') cashCAD += amountRequired;
         }
 
-        await knex('user').update({ cash_usd: cashUSD, cash_cad: cashCAD }).where({ id: userId });
+        await knex('user')
+            .update({ cash_usd: cashUSD, cash_cad: cashCAD })
+            .where({ id: userId });
 
         await knex('holding')
             .update({
@@ -116,9 +133,9 @@ const addTrade = async (req, res) => {
             .where({ user_id: userId })
             .andWhere({ ticker: ticker });
 
-        const newTrade = { id: v1(), ...req.body };
-        newTrade.order_status = 'approved';
-        await knex('trade').insert(newTrade);
+        const newTradingHistory = { id: v1(), ...newTrading };
+        newTradingHistory.order_status = 'approved';
+        await knex('trade').insert(newTradingHistory);
 
         return res.status(200).json({
             user: { id: userId, cash_usd: cashUSD, cash_cad: cashCAD },
@@ -135,4 +152,4 @@ const addTrade = async (req, res) => {
     }
 };
 
-module.exports = { tradeHistory, addTrade };
+module.exports = { getTradeHistory, addTrade };

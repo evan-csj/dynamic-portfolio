@@ -1,7 +1,8 @@
 const knex = require('knex')(require('../knexfile'));
 
 const updatePortfolio = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.params.userId || req.user || '';
+    
     const dp = req.body;
     try {
         const user = await knex('user').where({ id: userId });

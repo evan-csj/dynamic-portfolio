@@ -22,18 +22,16 @@ function Transaction(props) {
 
     useEffect(() => {
         props.unsubscribeAll();
-        const username = sessionStorage.getItem('userId');
+        const userIdSession = sessionStorage.getItem('userId');
 
-        if (username === null) {
-            navigate('/');
-        } else {
-            getTrading(username).then(response => {
-                setTradingList(response.data);
-            });
-            getFunding(username).then(response => {
-                setFundingList(response.data);
-            });
-        }
+        const username = userIdSession ?? '';
+
+        getTrading(username).then(response => {
+            setTradingList(response.data);
+        });
+        getFunding(username).then(response => {
+            setFundingList(response.data);
+        });
         // eslint-disable-next-line
     }, [props.toggle]);
 
