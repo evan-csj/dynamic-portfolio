@@ -345,6 +345,7 @@ const Watchlist = props => {
                     <Tab onClick={() => changeScale('YTD')}>YTD</Tab>
                     <Tab onClick={() => changeScale('1Y')}>1Y</Tab>
                     <Tab onClick={() => changeScale('5Y')}>5Y</Tab>
+                    <Tab onClick={() => changeScale('ALL')}>ALL</Tab>
                 </TabList>
             </Tabs>
 

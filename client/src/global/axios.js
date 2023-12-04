@@ -93,28 +93,16 @@ const getPriceHistory = async (ticker, scale) => {
     const currentHour = currentMoment.hour();
     const currentMinute = currentMoment.minute();
 
-    const multiplier = {
-        '1D': 1,
-        '5D': 5,
-        '1M': 1,
-        '3M': 1,
-        '6M': 1,
-        YTD: 1,
-        '1Y': 1,
-        '5Y': 1,
-        ALL: 1,
-    };
-
-    const timespan = {
-        '1D': 'minute',
-        '5D': 'minute',
-        '1M': 'day',
-        '3M': 'day',
-        '6M': 'day',
-        YTD: 'day',
-        '1Y': 'day',
-        '5Y': 'week',
-        ALL: 'month',
+    const timeframe = {
+        '1D': '1Min',
+        '5D': '5Min',
+        '1M': '30Min',
+        '3M': '1H',
+        '6M': '2H',
+        YTD: '1D',
+        '1Y': '1D',
+        '5Y': '1W',
+        ALL: '1M',
     };
 
     const isOpen = !(
@@ -146,10 +134,10 @@ const getPriceHistory = async (ticker, scale) => {
 
     const candlesParameters = {
         ticker,
-        multiplier: multiplier[scale],
-        timespan: timespan[scale],
+        timeframe: timeframe[scale],
         from: fromDate[scale],
         to: toDate,
+        scale,
     };
 
     try {
@@ -163,6 +151,86 @@ const getPriceHistory = async (ticker, scale) => {
         return priceHistory;
     } catch (err) {}
 };
+
+// const getPriceHistory = async (ticker, scale) => {
+//     const currentMoment = dayjs();
+//     const currentYear = currentMoment.year();
+//     const currentMonth = currentMoment.month();
+//     const dayOfWeek = currentMoment.day();
+//     const currentHour = currentMoment.hour();
+//     const currentMinute = currentMoment.minute();
+
+//     const multiplier = {
+//         '1D': 1,
+//         '5D': 5,
+//         '1M': 1,
+//         '3M': 1,
+//         '6M': 1,
+//         YTD: 1,
+//         '1Y': 1,
+//         '5Y': 1,
+//         ALL: 1,
+//     };
+
+//     const timespan = {
+//         '1D': 'minute',
+//         '5D': 'minute',
+//         '1M': 'day',
+//         '3M': 'day',
+//         '6M': 'day',
+//         YTD: 'day',
+//         '1Y': 'day',
+//         '5Y': 'week',
+//         ALL: 'month',
+//     };
+
+//     const isOpen = !(
+//         currentHour < 6 ||
+//         (currentHour === 6 && currentMinute < 30) ||
+//         dayOfWeek === 0 ||
+//         dayOfWeek === 6
+//     );
+
+//     const lastOpenDayOfWeek = isOpen
+//         ? dayOfWeek
+//         : dayOfWeek === 0 || dayOfWeek === 1
+//         ? -2
+//         : dayOfWeek - 1;
+
+//     const fromDate = {
+//         '1D': currentMoment.day(lastOpenDayOfWeek).format('YYYY-MM-DD'),
+//         '5D': currentMoment.day(dayOfWeek - 7).format('YYYY-MM-DD'),
+//         '1M': currentMoment.month(currentMonth - 1).format('YYYY-MM-DD'),
+//         '3M': currentMoment.month(currentMonth - 3).format('YYYY-MM-DD'),
+//         '6M': currentMoment.month(currentMonth - 6).format('YYYY-MM-DD'),
+//         YTD: `${currentYear}-01-01`,
+//         '1Y': currentMoment.year(currentYear - 1).format('YYYY-MM-DD'),
+//         '5Y': currentMoment.year(currentYear - 5).format('YYYY-MM-DD'),
+//         ALL: '1970-01-01',
+//     };
+
+//     const toDate = currentMoment.format('YYYY-MM-DD');
+
+//     const candlesParameters = {
+//         ticker,
+//         multiplier: multiplier[scale],
+//         timespan: timespan[scale],
+//         from: fromDate[scale],
+//         to: toDate,
+//         scale,
+//     };
+
+//     try {
+//         const priceHistory = await axiosStandard.get(
+//             `${API_ADDRESS}/price/candles`,
+//             {
+//                 params: candlesParameters,
+//             }
+//         );
+
+//         return priceHistory;
+//     } catch (err) {}
+// };
 
 const getLastPrice = async ticker => {
     try {
