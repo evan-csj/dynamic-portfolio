@@ -455,15 +455,15 @@ const deleteWatchItem = async item => {
     } catch (err) {}
 };
 
-const getFeedback = async text => {
+const chatgpt = async text => {
     const newMessage = {
-        text: text,
+        text,
     };
 
     try {
         const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.post(
-            `${API_ADDRESS}/chatbot`,
+            `${API_ADDRESS}/chatgpt`,
             newMessage,
             {
                 headers: {
@@ -520,7 +520,7 @@ export {
     postTrading,
     addWatchItem,
     deleteWatchItem,
-    getFeedback,
+    chatgpt,
     checkUserPassword,
     logout,
 };

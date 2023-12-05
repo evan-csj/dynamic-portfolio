@@ -9,7 +9,7 @@ import Txn from './components/Transaction/Transaction';
 import ChatBot from './components/ChatBot/ChatBot';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
-import { getFeedback } from './global/axios';
+import { chatgpt } from './global/axios';
 import useWebSocket from 'react-use-websocket';
 import {
     Flex,
@@ -100,7 +100,7 @@ function App() {
         ]);
         if (sender === 'User') {
             setWaitForRes(true);
-            getFeedback(text)
+            chatgpt(text)
                 .then(response => {
                     setWaitForRes(false);
                     setmessages([
