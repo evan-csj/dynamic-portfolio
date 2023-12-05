@@ -27,7 +27,7 @@ const singleUser = async (req, res) => {
             return res.status(200).json(user);
         }
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(400).json(`Error retrieving user ${userId} ${error}`);
     }
 };
@@ -78,7 +78,7 @@ const checkUser = async (req, res) => {
             return res.status(404).json(`${username} is not found!`);
         }
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };

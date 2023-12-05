@@ -153,7 +153,7 @@ app.use('/stat', statRoute);
             }
             const response = await nlp.process('en', text);
             if (response.intent !== 'None') {
-                res.status(200).json({
+                return res.status(200).json({
                     intent: response.intent,
                     answer: response.answer,
                 });
@@ -179,6 +179,12 @@ app.use('/stat', statRoute);
                             intent: 'gpt',
                             answer: gptRes,
                         });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        return res
+                            .status(500)
+                            .json({ error: 'Something went wrong' });
                     });
             }
         }
@@ -188,7 +194,7 @@ app.use('/stat', statRoute);
 app.get('/logout', (req, res) => {
     req.logout(error => {
         if (error) {
-            console.error(error);
+            console.error('Error:', error);
             return res.status(500).json({
                 message: 'Server error, please try again later',
                 error: error,

@@ -26,7 +26,7 @@ const getHolding = async (req, res) => {
             return res.status(200).json(holding);
         }
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res
             .status(400)
             .json(`Error retrieving user id ${userId} ${error}`);

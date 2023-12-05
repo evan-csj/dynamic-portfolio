@@ -18,7 +18,7 @@ const getTradeHistory = async (req, res) => {
             return res.status(200).json(tradeHistory);
         }
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(400).json(`Error retrieving user ${userId} ${error}`);
     }
 };
@@ -151,7 +151,7 @@ const addTrade = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };

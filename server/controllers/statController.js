@@ -47,7 +47,7 @@ const getCompanyProfile = async (req, res) => {
         const response = await axios.request(finnHubCompanyProfile(ticker));
         return res.status(200).json(response.data);
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
@@ -58,7 +58,7 @@ const getEps = async (req, res) => {
         const response = await axios.request(finnHubEps(ticker));
         return res.status(200).json(response.data);
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };
@@ -69,7 +69,7 @@ const getTrends = async (req, res) => {
         const response = await axios.request(finnHubTrends(ticker));
         return res.status(200).json(response.data);
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(500).json({ error: 'Something went wrong' });
     }
 };

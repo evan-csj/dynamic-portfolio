@@ -113,7 +113,7 @@ const getCandles = async (req, res) => {
 
         return res.status(200).json({ ohlc: ohlcArray, v: volumeArray });
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(404).json(error);
     }
 };
@@ -203,7 +203,7 @@ const getQuote = async (req, res) => {
         const response = await axios.request(finnHubQuote(ticker));
         return res.status(200).json(response.data);
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(404).json(error);
     }
 };
@@ -236,7 +236,7 @@ const getForex = async (_req, res) => {
             return res.status(200).json(lastRate);
         }
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         return res.status(404).json(error);
     }
 };
