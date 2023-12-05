@@ -2,8 +2,12 @@ const passport = require('passport');
 require('dotenv').config();
 
 const githubOAuth = passport.authenticate('github');
+const googleOAuth = passport.authenticate('google');
 
 const githubCallback = passport.authenticate('github', {
+    failureRedirect: '/',
+});
+const googleCallback = passport.authenticate('google', {
     failureRedirect: '/',
 });
 
@@ -21,7 +25,9 @@ const callbackRedirect = (_req, res) => {
 
 module.exports = {
     githubOAuth,
+    googleOAuth,
     githubCallback,
+    googleCallback,
     callbackRedirect,
     // callbackSuccess,
 };

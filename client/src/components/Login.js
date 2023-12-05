@@ -3,6 +3,7 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import {
     Flex,
+    Spacer,
     Box,
     Center,
     Input,
@@ -144,7 +145,7 @@ const Login = props => {
                     <Flex
                         direction="column"
                         alignItems="center"
-                        gap="24px"
+                        gap={0}
                         w="100%"
                     >
                         <Image src={logo} alt="logo" boxSize="120px" />
@@ -211,7 +212,8 @@ const Login = props => {
                         </FormControl>
                         <Flex
                             w="100%"
-                            gap={4}
+                            mt={6}
+                            gap={6}
                             direction="column"
                             justifyContent="space-between"
                             alignItems="center"
@@ -245,10 +247,31 @@ const Login = props => {
                             </Button>
                             <Flex
                                 w="100%"
-                                gap={4}
-                                direction="row"
+                                rowGap={4}
+                                direction={{ base: 'column', md: 'row' }}
                                 flexWrap="wrap"
                             >
+                                <Center flex="1">
+                                    <NavLink to={`${SERVER_URL}/auth/google`}>
+                                        <Flex
+                                            direction="row"
+                                            gap={1}
+                                            alignItems="flex-end"
+                                        >
+                                            <Image
+                                                h={8}
+                                                src={googleIcon}
+                                                alt="google-icon"
+                                            />
+                                            <Image
+                                                h={7}
+                                                src={googleLogo}
+                                                alt="google-logo"
+                                            />
+                                        </Flex>
+                                    </NavLink>
+                                </Center>
+
                                 <Center flex="1">
                                     <NavLink to={`${SERVER_URL}/auth/github`}>
                                         <Flex
@@ -265,27 +288,6 @@ const Login = props => {
                                                 h={5}
                                                 src={githubLogo}
                                                 alt="github-logo"
-                                            />
-                                        </Flex>
-                                    </NavLink>
-                                </Center>
-
-                                <Center flex="1">
-                                    <NavLink to={`${SERVER_URL}/auth/github`}>
-                                        <Flex
-                                            direction="row"
-                                            gap={1}
-                                            alignItems="flex-end"
-                                        >
-                                            <Image
-                                                h={8}
-                                                src={googleIcon}
-                                                alt="google-icon"
-                                            />
-                                            <Image
-                                                h={7}
-                                                src={googleLogo}
-                                                alt="google-logo"
                                             />
                                         </Flex>
                                     </NavLink>

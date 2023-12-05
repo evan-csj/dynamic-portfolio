@@ -4,8 +4,6 @@ const session = require('express-session');
 // const MySQLStore = require('express-mysql-session')(session);
 const helmet = require('helmet');
 const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const GitHubStrategy = require('passport-github2').Strategy;
 require('dotenv').config();
 
 const app = express();
@@ -47,35 +45,6 @@ app.use(
         credentials: true,
     })
 );
-
-// passport.use(
-//     new GoogleStrategy(
-//         {
-//             clientID: process.env.GOOGLE_CLIENT_ID,
-//             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//             callbackURL: process.env.GOOGLE_CALLBACK_URL,
-//             scope: ['profile', 'email'],
-//         },
-//         (_accessToken, _refreshToken, profile, done) => {
-//             const testProfile = 'evancheng';
-//             knex('user')
-//                 .select('id')
-//                 .where('id', testProfile)
-//                 .then(data => {
-//                     if (data.length === 0) {
-//                         console.log(
-//                             `The user with user ${testProfile} is not found!`
-//                         );
-//                     } else {
-//                         done(null, data[0]);
-//                     }
-//                 })
-//                 .catch(err => {
-//                     console.log(`Error retrieving user ${testProfile} ${err}`);
-//                 });
-//         }
-//     )
-// );
 
 app.use('/user', userRoute);
 app.use('/trade', tradeRoute);

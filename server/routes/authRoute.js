@@ -7,4 +7,9 @@ router
     .get(authController.githubCallback, authController.callbackRedirect);
 // router.route('/success-callback').get(authController.callbackSuccess);
 
+router.route('/google').get(authController.googleOAuth);
+router
+    .route('/google/callback')
+    .get(authController.googleCallback, authController.callbackRedirect);
+
 module.exports = router;
