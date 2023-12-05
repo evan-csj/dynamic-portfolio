@@ -15,8 +15,10 @@ import {
 } from '@chakra-ui/react';
 import { checkUserPassword } from '../global/axios';
 import logo from '../assets/logo.svg';
-import githubLogo1 from '../assets/github-mark.png';
-import githubLogo2 from '../assets/GitHub_Logo.png';
+import githubIcon from '../assets/GitHub_Icon.png';
+import githubLogo from '../assets/GitHub_Logo.png';
+import googleIcon from '../assets/Google_Icon.png';
+import googleLogo from '../assets/Google_Logo.png';
 import '../styles/global.scss';
 
 import axios from 'axios';
@@ -75,6 +77,7 @@ const Login = props => {
         props.unsubscribeAll();
         // eslint-disable-next-line
     }, []);
+
     // useEffect(() => {
     //     google.accounts.id.initialize({
     //         client_id: GOOGLE_ID,
@@ -131,10 +134,9 @@ const Login = props => {
         >
             <Center w={{ base: '100%', md: '480px' }} data-peer>
                 <Center
-                    h="500px"
                     w="100%"
-                    mx="16px"
-                    px={{ base: '32px', md: '64px' }}
+                    mx={8}
+                    p="32px"
                     bg="light.white"
                     borderRadius="24px"
                     boxShadow="2xl"
@@ -209,7 +211,7 @@ const Login = props => {
                         </FormControl>
                         <Flex
                             w="100%"
-                            gap="8px"
+                            gap={4}
                             direction="column"
                             justifyContent="space-between"
                             alignItems="center"
@@ -241,19 +243,54 @@ const Login = props => {
                             >
                                 Login
                             </Button>
-                            <Box id="google-signin"></Box>
-                            <NavLink to={`${SERVER_URL}/auth/github`}>
-                                <Flex dir="row" gap="0" h={8}>
-                                    <Image
-                                        src={githubLogo1}
-                                        alt="github-logo"
-                                    />
-                                    <Image
-                                        src={githubLogo2}
-                                        alt="github-logo"
-                                    />
-                                </Flex>
-                            </NavLink>
+                            <Flex
+                                w="100%"
+                                gap={4}
+                                direction="row"
+                                flexWrap="wrap"
+                            >
+                                <Center flex="1">
+                                    <NavLink to={`${SERVER_URL}/auth/github`}>
+                                        <Flex
+                                            direction="row"
+                                            gap="0"
+                                            alignItems="center"
+                                        >
+                                            <Image
+                                                h={8}
+                                                src={githubIcon}
+                                                alt="github-icon"
+                                            />
+                                            <Image
+                                                h={5}
+                                                src={githubLogo}
+                                                alt="github-logo"
+                                            />
+                                        </Flex>
+                                    </NavLink>
+                                </Center>
+
+                                <Center flex="1">
+                                    <NavLink to={`${SERVER_URL}/auth/github`}>
+                                        <Flex
+                                            direction="row"
+                                            gap={1}
+                                            alignItems="flex-end"
+                                        >
+                                            <Image
+                                                h={8}
+                                                src={googleIcon}
+                                                alt="google-icon"
+                                            />
+                                            <Image
+                                                h={7}
+                                                src={googleLogo}
+                                                alt="google-logo"
+                                            />
+                                        </Flex>
+                                    </NavLink>
+                                </Center>
+                            </Flex>
                         </Flex>
                     </Flex>
                 </Center>

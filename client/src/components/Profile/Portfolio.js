@@ -211,7 +211,7 @@ const Portfolio = props => {
 
     return (
         <Flex className="flex-col" pt={4}>
-            <FormControl key={portfolioList} zIndex='2'>
+            <FormControl key={portfolioList} zIndex="2">
                 <Flex w="100%" gap={4} justifyContent="space-between">
                     <Box flex="1">
                         <Select

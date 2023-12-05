@@ -83,7 +83,7 @@ function App() {
             { message: text, sender: sender },
             {
                 message: (
-                    <Flex alignItems="end" dir="row" gap="8px" h="16px">
+                    <Flex alignItems="end" direction="row" gap="8px" h="16px">
                         <SkeletonCircle w="8px" h="8px">
                             X
                         </SkeletonCircle>
