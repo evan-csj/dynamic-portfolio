@@ -11,7 +11,8 @@ const googleCallback = passport.authenticate('google', {
     failureRedirect: '/',
 });
 
-const callbackRedirect = (_req, res) => {
+const callbackRedirect = (req, res) => {
+    console.log(req)
     return res.redirect(`${process.env.CLIENT_URL}/profile`);
 };
 

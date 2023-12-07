@@ -31,21 +31,94 @@ passport.use(
     )
 );
 
-passport.serializeUser((user, done) => {
-    done(null, user);
+passport.serializeUser(async (userOAuth, done) => {
+    const { provider } = userOAuth;
+    try {
+        let userDB;
+        let keyField, keyValue, defaultId;
+
+        if (provider) {
+            switch (provider) {
+                case 'github':
+                    keyField = 'github_username';
+                    keyValue = userOAuth.username;
+                    defaultId = keyValue;
+                    firstName = 'GitHub';
+                    lastName = 'User';
+                    break;
+                case 'google':
+                    keyField = 'user_gmail';
+                    keyValue = userOAuth.emails[0].value;
+                    defaultId = keyValue.split('@')[0];
+                    firstName = userOAuth.name.givenName;
+                    lastName = userOAuth.name.familyName;
+                    break;
+                default:
+                    done(new Error('Undefined Authentication!'));
+                    return;
+            }
+
+            userDB = await knex('user')
+                .select('id', keyField)
+                .where(keyField, keyValue)
+                .first();
+
+            if (!userDB) {
+                const newUser = {
+                    id: defaultId,
+                    [keyField]: keyValue,
+                    password: '',
+                    first_name: firstName,
+                    last_name: lastName,
+                    cash_usd: 10000,
+                    cash_cad: 100,
+                    dp: {},
+                };
+
+                await knex('user').insert(newUser);
+            }
+
+            done(null, userOAuth);
+        } else {
+            done(new Error('Undefined Authentication!'));
+        }
+    } catch (error) {
+        done(error);
+    }
 });
 
 passport.deserializeUser(async (sessionObj, done) => {
-    const githubUsername = sessionObj.username;
+    const provider = sessionObj.provider;
     try {
-        const user = await knex('user')
-            .select('id', 'github_username')
-            .where('github_username', githubUsername)
-            .first();
-        if (user) {
-            done(null, user.id);
+        let userDB = undefined;
+        if (provider === 'github') {
+            const githubUsername = sessionObj.username;
+            userDB = await knex('user')
+                .select('id', 'github_username')
+                .where('github_username', githubUsername)
+                .first();
+            if (userDB) {
+                done(null, userDB.id);
+            } else {
+                done(
+                    new Error(
+                        `User with github id ${githubUsername} is not found!`
+                    )
+                );
+            }
+        } else if (provider === 'google') {
+            const gmail = sessionObj.emails[0].value;
+            userDB = await knex('user')
+                .select('id', 'user_gmail')
+                .where('user_gmail', gmail)
+                .first();
+            if (userDB) {
+                done(null, userDB.id);
+            } else {
+                done(new Error(`User with gmail ${gmail} is not found!`));
+            }
         } else {
-            done(new Error(`${githubUsername} is not found!`));
+            done(new Error('Undefined Authentication!'));
         }
     } catch (error) {
         done(error);

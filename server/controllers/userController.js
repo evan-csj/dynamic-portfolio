@@ -9,7 +9,6 @@ const singleUser = async (req, res) => {
         const user = await knex('user')
             .select(
                 'id',
-                'user_email',
                 'first_name',
                 'last_name',
                 'cash_usd',
@@ -30,18 +29,6 @@ const singleUser = async (req, res) => {
         console.error('Error:', error);
         return res.status(400).json(`Error retrieving user ${userId} ${error}`);
     }
-};
-
-const addUser = (req, res) => {
-    const newUser = req.body;
-    knex('user')
-        .insert(newUser)
-        .then(_data => {
-            res.status(201).json(newUser);
-        })
-        .catch(err => {
-            res.status(400).json(`Error creating user: ${err}`);
-        });
 };
 
 const checkUser = async (req, res) => {
@@ -83,4 +70,4 @@ const checkUser = async (req, res) => {
     }
 };
 
-module.exports = { singleUser, addUser, checkUser };
+module.exports = { singleUser, checkUser };

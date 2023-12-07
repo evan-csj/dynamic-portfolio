@@ -7,8 +7,8 @@ exports.up = function (knex) {
         .createTable('user', table => {
             table.string('id').primary().unique().notNullable();
             table.string('github_username').unique();
-            table.string('password').notNullable();
-            table.string('user_email').unique().notNullable();
+            table.string('password');
+            table.string('user_gmail').unique();
             table.string('first_name').notNullable();
             table.string('last_name').notNullable();
             table.float('cash_usd', 20, 7).unsigned().defaultTo(0);
