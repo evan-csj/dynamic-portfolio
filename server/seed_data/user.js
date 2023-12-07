@@ -15,5 +15,6 @@ module.exports = [
             COST: 25,
             F: 25,
         },
+        is_new: false,
     },
 ];

@@ -34,7 +34,6 @@ passport.use(
 passport.serializeUser(async (userOAuth, done) => {
     const { provider } = userOAuth;
     try {
-        let userDB;
         let keyField, keyValue, defaultId;
 
         if (provider) {
@@ -58,7 +57,7 @@ passport.serializeUser(async (userOAuth, done) => {
                     return;
             }
 
-            userDB = await knex('user')
+            const userDB = await knex('user')
                 .select('id', keyField)
                 .where(keyField, keyValue)
                 .first();
@@ -67,12 +66,10 @@ passport.serializeUser(async (userOAuth, done) => {
                 const newUser = {
                     id: defaultId,
                     [keyField]: keyValue,
-                    password: '',
                     first_name: firstName,
                     last_name: lastName,
                     cash_usd: 10000,
                     cash_cad: 100,
-                    dp: {},
                 };
 
                 await knex('user').insert(newUser);

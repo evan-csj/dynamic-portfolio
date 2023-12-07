@@ -7,13 +7,14 @@ exports.up = function (knex) {
         .createTable('user', table => {
             table.string('id').primary().unique().notNullable();
             table.string('github_username').unique();
-            table.string('password');
+            table.string('password').defaultTo('');
             table.string('user_gmail').unique();
             table.string('first_name').notNullable();
             table.string('last_name').notNullable();
             table.float('cash_usd', 20, 7).unsigned().defaultTo(0);
             table.float('cash_cad', 20, 7).unsigned().defaultTo(0);
-            table.jsonb('dp');
+            table.jsonb('dp').defaultTo({});
+            table.boolean('is_new').defaultTo(true);
             table.timestamps(true, true);
         })
         .createTable('symbol', table => {
