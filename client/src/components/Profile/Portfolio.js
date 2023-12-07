@@ -198,14 +198,16 @@ const Portfolio = props => {
 
     useEffect(() => {
         getSymbols().then(response => {
-            const symbols = response.data;
-            const formattedSymbols = symbols.map(item => {
-                return {
-                    value: item.symbol,
-                    label: item.symbol,
-                };
-            });
-            symbolOptions.current = formattedSymbols;
+            if (response.status === 200) {
+                const symbols = response.data;
+                const formattedSymbols = symbols.map(item => {
+                    return {
+                        value: item.symbol,
+                        label: item.symbol,
+                    };
+                });
+                symbolOptions.current = formattedSymbols;
+            }
         });
     }, []);
 

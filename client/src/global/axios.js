@@ -24,9 +24,9 @@ const getUser = async id => {
             },
         });
         return user;
-    } catch (err) {
-        console.error('Error:', err);
-        return;
+    } catch (error) {
+        console.error('Error:', error.response.data);
+        return error.response;
     }
 };
 
@@ -42,7 +42,10 @@ const getHoldings = async id => {
             }
         );
         return holdings;
-    } catch (err) {}
+    } catch (error) {
+        console.error('Error:', error.response.data);
+        return error.response;
+    }
 };
 
 const getTrading = async id => {
@@ -84,7 +87,10 @@ const getCurrency = async () => {
             },
         });
         return exRate;
-    } catch (err) {}
+    } catch (error) {
+        console.error('Error:', error.response.data);
+        return error.response;
+    }
 };
 
 const getWatchlist = async id => {
@@ -280,7 +286,10 @@ const getSymbols = async () => {
             },
         });
         return symbols;
-    } catch (err) {}
+    } catch (error) {
+        console.error('Error:', error.response.data);
+        return error.response;
+    }
 };
 
 const putSymbolInfo = async symbolInfo => {

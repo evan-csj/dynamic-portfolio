@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import FundingForm from './components/Action/FundingForm';
 import TradingForm from './components/Action/TradingForm';
@@ -98,6 +98,7 @@ function App() {
                 sender: 'Bot',
             },
         ]);
+        
         if (sender === 'User') {
             setWaitForRes(true);
             chatgpt(text)
@@ -209,6 +210,7 @@ function App() {
                         />
                     }
                 />
+                <Route path="*" element={<Navigate to="/" />} />
             </Routes>
             <ChatBot
                 messages={messages}

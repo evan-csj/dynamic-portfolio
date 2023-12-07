@@ -176,7 +176,7 @@ const Profile = props => {
 
     useEffect(() => {
         getCurrency().then(response => {
-            setExRate(response.data);
+            if (response.status === 200) setExRate(response.data);
         });
     }, []);
 
@@ -184,25 +184,35 @@ const Profile = props => {
         const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
         setUserId(username);
-        
-        getUser(username).then(response => {
-            const { first_name, last_name, cash_cad, cash_usd, dp } =
-                response.data;
-            const user = {
-                firstName: first_name,
-                lastName: last_name,
-                cashCAD: cash_cad,
-                cashUSD: cash_usd,
-                dp: dp,
-            };
-            setUserData(user);
-        });
 
-        getHoldings(username).then(response => {
-            const dataObj = convertArray2Dict(response.data);
-            setHoldingList(dataObj);
-            setIsHoldingLoaded(true);
-        });
+        getUser(username)
+            .then(response => {
+                if (response.status === 200) {
+                    const { first_name, last_name, cash_cad, cash_usd, dp } =
+                        response.data;
+                    const user = {
+                        firstName: first_name,
+                        lastName: last_name,
+                        cashCAD: cash_cad,
+                        cashUSD: cash_usd,
+                        dp: dp,
+                    };
+                    setUserData(user);
+                } else {
+                    navigate('/');
+                }
+            })
+            .catch(error => console.error(error));
+
+        getHoldings(username)
+            .then(response => {
+                if (response.status === 200) {
+                    const dataObj = convertArray2Dict(response.data);
+                    setHoldingList(dataObj);
+                    setIsHoldingLoaded(true);
+                }
+            })
+            .catch(error => console.error(error));
         // eslint-disable-next-line
     }, [props.toggle]);
 

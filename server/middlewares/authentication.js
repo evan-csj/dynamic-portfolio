@@ -7,7 +7,6 @@ const isAuth = (req, res, next) => {
     } else {
         if (!req.headers.jwt) {
             return res.status(401).json('No token found');
-            // return res.redirect(`${process.env.CLIENT_URL}/login`);
         }
         const authTokenArray = req.headers.jwt.split(' ');
         if (
