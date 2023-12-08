@@ -2,11 +2,6 @@ import axios from 'axios';
 const dayjs = require('dayjs');
 const API_PORT = 8080;
 const API_ADDRESS = `http://localhost:${API_PORT}`;
-const newHeader = {
-    headers: {
-        'Content-Type': 'application/json',
-    },
-};
 
 const axiosStandard = axios.create({
     withCredentials: true,
@@ -60,7 +55,10 @@ const getTrading = async id => {
             }
         );
         return trades;
-    } catch (err) {}
+    } catch (error) {
+        console.error('Error:', error.response.data);
+        return error.response;
+    }
 };
 
 const getFunding = async id => {
@@ -75,7 +73,10 @@ const getFunding = async id => {
             }
         );
         return funding;
-    } catch (err) {}
+    } catch (error) {
+        console.error('Error:', error.response.data);
+        return error.response;
+    }
 };
 
 const getCurrency = async () => {
@@ -88,7 +89,6 @@ const getCurrency = async () => {
         });
         return exRate;
     } catch (error) {
-        console.error('Error:', error.response.data);
         return error.response;
     }
 };
@@ -105,7 +105,10 @@ const getWatchlist = async id => {
             }
         );
         return watchlist;
-    } catch (err) {}
+    } catch (error) {
+        console.error('Error:', error.response.data);
+        return error.response;
+    }
 };
 
 const getPriceHistory = async (ticker, scale) => {
@@ -287,7 +290,6 @@ const getSymbols = async () => {
         });
         return symbols;
     } catch (error) {
-        console.error('Error:', error.response.data);
         return error.response;
     }
 };

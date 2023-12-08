@@ -191,10 +191,14 @@ const Watchlist = props => {
         setUserId(username);
 
         getWatchlist(username).then(response => {
-            const dataObj = convertArray2Dict(response.data);
-            setWatchlist(dataObj);
-            setIsWatchlistLoaded(true);
-            setTicker(response.data[0].ticker);
+            if (response.status === 200) {
+                const dataObj = convertArray2Dict(response.data);
+                setWatchlist(dataObj);
+                setIsWatchlistLoaded(true);
+                setTicker(response.data[0].ticker);
+            } else {
+                navigate('/');
+            }
         });
         // eslint-disable-next-line
     }, []);
@@ -223,15 +227,20 @@ const Watchlist = props => {
 
     useEffect(() => {
         getSymbols().then(response => {
-            const symbols = response.data;
-            const formattedSymbols = symbols.map(item => {
-                return {
-                    value: item.symbol,
-                    label: item.symbol,
-                };
-            });
-            symbolOptions.current = formattedSymbols;
+            if (response.status === 200) {
+                const symbols = response.data;
+                const formattedSymbols = symbols.map(item => {
+                    return {
+                        value: item.symbol,
+                        label: item.symbol,
+                    };
+                });
+                symbolOptions.current = formattedSymbols;
+            } else {
+                navigate('/');
+            }
         });
+        // eslint-disable-next-line
     }, []);
 
     // useEffect(() => {
@@ -284,7 +293,7 @@ const Watchlist = props => {
     // }, [ticker, chartScale]);
 
     useEffect(() => {
-        if (ticker === '') return;
+        if (!ticker) return;
         getPriceHistory(ticker, chartScale).then(response => {
             setCandleStickData({
                 priceData: response.data.ohlc,

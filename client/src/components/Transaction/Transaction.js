@@ -27,10 +27,19 @@ function Transaction(props) {
         const username = userIdSession ?? '';
 
         getTrading(username).then(response => {
-            setTradingList(response.data);
+            if (response.status === 200) {
+                setTradingList(response.data);
+            } else {
+                navigate('/');
+            }
         });
+
         getFunding(username).then(response => {
-            setFundingList(response.data);
+            if (response.status === 200) {
+                setFundingList(response.data);
+            } else {
+                navigate('/');
+            }
         });
         // eslint-disable-next-line
     }, [props.toggle]);
