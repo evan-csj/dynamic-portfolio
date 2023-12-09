@@ -5,6 +5,7 @@ import {
     Heading,
     Box,
     Flex,
+    Stack,
     Button,
     FormControl,
     FormLabel,
@@ -176,13 +177,9 @@ const TradingForm = props => {
     useEffect(() => {
         unsubscribeAll();
         const userIdSession = sessionStorage.getItem('userId');
-        if (userIdSession) {
-            setUserId(userIdSession);
-        } else {
-            setUserId('');
-        }
-
         const username = userIdSession ?? '';
+        setUserId(username);
+
         getUser(username).then(response => {
             setUserData(response.data);
         });
@@ -254,7 +251,7 @@ const TradingForm = props => {
     return (
         <Flex
             className="flex-col"
-            px={{ base: '16px', lg: '32px', xl: '0' }}
+            px={{ base: '16px', lg: '32px', xl: '24px' }}
             mx={{ xl: '0' }}
             w={{ xl: '100%' }}
             pt={12}
@@ -262,74 +259,75 @@ const TradingForm = props => {
         >
             <Heading size="3xl">{title}</Heading>
             <FormControl>
-                <FormLabel>Type</FormLabel>
-                <Select
-                    placeholder="Select Type"
-                    options={typeOptions}
-                    isRequired
-                    onChange={handleTypeChange}
-                ></Select>
-                <Box h={8} />
-                <FormLabel>Symbol</FormLabel>
-                <Select
-                    placeholder="Type Symbol"
-                    options={symbolOptions.current}
-                    isRequired
-                    onChange={handleSymbolChange}
-                ></Select>
-                {/* <InputGroup>
-                    <Input
-                        placeholder="Enter Symbol"
-                        name="symbol"
-                        value={symbol}
-                        maxLength="5"
-                        onChange={handleSymbolChange}
-                    />
-                </InputGroup> */}
-                {
-                    <FormHelperText>
-                        Current price: ${currentPrice} {currency} / Position:{' '}
-                        {shares} shares
-                    </FormHelperText>
-                }
-                <Box h={8} />
-                <FormLabel>Quantity</FormLabel>
-                <InputGroup>
-                    <Input
-                        placeholder="Enter Quantity"
-                        name="quantity"
-                        value={quantity}
-                        maxLength="10"
-                        onChange={handleQuantityChange}
-                    />
-                </InputGroup>
-                {!notZero() ? (
-                    <FormHelperText color="light.red">
-                        Don't enter 0!
-                    </FormHelperText>
-                ) : (
-                    <></>
-                )}
-                <Box h={8} />
-                <Button
-                    variant="submit"
-                    type="submit"
-                    w="100%"
-                    onClick={handleSubmit}
-                >
-                    Submit
-                </Button>
-                {!enoughShares() ? (
-                    <FormHelperText color="light.red">
-                        Not enough shares to sell
-                    </FormHelperText>
-                ) : !enoughFund() ? (
-                    <FormHelperText color="light.red">
-                        Not enough fund to buy
-                    </FormHelperText>
-                ) : (
-                    <></>
-                )}
+                <Stack spacing={8}>
+                    <Box>
+                        <FormLabel>Type</FormLabel>
+                        <Select
+                            placeholder="Select Type"
+                            options={typeOptions}
+                            isRequired
+                            onChange={handleTypeChange}
+                        ></Select>
+                    </Box>
+
+                    <Box>
+                        <FormLabel>Symbol</FormLabel>
+                        <Select
+                            placeholder="Type Symbol"
+                            options={symbolOptions.current}
+                            isRequired
+                            onChange={handleSymbolChange}
+                        ></Select>
+                        {
+                            <FormHelperText>
+                                Current price: ${currentPrice} {currency} /
+                                Position: {shares} shares
+                            </FormHelperText>
+                        }
+                    </Box>
+
+                    <Box>
+                        <FormLabel>Quantity</FormLabel>
+                        <InputGroup>
+                            <Input
+                                placeholder="Enter Quantity"
+                                name="quantity"
+                                value={quantity}
+                                maxLength="10"
+                                onChange={handleQuantityChange}
+                            />
+                        </InputGroup>
+                        {!notZero() ? (
+                            <FormHelperText color="light.red">
+                                Don't enter 0!
+                            </FormHelperText>
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
+
+                    <Box>
+                        <Button
+                            variant="submit"
+                            type="submit"
+                            w="100%"
+                            onClick={handleSubmit}
+                        >
+                            Submit
+                        </Button>
+                        {!enoughShares() ? (
+                            <FormHelperText color="light.red">
+                                Not enough shares to sell
+                            </FormHelperText>
+                        ) : !enoughFund() ? (
+                            <FormHelperText color="light.red">
+                                Not enough fund to buy
+                            </FormHelperText>
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
+                </Stack>
             </FormControl>
             <Balance userData={userData} />
         </Flex>

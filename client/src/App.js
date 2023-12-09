@@ -98,7 +98,7 @@ function App() {
                 sender: 'Bot',
             },
         ]);
-        
+
         if (sender === 'User') {
             setWaitForRes(true);
             chatgpt(text)
@@ -173,7 +173,10 @@ function App() {
                         <Login login={login} unsubscribeAll={unsubscribeAll} />
                     }
                 />
-                <Route path="/signup" element={<SignUp />} />
+                <Route
+                    path="/signup"
+                    element={<SignUp unsubscribeAll={unsubscribeAll} />}
+                />
                 <Route
                     path="/profile"
                     element={
@@ -296,7 +299,7 @@ function App() {
                 <DrawerOverlay zIndex={1} />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerBody>
+                    <DrawerBody p={0}>
                         <FundingForm
                             userId={username}
                             changePage={changePage}
@@ -318,7 +321,7 @@ function App() {
                 <DrawerOverlay zIndex={1} />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerBody>
+                    <DrawerBody p={0}>
                         <TradingForm
                             userId={username}
                             changePage={changePage}

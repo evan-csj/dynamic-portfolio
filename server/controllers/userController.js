@@ -70,4 +70,22 @@ const checkUser = async (req, res) => {
     }
 };
 
-module.exports = { singleUser, checkUser };
+const editUser = async (req, res) => {
+    const { oldUserId, newUserId, firstName, lastName } = req.body;
+    const validatedUserId = newUserId.toLowerCase();
+
+    const updateUserData = {
+        id: validatedUserId,
+        first_name: firstName,
+        last_name: lastName,
+    };
+
+    try {
+        await knex('user').where({ id: oldUserId }).update(updateUserData);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Something went wrong' });
+    }
+};
+
+module.exports = { singleUser, checkUser, editUser };

@@ -5,6 +5,7 @@ import {
     Heading,
     Box,
     Flex,
+    Stack,
     Button,
     FormControl,
     FormLabel,
@@ -92,13 +93,9 @@ const FundingForm = props => {
     useEffect(() => {
         props.unsubscribeAll();
         const userIdSession = sessionStorage.getItem('userId');
-        if (userIdSession) {
-            setUserId(userIdSession);
-        } else {
-            setUserId('');
-        }
-
         const username = userIdSession ?? '';
+        setUserId(username);
+
         getUser(username).then(response => {
             setUserData(response.data);
         });
@@ -125,8 +122,8 @@ const FundingForm = props => {
 
     return (
         <Flex
-            className="flex-col"
-            px={{ base: '16px', lg: '32px', xl: '0' }}
+            direction="column"
+            px={{ base: '24px', lg: '32px', xl: '24px' }}
             mx={{ xl: '0' }}
             w={{ xl: '100%' }}
             pt={12}
@@ -134,66 +131,74 @@ const FundingForm = props => {
         >
             <Heading size="3xl">{title}</Heading>
             <FormControl>
-                <FormLabel>Action</FormLabel>
-                <Select
-                    placeholder="Select Action"
-                    options={typeOptions}
-                    isRequired
-                    onChange={handleTypeChange}
-                ></Select>
-                <Box h={8} />
-                <FormLabel>Amount</FormLabel>
-                <InputGroup>
-                    <InputLeftElement
-                        pointerEvents="none"
-                        color="light.grey"
-                        children="$"
-                    />
-                    <Input
-                        placeholder="Enter amount"
-                        name="amount"
-                        value={amount}
-                        maxLength="13"
-                        onChange={handleAmountChange}
-                    />
-                    <InputRightElement
-                        children={
-                            enoughFund() && notZero ? (
-                                <CheckIcon color="light.green" />
-                            ) : (
-                                <CloseIcon color="light.red" />
-                            )
-                        }
-                    />
-                </InputGroup>
-                {!enoughFund() ? (
-                    <FormHelperText color="light.red">
-                        Fund is not enough to withdraw
-                    </FormHelperText>
-                ) : !notZero ? (
-                    <FormHelperText color="light.red">
-                        Don't enter 0
-                    </FormHelperText>
-                ) : (
-                    <></>
-                )}
-                <Box h={8} />
-                <FormLabel>Account</FormLabel>
-                <Select
-                    placeholder="Select Account"
-                    options={accountOptions}
-                    isRequired
-                    onChange={handleAccountChange}
-                ></Select>
-                <Box h={8} />
-                <Button
-                    variant="submit"
-                    type="submit"
-                    w="100%"
-                    onClick={handleSubmit}
-                >
-                    Submit
-                </Button>
+                <Stack spacing={8}>
+                    <Box>
+                        <FormLabel>Action</FormLabel>
+                        <Select
+                            placeholder="Select Action"
+                            options={typeOptions}
+                            isRequired
+                            onChange={handleTypeChange}
+                        ></Select>
+                    </Box>
+
+                    <Box>
+                        <FormLabel>Amount</FormLabel>
+                        <InputGroup>
+                            <InputLeftElement
+                                pointerEvents="none"
+                                color="light.grey"
+                                children="$"
+                            />
+                            <Input
+                                placeholder="Enter amount"
+                                name="amount"
+                                value={amount}
+                                maxLength="13"
+                                onChange={handleAmountChange}
+                            />
+                            <InputRightElement
+                                children={
+                                    enoughFund() && notZero ? (
+                                        <CheckIcon color="light.green" />
+                                    ) : (
+                                        <CloseIcon color="light.red" />
+                                    )
+                                }
+                            />
+                        </InputGroup>
+                        {!enoughFund() ? (
+                            <FormHelperText color="light.red">
+                                Fund is not enough to withdraw
+                            </FormHelperText>
+                        ) : !notZero ? (
+                            <FormHelperText color="light.red">
+                                Don't enter 0
+                            </FormHelperText>
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
+
+                    <Box>
+                        <FormLabel>Account</FormLabel>
+                        <Select
+                            placeholder="Select Account"
+                            options={accountOptions}
+                            isRequired
+                            onChange={handleAccountChange}
+                        ></Select>
+                    </Box>
+
+                    <Button
+                        variant="submit"
+                        type="submit"
+                        w="100%"
+                        onClick={handleSubmit}
+                    >
+                        Submit
+                    </Button>
+                </Stack>
             </FormControl>
             <Balance userData={userData} />
         </Flex>

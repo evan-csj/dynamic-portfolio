@@ -494,11 +494,23 @@ const checkUserPassword = async login => {
         password: login.password,
     };
     try {
-        const isCorrect = await axiosStandard.put(
+        const isCorrect = await axiosStandard.post(
             `${API_ADDRESS}/user`,
             userInput
         );
         return isCorrect;
+    } catch (err) {
+        return err.response;
+    }
+};
+
+const updateUserData = async userData => {
+    try {
+        const newUserData = await axiosStandard.put(
+            `${API_ADDRESS}/user`,
+            userData
+        );
+        return newUserData;
     } catch (err) {
         return err.response;
     }
@@ -533,5 +545,6 @@ export {
     deleteWatchItem,
     chatgpt,
     checkUserPassword,
+    updateUserData,
     logout,
 };
