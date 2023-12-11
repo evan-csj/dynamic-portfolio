@@ -70,24 +70,11 @@ const Profile = props => {
                     const profile = await getCompanyProfile(ticker);
 
                     const {
-                        name,
-                        exchange,
-                        finnhubIndustry: sector,
                         logo,
                         currency,
                     } = profile.data;
 
-                    const updateSymbol = {
-                        ticker: ticker,
-                        name: name,
-                        exchange: exchange,
-                        sector: sector,
-                        logo: logo,
-                        currency: currency,
-                    };
-
                     holdingItem.currency = currency;
-                    await putSymbolInfo(updateSymbol);
                 }
 
                 if (diff > 60 || holdingItem.price === 0) {
@@ -168,6 +155,7 @@ const Profile = props => {
     }, [props.toggle]);
 
     useEffect(() => {
+        setIsHoldingLoaded(false);
         if (isHoldingLoaded) {
             updateHoldingList();
             wsInitial();
