@@ -28,6 +28,7 @@ const SignUp = props => {
                 lastName,
             };
             updateUserData(newUserData);
+            navigate('/profile');
         }
     };
 
@@ -39,12 +40,12 @@ const SignUp = props => {
     const handleFirstNameChange = event => {
         const input = event.target.value;
         setFirstName(input);
-    }
+    };
 
     const handleLastNameChange = event => {
         const input = event.target.value;
         setLastName(input);
-    }
+    };
 
     useEffect(() => {
         props.unsubscribeAll();
@@ -83,6 +84,8 @@ const SignUp = props => {
                         <FormLabel>Username</FormLabel>
                         <Input
                             placeholder={oldUserId}
+                            isRequired
+                            maxLength="10"
                             onChange={handleIdChange}
                         />
                     </Box>
@@ -90,6 +93,8 @@ const SignUp = props => {
                         <FormLabel>First Name</FormLabel>
                         <Input
                             placeholder={firstName}
+                            isRequired
+                            maxLength="20"
                             onChange={handleFirstNameChange}
                         />
                     </Box>
@@ -97,6 +102,8 @@ const SignUp = props => {
                         <FormLabel>Last Name</FormLabel>
                         <Input
                             placeholder={lastName}
+                            isRequired
+                            maxLength="20"
                             onChange={handleLastNameChange}
                         />
                     </Box>

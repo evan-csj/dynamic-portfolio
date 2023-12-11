@@ -33,57 +33,7 @@ import {
 } from '../../global/axios';
 import '../../styles/global.scss';
 import dayjs from 'dayjs';
-
-const quotes = [
-    {
-        statement:
-            "The best investment you can make is an investment in yourself. The more you learn, the more you'll earn.",
-        name: 'Warren Buffett',
-    },
-    {
-        statement:
-            'Be fearful when others are greedy and be greed when others are fearful.',
-        name: 'Warren Buffett',
-    },
-    {
-        statement:
-            'Wide diversification is only required when investors do not understand what they are doing.',
-        name: 'Warren Buffett',
-    },
-    {
-        statement: 'Never invest in a business you cannot understand.',
-        name: 'Warren Buffett',
-    },
-    {
-        statement:
-            'The key to making money in stocks is not to get scared out of them.',
-        name: 'Peter Lynch',
-    },
-    {
-        statement:
-            "The basic story remains simple and never ending. Stock aren't lottery tickets. There's a company attached to every share.",
-        name: 'Peter Lynch',
-    },
-    {
-        statement: 'Know what you own and know why you own it.',
-        name: 'Peter Lynch',
-    },
-    {
-        statement:
-            'The big money is not in the buying or selling, but in the waiting.',
-        name: 'Charlie Munger',
-    },
-    {
-        statement:
-            'Simplicity has a way of improving performance by enabling us to better understand what we are doing.',
-        name: 'Charlie Munger',
-    },
-    {
-        statement:
-            'Spend each day trying to be a little wise than you were when you wake up.',
-        name: 'Charlie Munger',
-    },
-];
+import text from './text.json';
 
 const Profile = props => {
     const navigate = useNavigate();
@@ -187,6 +137,7 @@ const Profile = props => {
 
         getUser(username)
             .then(response => {
+                console.log(response.data)
                 if (response.status === 200) {
                     const { first_name, last_name, cash_cad, cash_usd, dp } =
                         response.data;
@@ -273,7 +224,7 @@ const Profile = props => {
     }, [exRate, userData, holdingList, isPriceLoaded]);
 
     useEffect(() => {
-        setQuoteIndex(Math.floor(Math.random() * quotes.length));
+        setQuoteIndex(Math.floor(Math.random() * text.quotes.length));
     }, []);
 
     const cashCAD = userData ? userData.cashCAD : 0;
@@ -282,7 +233,7 @@ const Profile = props => {
     const equityUSD = accountDetail ? accountDetail.equityUSD : 0;
     const equityTotal = accountDetail ? accountDetail.equityTotal : 0;
     const usd2cad = accountDetail ? accountDetail.usd2cad : 1;
-    const quote = quotes[quoteIndex];
+    const quote = text.quotes[quoteIndex];
 
     return (
         <Flex

@@ -195,7 +195,8 @@ const Watchlist = props => {
                 const dataObj = convertArray2Dict(response.data);
                 setWatchlist(dataObj);
                 setIsWatchlistLoaded(true);
-                setTicker(response.data[0].ticker);
+                if (response.data.length > 0)
+                    setTicker(response.data[0].ticker);
             } else {
                 navigate('/');
             }

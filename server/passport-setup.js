@@ -33,6 +33,7 @@ passport.use(
 
 passport.serializeUser(async (userOAuth, done) => {
     const { provider } = userOAuth;
+    
     try {
         let keyField, keyValue, defaultId;
 
@@ -41,14 +42,14 @@ passport.serializeUser(async (userOAuth, done) => {
                 case 'github':
                     keyField = 'github_username';
                     keyValue = userOAuth.username;
-                    defaultId = keyValue;
-                    firstName = 'GitHub';
-                    lastName = 'User';
+                    defaultId = keyValue + '@github';
+                    firstName = userOAuth.displayName;
+                    lastName = '';
                     break;
                 case 'google':
                     keyField = 'user_gmail';
                     keyValue = userOAuth.emails[0].value;
-                    defaultId = keyValue.split('@')[0];
+                    defaultId = keyValue.split('@')[0] + '@google';
                     firstName = userOAuth.name.givenName;
                     lastName = userOAuth.name.familyName;
                     break;
