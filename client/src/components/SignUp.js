@@ -7,6 +7,7 @@ import {
     Stack,
     FormControl,
     FormLabel,
+    FormHelperText,
     Input,
     Button,
 } from '@chakra-ui/react';
@@ -18,6 +19,7 @@ const SignUp = props => {
     const [newUserId, setNewUserId] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [isDuplicate, setIsDuplicate] = useState(false);
 
     const handleSave = () => {
         if (newUserId && firstName && lastName) {
@@ -27,8 +29,14 @@ const SignUp = props => {
                 firstName,
                 lastName,
             };
-            updateUserData(newUserData);
-            navigate('/profile');
+
+            updateUserData(newUserData).then(response => {
+                if (response.status === 403) {
+                    setIsDuplicate(true);
+                } else {
+                    navigate('/profile');
+                }
+            });
         }
     };
 
@@ -88,6 +96,13 @@ const SignUp = props => {
                             maxLength="10"
                             onChange={handleIdChange}
                         />
+                        {isDuplicate ? (
+                            <FormHelperText color="light.red">
+                                User exists! Please try another one!
+                            </FormHelperText>
+                        ) : (
+                            <></>
+                        )}
                     </Box>
                     <Box>
                         <FormLabel>First Name</FormLabel>

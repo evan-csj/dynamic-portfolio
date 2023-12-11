@@ -71,6 +71,7 @@ const checkUser = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
+    console.log(req.body);
     const { oldUserId, newUserId, firstName, lastName } = req.body;
     const validatedUserId = newUserId.toLowerCase();
 
@@ -81,7 +82,17 @@ const editUser = async (req, res) => {
     };
 
     try {
-        await knex('user').where({ id: oldUserId }).update(updateUserData);
+        let user = undefined;
+        if (oldUserId !== validatedUserId) {
+            user = await knex('user').where({ id: newUserId }).first();
+        }
+
+        if (!user) {
+            const updatedUser = await knex('user').where({ id: oldUserId }).update(updateUserData);
+            return res.status(200).json(updatedUser);
+        } else {
+            return res.status(403).json({ error: 'User Exist!' });
+        }
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ error: 'Something went wrong' });

@@ -34,6 +34,7 @@ import {
 import '../../styles/global.scss';
 import dayjs from 'dayjs';
 import text from './text.json';
+import { Edit } from '../../styles/icons';
 
 const Profile = props => {
     const navigate = useNavigate();
@@ -137,7 +138,6 @@ const Profile = props => {
 
         getUser(username)
             .then(response => {
-                console.log(response.data)
                 if (response.status === 200) {
                     const { first_name, last_name, cash_cad, cash_usd, dp } =
                         response.data;
@@ -258,41 +258,52 @@ const Profile = props => {
                     mx={{ xl: 'auto' }}
                     w={{ xl: '1020px' }}
                 >
-                    <Box>
-                        <Heading
-                            color="light.white"
-                            size={{ base: 'md', md: 'lg', lg: 'xl' }}
-                        >
-                            Welcome!
-                        </Heading>
-                        <Heading
+                    <Flex direction="row" justifyContent="space-between">
+                        <Box>
+                            <Heading
+                                color="light.white"
+                                size={{ base: 'md', md: 'lg', lg: 'xl' }}
+                            >
+                                Welcome!
+                            </Heading>
+                            <Heading
+                                color="light.yellow"
+                                size={{ base: 'md', md: 'lg', lg: 'xl' }}
+                                mt="8px"
+                            >
+                                {userData ? (
+                                    <Flex gap="16px">
+                                        <Box>{userData.firstName}</Box>
+                                        <Box>{userData.lastName}</Box>
+                                    </Flex>
+                                ) : (
+                                    <Flex gap="16px">
+                                        <Skeleton
+                                            w="fit-content"
+                                            borderRadius="24px"
+                                        >
+                                            XXXXX
+                                        </Skeleton>
+                                        <Skeleton
+                                            w="fit-content"
+                                            borderRadius="24px"
+                                        >
+                                            XXXXXXXX
+                                        </Skeleton>
+                                    </Flex>
+                                )}
+                            </Heading>
+                        </Box>
+                        <Edit
+                            variant="btn"
+                            cursor="pointer"
                             color="light.yellow"
-                            size={{ base: 'md', md: 'lg', lg: 'xl' }}
-                            mt="8px"
-                        >
-                            {userData ? (
-                                <Flex gap="16px">
-                                    <Box>{userData.firstName}</Box>
-                                    <Box>{userData.lastName}</Box>
-                                </Flex>
-                            ) : (
-                                <Flex gap="16px">
-                                    <Skeleton
-                                        w="fit-content"
-                                        borderRadius="24px"
-                                    >
-                                        XXXXX
-                                    </Skeleton>
-                                    <Skeleton
-                                        w="fit-content"
-                                        borderRadius="24px"
-                                    >
-                                        XXXXXXXX
-                                    </Skeleton>
-                                </Flex>
-                            )}
-                        </Heading>
-                    </Box>
+                            onClick={() => {
+                                navigate('/signup');
+                            }}
+                        />
+                    </Flex>
+
                     <Text color="light.white">{quote.statement}</Text>
                     <Text color="light.white" alignSelf="end" fontWeight="bold">
                         ---- ---- {quote.name}

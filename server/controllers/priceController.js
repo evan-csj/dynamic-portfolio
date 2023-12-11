@@ -201,6 +201,7 @@ const getQuote = async (req, res) => {
     const { ticker } = req.query;
     try {
         const response = await axios.request(finnHubQuote(ticker));
+        console.log(req.body, response.data)
         return res.status(200).json(response.data);
     } catch (error) {
         console.error('Error:', error);
