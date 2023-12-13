@@ -6,7 +6,6 @@ const {
     EX_KEY,
     FINNHUB_KEY,
     POLYGON_KEY,
-    ALPHA_VANTAGE_RAPID,
     ALPACA_KEY,
     ALPACA_SECRET,
 } = process.env;
@@ -37,23 +36,6 @@ const polygonAggs = (ticker, multiplier, timespan, from, to) => {
     };
 };
 
-// const alphaVantage = symbol => {
-//     return {
-//         method: 'GET',
-//         url: 'https://alpha-vantage.p.rapidapi.com/query',
-//         params: {
-//             function: 'TIME_SERIES_DAILY_ADJUSTED',
-//             symbol: symbol,
-//             outputsize: 'full',
-//             datatype: 'json',
-//         },
-//         headers: {
-//             'X-RapidAPI-Key': ALPHA_VANTAGE_RAPID,
-//             'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
-//         },
-//     };
-// };
-
 const alpaca = (symbol, timeframe, from) => {
     return {
         method: 'GET',
@@ -64,7 +46,7 @@ const alpaca = (symbol, timeframe, from) => {
             start: from + 'T08:00:00Z',
             limit: 10000,
             adjustment: 'split',
-            feed: 'sip',
+            feed: 'iex',
             sort: 'asc',
         },
         headers: {
@@ -118,90 +100,10 @@ const getCandles = async (req, res) => {
     }
 };
 
-// const getCandles = async (req, res) => {
-//     const { ticker, multiplier, timespan, from, to, scale } = req.query;
-
-//     try {
-//         let ohlcArray = [];
-//         let volumeArray = [];
-
-//         if (scale === '5Y' || scale === 'ALL') {
-//             const response = await axios.request(alphaVantage(ticker));
-//             const responseData = response.data['Time Series (Daily)'];
-
-//             for (const [date, data] of Object.entries(responseData)) {
-//                 const time = dayjs(date).unix();
-//                 const open = parseFloat(data['1. open']);
-//                 const high = parseFloat(data['2. high']);
-//                 const low = parseFloat(data['3. low']);
-//                 const close = parseFloat(data['4. close']);
-//                 const closeAdj = parseFloat(data['5. adjusted close']);
-//                 const ratio = closeAdj / close;
-//                 const openAdj = open * ratio;
-//                 const highAdj = high * ratio;
-//                 const lowAdj = low * ratio;
-//                 const volume = parseInt(data['6. volume']);
-//                 const color =
-//                     close - open >= 0
-//                         ? 'rgba(38, 166, 154, 0.5)'
-//                         : 'rgba(239, 83, 80, 0.5)';
-//                 ohlcArray.unshift({
-//                     time,
-//                     open: openAdj,
-//                     high: highAdj,
-//                     low: lowAdj,
-//                     close: closeAdj,
-//                 });
-//                 volumeArray.unshift({
-//                     time,
-//                     value: volume,
-//                     color,
-//                 });
-//             }
-//         } else {
-//             const response = await axios.request(
-//                 polygonAggs(ticker, multiplier, timespan, from, to)
-//             );
-
-//             const resultArray = response.data.results;
-
-//             for (const {
-//                 o: open,
-//                 h: high,
-//                 l: low,
-//                 c: close,
-//                 v: volume,
-//                 t: time,
-//             } of resultArray) {
-//                 const color =
-//                     close - open >= 0
-//                         ? 'rgba(38, 166, 154, 0.5)'
-//                         : 'rgba(239, 83, 80, 0.5)';
-//                 ohlcArray.push({
-//                     time: time / 1000,
-//                     open,
-//                     high,
-//                     low,
-//                     close,
-//                 });
-//                 volumeArray.push({
-//                     time: time / 1000,
-//                     value: volume,
-//                     color,
-//                 });
-//             }
-//         }
-//         return res.status(200).json({ ohlc: ohlcArray, v: volumeArray });
-//     } catch (error) {
-//         return res.status(404).json(error);
-//     }
-// };
-
 const getQuote = async (req, res) => {
     const { ticker } = req.query;
     try {
         const response = await axios.request(finnHubQuote(ticker));
-        console.log(req.body, response.data)
         return res.status(200).json(response.data);
     } catch (error) {
         console.error('Error:', error);
