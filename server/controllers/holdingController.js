@@ -1,36 +1,36 @@
 const knex = require('knex')(require('../knexfile'));
 
-const selectHolding = userId =>
-    knex('holding')
-        .join('symbol', { 'symbol.symbol': 'holding.ticker' })
-        .select(
-            'id',
-            'user_id',
-            'ticker',
-            'avg_price',
-            'price',
-            'buy_shares',
-            'sell_shares',
-            'currency',
-            'updated_at'
-        )
-        .where('user_id', userId);
+const getHolding = async (req, res) => {
+    const userId = req.params.userId || req.user || '';
 
-const getHolding = (req, res) => {
-    const userId = req.params.userId;
-    selectHolding(userId)
-        .then(data => {
-            if (data.length === 0) {
-                return res
-                    .status(404)
-                    .json(`The holding with user id ${userId} is not found!`);
-            } else {
-                res.status(200).json(data);
-            }
-        })
-        .catch(err => {
-            res.status(400).json(`Error retrieving user id ${userId} ${err}`);
-        });
+    try {
+        const holding = await knex('holding')
+            .join('symbol', { 'symbol.symbol': 'holding.ticker' })
+            .select(
+                'id',
+                'user_id',
+                'ticker',
+                'avg_price',
+                'price',
+                'buy_shares',
+                'sell_shares',
+                'currency',
+                'updated_at'
+            )
+            .where('user_id', userId);
+        if (!holding) {
+            return res
+                .status(404)
+                .json(`The holding with user id ${userId} is not found!`);
+        } else {
+            return res.status(200).json(holding);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return res
+            .status(400)
+            .json(`Error retrieving user id ${userId} ${error}`);
+    }
 };
 
 module.exports = { getHolding };

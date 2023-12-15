@@ -17,7 +17,9 @@ const CandleStick = props => {
 
     useEffect(() => {
         const handleResize = () => {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+            chart.applyOptions({
+                width: chartContainerRef.current.clientWidth,
+            });
         };
 
         const chart = createChart(chartContainerRef.current, {
@@ -28,16 +30,40 @@ const CandleStick = props => {
             width: chartContainerRef.current.clientWidth,
             height: 300,
         });
-        chart.timeScale().fitContent();
 
         const candlestickSeries = chart.addCandlestickSeries({
-            upColor: '#26a69a',
-            downColor: '#ef5350',
+            upColor: 'rgba(38, 166, 154, 1)',
+            downColor: 'rgba(239, 83, 80, 1)',
             borderVisible: false,
-            wickUpColor: '#26a69a',
-            wickDownColor: '#ef5350',
+            wickUpColor: 'rgba(38, 166, 154, 1)',
+            wickDownColor: 'rgba(239, 83, 80, 1)',
         });
-        candlestickSeries.setData(data);
+
+        const volumeSeries = chart.addHistogramSeries({
+            priceFormat: {
+                type: 'volume',
+            },
+            priceScaleId: '',
+            scaleMargins: {
+                top: 0.7,
+                bottom: 0,
+            },
+        });
+
+        volumeSeries.priceScale().applyOptions({
+            scaleMargins: {
+                top: 0.7,
+                bottom: 0,
+            },
+        });
+
+        candlestickSeries.setData(data.priceData);
+        volumeSeries.setData(data.volumeData);
+
+        chart.timeScale().fitContent();
+        chart.timeScale().applyOptions({
+            timeVisible: true,
+        });
 
         window.addEventListener('resize', handleResize);
 
@@ -46,7 +72,14 @@ const CandleStick = props => {
 
             chart.remove();
         };
-    }, [data, backgroundColor, lineColor, textColor, areaTopColor, areaBottomColor]);
+    }, [
+        data,
+        backgroundColor,
+        lineColor,
+        textColor,
+        areaTopColor,
+        areaBottomColor,
+    ]);
 
     return <div ref={chartContainerRef} />;
 };

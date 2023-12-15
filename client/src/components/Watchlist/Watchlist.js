@@ -21,7 +21,7 @@ import {
     getLastPrice,
     getCurrency,
     getSymbols,
-    postWatchItem,
+    addWatchItem,
     deleteWatchItem,
     getCompanyProfile,
     putSymbolPrice,
@@ -30,16 +30,19 @@ import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
 import '../../styles/global.scss';
-// import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
-function Watchlist(props) {
+const Watchlist = props => {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
     const navigate = useNavigate();
     const [userId, setUserId] = useState(null);
     const [watchlist, setWatchlist] = useState({});
     const [isWatchlistLoaded, setIsWatchlistLoaded] = useState(false);
     const [exRate, setExRate] = useState(1);
-    const [candlestickData, setCandleStickData] = useState([]);
+    const [candlestickData, setCandleStickData] = useState(null);
     const [chartScale, setChartScale] = useState('1Y');
     const [ticker, setTicker] = useState('');
     const [existing, setExising] = useState(false);
@@ -47,15 +50,6 @@ function Watchlist(props) {
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
-
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const [socketUrl, setSocketUrl] = useState(
-    //     `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
-    // );
-    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-    //     onOpen: () => console.log('Link Start'),
-    //     shouldReconnect: closeEvent => true,
-    // });
 
     const wsInitial = () => {
         unsubscribeAll();
@@ -142,34 +136,31 @@ function Watchlist(props) {
             const { logo, name, exchange, finnhubIndustry, currency } =
                 profile.data;
 
-            let newWatchFE = {
-                id: `${userId}-${searchTicker}`,
-                user_id: userId,
-                logo: logo,
+            const newWatchItemFE = {
+                logo,
                 ticker: searchTicker,
                 price: currentPrice,
                 prev_close: prevClose,
-                currency: currency,
+                currency,
             };
 
-            let newWatchBE = {
-                id: `${userId}-${searchTicker}`,
-                user_id: userId,
-                name: name,
-                exchange: exchange,
+            const newWatchItemBE = {
+                userId,
+                name,
+                exchange,
                 sector: finnhubIndustry,
-                logo: logo,
+                logo,
                 ticker: searchTicker,
                 price: currentPrice,
-                prev_close: prevClose,
-                currency: currency,
+                prevClose,
+                currency,
             };
 
             let newWatchlist = { ...watchlist };
-            newWatchlist[searchTicker] = newWatchFE;
+            newWatchlist[searchTicker] = newWatchItemFE;
             setWatchlist(newWatchlist);
             setTicker(searchTicker);
-            await postWatchItem(newWatchBE);
+            await addWatchItem(newWatchItemBE);
             setSearchTicker('');
             wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
@@ -177,33 +168,39 @@ function Watchlist(props) {
         }
     };
 
-    const deleteItem = ticker => {
+    const deleteItem = async ticker => {
         let newWatchlist = { ...watchlist };
+        const item = {
+            userId,
+            ticker,
+        };
+
         if (ticker in watchlist) {
             delete newWatchlist[ticker];
             setWatchlist(newWatchlist);
-            deleteWatchItem(`${userId}-${ticker}`);
+            await deleteWatchItem(item);
             wsChange('unsubscribe', ticker);
             setListLength(Object.keys(newWatchlist).length);
             setSubscribe(Object.keys(newWatchlist));
         }
-        return;
     };
 
     useEffect(() => {
-        const username = sessionStorage.getItem('userId');
+        const userIdSession = sessionStorage.getItem('userId');
+        const username = userIdSession ?? '';
         setUserId(username);
 
-        if (username === '') {
-            navigate('/');
-        } else {
-            getWatchlist(username).then(response => {
+        getWatchlist(username).then(response => {
+            if (response.status === 200) {
                 const dataObj = convertArray2Dict(response.data);
                 setWatchlist(dataObj);
                 setIsWatchlistLoaded(true);
-                setTicker(response.data[0].ticker);
-            });
-        }
+                if (response.data.length > 0)
+                    setTicker(response.data[0].ticker);
+            } else {
+                navigate('/');
+            }
+        });
         // eslint-disable-next-line
     }, []);
 
@@ -231,47 +228,78 @@ function Watchlist(props) {
 
     useEffect(() => {
         getSymbols().then(response => {
-            const symbols = response.data;
-            const formattedSymbols = symbols.map(item => {
-                return {
-                    value: item.symbol,
-                    label: item.symbol,
-                };
-            });
-            symbolOptions.current = formattedSymbols;
+            if (response.status === 200) {
+                const symbols = response.data;
+                const formattedSymbols = symbols.map(item => {
+                    return {
+                        value: item.symbol,
+                        label: item.symbol,
+                    };
+                });
+                symbolOptions.current = formattedSymbols;
+            } else {
+                navigate('/');
+            }
         });
+        // eslint-disable-next-line
     }, []);
 
+    // useEffect(() => {
+    //     if (ticker === '') return;
+    //     getPriceHistory(ticker, chartScale).then(response => {
+    //         if (response.data.s !== 'ok') return;
+    //         const {
+    //             c: close,
+    //             h: high,
+    //             l: low,
+    //             o: open,
+    //             t: time,
+    //             v: volume,
+    //         } = response.data;
+    //         const lengths = [time, close, high, low, open, volume].map(
+    //             arr => arr.length
+    //         );
+    //         const isSame = lengths.every(len => len === lengths[0]);
+    //         if (!isSame) return;
+
+    //         const priceData = time.map((time, i) => {
+    //             const offset = dayjs.unix(time).tz('America/Vancouver').$offset;
+    //             const newElement = {
+    //                 time: time + offset * 60,
+    //                 open: open[i],
+    //                 close: close[i],
+    //                 high: high[i],
+    //                 low: low[i],
+    //             };
+    //             return newElement;
+    //         });
+
+    //         const volumeData = time.map((time, i) => {
+    //             const newElement = {
+    //                 time: priceData[i].time,
+    //                 value: volume[i],
+    //                 color:
+    //                     close[i] - open[i] >= 0
+    //                         ? 'rgba(38, 166, 154, 0.5)'
+    //                         : 'rgba(239, 83, 80, 0.5)',
+    //             };
+    //             return newElement;
+    //         });
+
+    //         setCandleStickData({
+    //             priceData: priceData,
+    //             volumeData: volumeData,
+    //         });
+    //     });
+    // }, [ticker, chartScale]);
+
     useEffect(() => {
-        if (ticker === '') return;
+        if (!ticker) return;
         getPriceHistory(ticker, chartScale).then(response => {
-            if (response.data.s !== 'ok') return;
-            const {
-                c: close,
-                h: high,
-                l: low,
-                o: open,
-                t: time,
-                v: volume,
-            } = response.data;
-            const lengths = [time, close, high, low, open, volume].map(
-                arr => arr.length
-            );
-            const isSame = lengths.every(len => len === lengths[0]);
-            if (!isSame) return;
-
-            const formattedData = time.map((time, i) => {
-                const newElement = {
-                    time: time,
-                    open: open[i],
-                    close: close[i],
-                    high: high[i],
-                    low: low[i],
-                };
-                return newElement;
+            setCandleStickData({
+                priceData: response.data.ohlc,
+                volumeData: response.data.v,
             });
-
-            setCandleStickData(formattedData);
         });
     }, [ticker, chartScale]);
 
@@ -299,44 +327,35 @@ function Watchlist(props) {
                 pt={4}
             >
                 <CandleStick
-                    data={candlestickData.length > 0 ? candlestickData : []}
+                    data={
+                        candlestickData !== null
+                            ? candlestickData
+                            : {
+                                  priceData: [],
+                                  volumeData: [],
+                              }
+                    }
                 ></CandleStick>
             </Box>
             <Tabs
-                variant="unstyled"
+                variant="dateRange"
                 size="md"
                 px={{ base: '16px', lg: '32px', xl: '0' }}
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
                 color="light.grey"
+                defaultIndex={6}
             >
                 <TabList>
-                    <Tab
-                        px={0}
-                        mx={4}
-                        borderBottom="2px"
-                        borderBottomColor="light.white"
-                        _selected={{
-                            color: 'light.blue',
-                            borderBottomColor: 'light.blue',
-                        }}
-                        onClick={() => changeScale('1Y')}
-                    >
-                        1Y
-                    </Tab>
-                    <Tab
-                        px={0}
-                        mx={4}
-                        borderBottom="2px"
-                        borderBottomColor="light.white"
-                        _selected={{
-                            color: 'light.blue',
-                            borderBottomColor: 'light.blue',
-                        }}
-                        onClick={() => changeScale('5Y')}
-                    >
-                        5Y
-                    </Tab>
+                    <Tab onClick={() => changeScale('1D')}>1D</Tab>
+                    <Tab onClick={() => changeScale('5D')}>5D</Tab>
+                    <Tab onClick={() => changeScale('1M')}>1M</Tab>
+                    <Tab onClick={() => changeScale('3M')}>3M</Tab>
+                    <Tab onClick={() => changeScale('6M')}>6M</Tab>
+                    <Tab onClick={() => changeScale('YTD')}>YTD</Tab>
+                    <Tab onClick={() => changeScale('1Y')}>1Y</Tab>
+                    <Tab onClick={() => changeScale('5Y')}>5Y</Tab>
+                    <Tab onClick={() => changeScale('ALL')}>ALL</Tab>
                 </TabList>
             </Tabs>
 
@@ -433,6 +452,6 @@ function Watchlist(props) {
             <Box h={48} />
         </Flex>
     );
-}
+};
 
 export default Watchlist;

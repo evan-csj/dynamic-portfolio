@@ -37,12 +37,12 @@ const WatchItem = props => {
                 setCurrency(currency);
 
                 const updateSymbol = {
-                    ticker: ticker,
-                    name: name,
-                    exchange: exchange,
-                    sector: sector,
-                    logo: logo,
-                    currency: currency,
+                    ticker,
+                    name,
+                    exchange,
+                    sector,
+                    logo,
+                    currency,
                 };
                 putSymbolInfo(updateSymbol);
             });

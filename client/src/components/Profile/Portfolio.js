@@ -198,20 +198,22 @@ const Portfolio = props => {
 
     useEffect(() => {
         getSymbols().then(response => {
-            const symbols = response.data;
-            const formattedSymbols = symbols.map(item => {
-                return {
-                    value: item.symbol,
-                    label: item.symbol,
-                };
-            });
-            symbolOptions.current = formattedSymbols;
+            if (response.status === 200) {
+                const symbols = response.data;
+                const formattedSymbols = symbols.map(item => {
+                    return {
+                        value: item.symbol,
+                        label: item.symbol,
+                    };
+                });
+                symbolOptions.current = formattedSymbols;
+            }
         });
     }, []);
 
     return (
         <Flex className="flex-col" pt={4}>
-            <FormControl key={portfolioList} zIndex='2'>
+            <FormControl key={portfolioList} zIndex="2">
                 <Flex w="100%" gap={4} justifyContent="space-between">
                     <Box flex="1">
                         <Select

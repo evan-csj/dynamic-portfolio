@@ -17,6 +17,7 @@ import {
     TabPanels,
     Tab,
     TabPanel,
+    Skeleton,
 } from '@chakra-ui/react';
 import ObjList from '../ObjList';
 import Portfolio from './Portfolio';
@@ -31,8 +32,9 @@ import {
     putSymbolInfo,
 } from '../../global/axios';
 import '../../styles/global.scss';
-// import useWebSocket from 'react-use-websocket';
 import dayjs from 'dayjs';
+import text from './text.json';
+import { Edit } from '../../styles/icons';
 
 const Profile = props => {
     const navigate = useNavigate();
@@ -43,14 +45,8 @@ const Profile = props => {
     const [isPriceLoaded, setIsPriceLoaded] = useState(false);
     const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
+    const [quoteIndex, setQuoteIndex] = useState(0);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
-
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-    //     onOpen: () => console.log('Link Start'),
-    //     shouldReconnect: closeEvent => true,
-    // });
 
     const wsInitial = () => {
         unsubscribeAll();
@@ -74,24 +70,11 @@ const Profile = props => {
                     const profile = await getCompanyProfile(ticker);
 
                     const {
-                        name,
-                        exchange,
-                        finnhubIndustry: sector,
                         logo,
                         currency,
                     } = profile.data;
 
-                    const updateSymbol = {
-                        ticker: ticker,
-                        name: name,
-                        exchange: exchange,
-                        sector: sector,
-                        logo: logo,
-                        currency: currency,
-                    };
-
                     holdingItem.currency = currency;
-                    await putSymbolInfo(updateSymbol);
                 }
 
                 if (diff > 60 || holdingItem.price === 0) {
@@ -131,40 +114,48 @@ const Profile = props => {
 
     useEffect(() => {
         getCurrency().then(response => {
-            setExRate(response.data);
+            if (response.status === 200) setExRate(response.data);
         });
     }, []);
 
     useEffect(() => {
-        const username = sessionStorage.getItem('userId');
+        const userIdSession = sessionStorage.getItem('userId');
+        const username = userIdSession ?? '';
         setUserId(username);
 
-        if (username === null) {
-            navigate('/');
-        } else {
-            getUser(username).then(response => {
-                const { first_name, last_name, cash_cad, cash_usd, dp } =
-                    response.data;
-                const user = {
-                    firstName: first_name,
-                    lastName: last_name,
-                    cashCAD: cash_cad,
-                    cashUSD: cash_usd,
-                    dp: dp,
-                };
-                setUserData(user);
-            });
+        getUser(username)
+            .then(response => {
+                if (response.status === 200) {
+                    const { first_name, last_name, cash_cad, cash_usd, dp } =
+                        response.data;
+                    const user = {
+                        firstName: first_name,
+                        lastName: last_name,
+                        cashCAD: cash_cad,
+                        cashUSD: cash_usd,
+                        dp: dp,
+                    };
+                    setUserData(user);
+                } else {
+                    navigate('/');
+                }
+            })
+            .catch(error => console.error(error));
 
-            getHoldings(username).then(response => {
-                const dataObj = convertArray2Dict(response.data);
-                setHoldingList(dataObj);
-                setIsHoldingLoaded(true);
-            });
-        }
+        getHoldings(username)
+            .then(response => {
+                if (response.status === 200) {
+                    const dataObj = convertArray2Dict(response.data);
+                    setHoldingList(dataObj);
+                    setIsHoldingLoaded(true);
+                }
+            })
+            .catch(error => console.error(error));
         // eslint-disable-next-line
-    }, []);
+    }, [props.toggle]);
 
     useEffect(() => {
+        setIsHoldingLoaded(false);
         if (isHoldingLoaded) {
             updateHoldingList();
             wsInitial();
@@ -220,12 +211,17 @@ const Profile = props => {
         }
     }, [exRate, userData, holdingList, isPriceLoaded]);
 
+    useEffect(() => {
+        setQuoteIndex(Math.floor(Math.random() * text.quotes.length));
+    }, []);
+
     const cashCAD = userData ? userData.cashCAD : 0;
     const cashUSD = userData ? userData.cashUSD : 0;
     const equityCAD = accountDetail ? accountDetail.equityCAD : 0;
     const equityUSD = accountDetail ? accountDetail.equityUSD : 0;
     const equityTotal = accountDetail ? accountDetail.equityTotal : 0;
     const usd2cad = accountDetail ? accountDetail.usd2cad : 1;
+    const quote = text.quotes[quoteIndex];
 
     return (
         <Flex
@@ -250,27 +246,55 @@ const Profile = props => {
                     mx={{ xl: 'auto' }}
                     w={{ xl: '1020px' }}
                 >
-                    <Box>
-                        <Heading
-                            color="light.white"
-                            size={{ base: 'md', md: 'lg', lg: 'xl' }}
-                        >
-                            Welcome!
-                        </Heading>
-                        <Heading
+                    <Flex direction="row" justifyContent="space-between">
+                        <Box>
+                            <Heading
+                                color="light.white"
+                                size={{ base: 'md', md: 'lg', lg: 'xl' }}
+                            >
+                                Welcome!
+                            </Heading>
+                            <Heading
+                                color="light.yellow"
+                                size={{ base: 'md', md: 'lg', lg: 'xl' }}
+                                mt="8px"
+                            >
+                                {userData ? (
+                                    <Flex gap="16px">
+                                        <Box>{userData.firstName}</Box>
+                                        <Box>{userData.lastName}</Box>
+                                    </Flex>
+                                ) : (
+                                    <Flex gap="16px">
+                                        <Skeleton
+                                            w="fit-content"
+                                            borderRadius="24px"
+                                        >
+                                            XXXXX
+                                        </Skeleton>
+                                        <Skeleton
+                                            w="fit-content"
+                                            borderRadius="24px"
+                                        >
+                                            XXXXXXXX
+                                        </Skeleton>
+                                    </Flex>
+                                )}
+                            </Heading>
+                        </Box>
+                        <Edit
+                            variant="btn"
+                            cursor="pointer"
                             color="light.yellow"
-                            size={{ base: 'md', md: 'lg', lg: 'xl' }}
-                        >
-                            {userData ? userData.firstName : 'FirstName'}{' '}
-                            {userData ? userData.lastName : 'LastName'}
-                        </Heading>
-                    </Box>
-                    <Text color="light.white">
-                        "Be fearful when others are greedy and be greed when
-                        others are fearful."
-                    </Text>
-                    <Text color="light.white" alignSelf="end">
-                        -- -- Warren Buffett
+                            onClick={() => {
+                                navigate('/signup');
+                            }}
+                        />
+                    </Flex>
+
+                    <Text color="light.white">{quote.statement}</Text>
+                    <Text color="light.white" alignSelf="end" fontWeight="bold">
+                        ---- ---- {quote.name}
                     </Text>
                 </Flex>
             </Flex>
@@ -283,7 +307,8 @@ const Profile = props => {
                 w={{ xl: '1020px' }}
             >
                 <Heading
-                    py={4}
+                    pt={{ base: '16px', lg: '32px' }}
+                    pb="16px"
                     color="light.black"
                     size={{ base: 'sm', md: 'md', lg: 'lg' }}
                 >

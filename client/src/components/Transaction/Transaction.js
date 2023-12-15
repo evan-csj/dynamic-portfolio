@@ -22,20 +22,27 @@ function Transaction(props) {
 
     useEffect(() => {
         props.unsubscribeAll();
-        const username = sessionStorage.getItem('userId');
+        const userIdSession = sessionStorage.getItem('userId');
 
-        if (username === null) {
-            navigate('/');
-        } else {
-            getTrading(username).then(response => {
+        const username = userIdSession ?? '';
+
+        getTrading(username).then(response => {
+            if (response.status === 200) {
                 setTradingList(response.data);
-            });
-            getFunding(username).then(response => {
+            } else {
+                navigate('/');
+            }
+        });
+
+        getFunding(username).then(response => {
+            if (response.status === 200) {
                 setFundingList(response.data);
-            });
-        }
+            } else {
+                navigate('/');
+            }
+        });
         // eslint-disable-next-line
-    }, []);
+    }, [props.toggle]);
 
     return (
         <Flex

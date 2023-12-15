@@ -17,11 +17,11 @@ const updateSymbolInfo = async (req, res) => {
     const { ticker, name, exchange, sector, logo, currency } = req.body;
 
     const updateInfo = {
-        name: name,
-        exchange: exchange,
-        sector: sector,
-        logo: logo,
-        currency: currency,
+        name,
+        exchange,
+        sector,
+        logo,
+        currency,
     };
 
     await knex('symbol').where({ symbol: ticker }).update(updateInfo);
@@ -31,7 +31,7 @@ const updateSymbolInfo = async (req, res) => {
 const updateSymbolPrice = async (req, res) => {
     const { symbol, price, prevClose } = req.body;
     const updatePrice = {
-        price: price,
+        price,
         prev_close: prevClose,
         updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
     };

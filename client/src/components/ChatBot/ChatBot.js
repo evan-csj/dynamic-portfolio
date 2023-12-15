@@ -5,14 +5,27 @@ import {
     ChatIcon,
     MinusIcon,
 } from '@chakra-ui/icons';
-import { Flex, Box, Center, Input, Circle } from '@chakra-ui/react';
+import {
+    Flex,
+    Box,
+    Center,
+    Input,
+    Circle,
+    InputGroup,
+    InputRightAddon,
+} from '@chakra-ui/react';
+import useComponentMinimize from '../../useComponentMinimize';
 import '../../styles/global.scss';
 import Message from './Message';
 
+const maxInputLen = 50;
+
 const ChatBot = props => {
     const msgListRef = useRef(undefined);
-    const [isOpen, setIsOpen] = useState(false);
     const [userMsg, setUserMsg] = useState('');
+    const [inputLen, setInputLen] = useState(0);
+    const { ref, isComponentMinimized, setIsComponentMinimized } =
+        useComponentMinimize(true);
 
     const handleKeyDown = e => {
         if (e.key === 'Enter' && e.target.value !== '') {
@@ -26,25 +39,29 @@ const ChatBot = props => {
     };
 
     const handleClose = () => {
-        setIsOpen(false);
+        setIsComponentMinimized(true);
     };
 
     const handleOpen = () => {
-        setIsOpen(true);
+        setIsComponentMinimized(false);
     };
 
     useEffect(() => {
-        if (isOpen)
+        if (!isComponentMinimized)
             msgListRef.current.scrollIntoView({
                 behavior: 'smooth',
                 block: 'end',
             });
     });
 
+    useEffect(() => {
+        setInputLen(userMsg.length);
+    }, [userMsg]);
+
     return (
-        <Box>
+        <Box ref={ref}>
             <Box
-                display={isOpen ? 'block' : 'none'}
+                display={isComponentMinimized ? 'none' : 'block'}
                 pos="fixed"
                 top={{ base: '0', lg: 'auto' }}
                 bottom={{ base: '0', lg: '100px', xl: '32px' }}
@@ -53,7 +70,7 @@ const ChatBot = props => {
                 w={{ base: '100%', lg: '300px' }}
                 boxShadow="xl"
                 borderRadius="12px"
-                zIndex='12'
+                zIndex="12"
             >
                 <Box
                     pos="relative"
@@ -63,7 +80,8 @@ const ChatBot = props => {
                 >
                     <Center
                         justifyContent="center"
-                        h="40px"
+                        fontSize={{ base: '20px', lg: '16px' }}
+                        h={{ base: '48px', lg: '40px' }}
                         w="100%"
                         bg="light.black"
                         color="light.white"
@@ -112,29 +130,49 @@ const ChatBot = props => {
                             h={{ base: '100px', lg: '70px' }}
                             w="100%"
                         >
-                            <Input
+                            <InputGroup
+                                size="sm"
                                 w="100%"
-                                h={{ base: '50px', lg: '30px' }}
-                                my="0"
-                                mx="20px"
                                 fontSize="16px"
-                                pl="12px"
+                                mx="20px"
                                 borderRadius="30px"
                                 borderWidth="1px"
                                 borderStyle="solid"
                                 borderColor="light.grey"
-                                focusBorderColor="light.yellow"
-                                placeholder="Message"
-                                value={userMsg}
-                                onChange={e => handleMsgChange(e)}
-                                onKeyDown={e => handleKeyDown(e)}
-                            />
+                                _focusWithin={{
+                                    boxShadow: '0 0 0 2px #ffce63',
+                                    borderColor: 'light.yellow',
+                                }}
+                            >
+                                <Input
+                                    placeholder="Message"
+                                    disabled={props.inputStatus}
+                                    h={{ base: '50px', lg: '30px' }}
+                                    maxLength="50"
+                                    borderLeftRadius="30px"
+                                    borderWidth="0px"
+                                    focusBorderColor="transparent"
+                                    value={userMsg}
+                                    onChange={e => handleMsgChange(e)}
+                                    onKeyDown={e => handleKeyDown(e)}
+                                />
+                                <InputRightAddon
+                                    h={{ base: '50px', lg: '30px' }}
+                                    color="light.grey"
+                                    bg="light.white"
+                                    children={`${inputLen}/${maxInputLen}`}
+                                    borderRightRadius="30px"
+                                    borderWidth="0px"
+                                />
+                            </InputGroup>
                         </Center>
                     </Flex>
                 </Box>
             </Box>
             <Center
-                display={isOpen ? 'none' : { base: 'none', lg: 'flex' }}
+                display={
+                    isComponentMinimized ? { base: 'none', lg: 'flex' } : 'none'
+                }
                 className="bounce-box"
                 pos="fixed"
                 bottom={{ base: '100px', xl: '32px' }}
@@ -164,17 +202,17 @@ const ChatBot = props => {
                 pos="fixed"
                 bottom="100px"
                 right="0"
-                zIndex={isOpen ? '13' : '1'}
-                w={isOpen ? '94px' : '54px'}
+                zIndex={isComponentMinimized ? '1' : '13'}
+                w={isComponentMinimized ? '54px' : '94px'}
                 h="50px"
                 borderLeftRadius="25px"
                 bg="light.black"
                 color="light.white"
                 cursor="pointer"
                 transition="width 0.3s ease"
-                onClick={!isOpen ? handleOpen : handleClose}
+                onClick={isComponentMinimized ? handleOpen : handleClose}
             >
-                {!isOpen ? (
+                {isComponentMinimized ? (
                     <ArrowLeftIcon transform="translate(15px)" />
                 ) : (
                     <ArrowRightIcon transform="translate(20px)" />

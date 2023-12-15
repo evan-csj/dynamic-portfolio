@@ -5,6 +5,7 @@ import {
     Heading,
     Box,
     Flex,
+    Stack,
     Button,
     FormControl,
     FormLabel,
@@ -91,104 +92,113 @@ const FundingForm = props => {
 
     useEffect(() => {
         props.unsubscribeAll();
-        const username = sessionStorage.getItem('userId');
+        const userIdSession = sessionStorage.getItem('userId');
+        const username = userIdSession ?? '';
         setUserId(username);
 
-        if (username === null) {
-            navigate('/');
-        } else {
-            getUser(username).then(response => {
-                setUserData(response.data);
-            });
-        }
+        getUser(username).then(response => {
+            setUserData(response.data);
+        });
         // eslint-disable-next-line
     }, []);
 
     const handleSubmit = () => {
         if (type !== '' && account !== '' && notZero && enoughFund()) {
             const newFunding = {
-                user_id: userId,
+                userId: userId,
                 amount: numberValue,
                 type: type,
                 currency: account,
             };
             postFunding(newFunding);
-            props.changePage('profile');
-            navigate('/profile');
+            props.closeDrawer();
+            if (props.toggle) {
+                props.updateToggle(false);
+            } else {
+                props.updateToggle(true);
+            }
         }
     };
 
     return (
         <Flex
-            className="flex-col"
-            px={{ base: '16px', lg: '32px', xl: '0' }}
-            mx={{ xl: 'auto' }}
-            w={{ xl: '1020px' }}
+            direction="column"
+            px={{ base: '24px', lg: '32px', xl: '24px' }}
+            mx={{ xl: '0' }}
+            w={{ xl: '100%' }}
             pt={12}
             gap={8}
         >
             <Heading size="3xl">{title}</Heading>
             <FormControl>
-                <FormLabel>Action</FormLabel>
-                <Select
-                    placeholder="Select Action"
-                    options={typeOptions}
-                    isRequired
-                    onChange={handleTypeChange}
-                ></Select>
-                <Box h={8} />
-                <FormLabel>Amount</FormLabel>
-                <InputGroup>
-                    <InputLeftElement
-                        pointerEvents="none"
-                        color="light.grey"
-                        children="$"
-                    />
-                    <Input
-                        placeholder="Enter amount"
-                        name="amount"
-                        value={amount}
-                        maxLength="13"
-                        onChange={handleAmountChange}
-                    />
-                    <InputRightElement
-                        children={
-                            enoughFund() && notZero ? (
-                                <CheckIcon color="light.green" />
-                            ) : (
-                                <CloseIcon color="light.red" />
-                            )
-                        }
-                    />
-                </InputGroup>
-                {!enoughFund() ? (
-                    <FormHelperText color="light.red">
-                        Fund is not enough to withdraw
-                    </FormHelperText>
-                ) : !notZero ? (
-                    <FormHelperText color="light.red">
-                        Don't enter 0
-                    </FormHelperText>
-                ) : (
-                    <></>
-                )}
-                <Box h={8} />
-                <FormLabel>Account</FormLabel>
-                <Select
-                    placeholder="Select Account"
-                    options={accountOptions}
-                    isRequired
-                    onChange={handleAccountChange}
-                ></Select>
-                <Box h={8} />
-                <Button
-                    variant="submit"
-                    type="submit"
-                    w="100%"
-                    onClick={handleSubmit}
-                >
-                    Submit
-                </Button>
+                <Stack spacing={8}>
+                    <Box>
+                        <FormLabel>Action</FormLabel>
+                        <Select
+                            placeholder="Select Action"
+                            options={typeOptions}
+                            isRequired
+                            onChange={handleTypeChange}
+                        ></Select>
+                    </Box>
+
+                    <Box>
+                        <FormLabel>Amount</FormLabel>
+                        <InputGroup>
+                            <InputLeftElement
+                                pointerEvents="none"
+                                color="light.grey"
+                                children="$"
+                            />
+                            <Input
+                                placeholder="Enter amount"
+                                name="amount"
+                                value={amount}
+                                maxLength="13"
+                                onChange={handleAmountChange}
+                            />
+                            <InputRightElement
+                                children={
+                                    enoughFund() && notZero ? (
+                                        <CheckIcon color="light.green" />
+                                    ) : (
+                                        <CloseIcon color="light.red" />
+                                    )
+                                }
+                            />
+                        </InputGroup>
+                        {!enoughFund() ? (
+                            <FormHelperText color="light.red">
+                                Fund is not enough to withdraw
+                            </FormHelperText>
+                        ) : !notZero ? (
+                            <FormHelperText color="light.red">
+                                Don't enter 0
+                            </FormHelperText>
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
+
+                    <Box>
+                        <FormLabel>Account</FormLabel>
+                        <Select
+                            placeholder="Select Account"
+                            options={accountOptions}
+                            isRequired
+                            onChange={handleAccountChange}
+                        ></Select>
+                    </Box>
+
+                    <Button
+                        variant="submit"
+                        type="submit"
+                        w="100%"
+                        onClick={handleSubmit}
+                    >
+                        Submit
+                    </Button>
+                </Stack>
             </FormControl>
             <Balance userData={userData} />
         </Flex>
