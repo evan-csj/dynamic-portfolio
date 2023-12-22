@@ -49,23 +49,23 @@ const Watchlist = props => {
     const [searchTicker, setSearchTicker] = useState('');
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
-    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
+    // const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
-    const wsInitial = () => {
-        unsubscribeAll();
-        const keyList = Object.keys(watchlist);
-        setSubscribe(keyList);
-        for (const symbol of keyList) {
-            sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
-        }
-    };
+    // const wsInitial = () => {
+    //     unsubscribeAll();
+    //     const keyList = Object.keys(watchlist);
+    //     setSubscribe(keyList);
+    //     for (const symbol of keyList) {
+    //         sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
+    //     }
+    // };
 
-    const wsChange = useCallback(
-        (type, symbol) => {
-            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
-        },
-        [sendMessage]
-    );
+    // const wsChange = useCallback(
+    //     (type, symbol) => {
+    //         sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+    //     },
+    //     [sendMessage]
+    // );
 
     const updateWatchlist = async () => {
         if (isWatchlistLoaded) {
@@ -162,9 +162,9 @@ const Watchlist = props => {
             setTicker(searchTicker);
             await addWatchItem(newWatchItemBE);
             setSearchTicker('');
-            wsChange('subscribe', searchTicker);
+            // wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
-            setSubscribe(Object.keys(newWatchlist));
+            // setSubscribe(Object.keys(newWatchlist));
         }
     };
 
@@ -179,9 +179,9 @@ const Watchlist = props => {
             delete newWatchlist[ticker];
             setWatchlist(newWatchlist);
             await deleteWatchItem(item);
-            wsChange('unsubscribe', ticker);
+            // wsChange('unsubscribe', ticker);
             setListLength(Object.keys(newWatchlist).length);
-            setSubscribe(Object.keys(newWatchlist));
+            // setSubscribe(Object.keys(newWatchlist));
         }
     };
 
@@ -207,24 +207,24 @@ const Watchlist = props => {
     useEffect(() => {
         if (isWatchlistLoaded) {
             updateWatchlist();
-            wsInitial();
+            // wsInitial();
         }
         // eslint-disable-next-line
     }, [isWatchlistLoaded]);
 
-    useEffect(() => {
-        if (lastMessage !== null) {
-            const json = JSON.parse(lastMessage.data);
-            const type = json.type;
-            if (type === 'trade') {
-                const data = json.data;
-                const price = data[0].p;
-                const symbol = data[0].s;
-                updatePrice(symbol, price);
-            }
-        }
-        // eslint-disable-next-line
-    }, [lastMessage]);
+    // useEffect(() => {
+    //     if (lastMessage !== null) {
+    //         const json = JSON.parse(lastMessage.data);
+    //         const type = json.type;
+    //         if (type === 'trade') {
+    //             const data = json.data;
+    //             const price = data[0].p;
+    //             const symbol = data[0].s;
+    //             updatePrice(symbol, price);
+    //         }
+    //     }
+    //     // eslint-disable-next-line
+    // }, [lastMessage]);
 
     useEffect(() => {
         getSymbols().then(response => {
