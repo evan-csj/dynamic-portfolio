@@ -127,7 +127,7 @@ socket.on('message', async data => {
                 await redisClient.set(firstMessage.s, firstMessage.p);
                 lastTime = currentTime;
             }
-            // console.log('The message type is', message.type);
+            // console.log(message);
         } catch (error) {
             console.error(error);
         }
@@ -164,7 +164,7 @@ const stopInterval = (ws, symbol) => {
     }
 };
 
-wss.on('connection', (ws, request) => {
+wss.on('connection', ws => {
     console.log('A user connected');
     ws.on('message', async message => {
         const receivedData = JSON.parse(message);

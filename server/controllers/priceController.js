@@ -2,13 +2,8 @@ const axios = require('axios');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
 require('dotenv').config();
-const {
-    EX_KEY,
-    FINNHUB_KEY,
-    POLYGON_KEY,
-    ALPACA_KEY,
-    ALPACA_SECRET,
-} = process.env;
+const { EX_KEY, FINNHUB_KEY, POLYGON_KEY, ALPACA_KEY, ALPACA_SECRET } =
+    process.env;
 
 const finnHubQuote = symbol => {
     return {
@@ -64,36 +59,8 @@ const getCandles = async (req, res) => {
         const response = await axios.request(alpaca(ticker, timeframe, from));
 
         const resultArray = response.data.bars[ticker];
-        let ohlcArray = [];
-        let volumeArray = [];
 
-        for (const {
-            o: open,
-            h: high,
-            l: low,
-            c: close,
-            v: volume,
-            t: time,
-        } of resultArray) {
-            const color =
-                close - open >= 0
-                    ? 'rgba(38, 166, 154, 0.5)'
-                    : 'rgba(239, 83, 80, 0.5)';
-            ohlcArray.push({
-                time: dayjs(time).unix(),
-                open,
-                high,
-                low,
-                close,
-            });
-            volumeArray.push({
-                time: dayjs(time).unix(),
-                value: volume,
-                color,
-            });
-        }
-
-        return res.status(200).json({ ohlc: ohlcArray, v: volumeArray });
+        return res.status(200).json(resultArray);
     } catch (error) {
         console.error('Error:', error);
         return res.status(404).json(error);

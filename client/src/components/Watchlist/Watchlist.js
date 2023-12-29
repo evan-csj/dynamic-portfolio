@@ -290,9 +290,41 @@ const Watchlist = props => {
     useEffect(() => {
         if (!ticker) return;
         getPriceHistory(ticker, chartScale).then(response => {
+            const localTime = new Date();
+            const timeZoneOffset = localTime.getTimezoneOffset() * 60;
+
+            let ohlcArray = [];
+            let volumeArray = [];
+
+            for (const {
+                o: open,
+                h: high,
+                l: low,
+                c: close,
+                v: volume,
+                t: time,
+            } of response.data) {
+                const color =
+                    close - open >= 0
+                        ? 'rgba(38, 166, 154, 0.5)'
+                        : 'rgba(239, 83, 80, 0.5)';
+                ohlcArray.push({
+                    time: dayjs(time).unix() - timeZoneOffset,
+                    open,
+                    high,
+                    low,
+                    close,
+                });
+                volumeArray.push({
+                    time: dayjs(time).unix() - timeZoneOffset,
+                    value: volume,
+                    color,
+                });
+            }
+
             setCandleStickData({
-                priceData: response.data.ohlc,
-                volumeData: response.data.v,
+                priceData: ohlcArray,
+                volumeData: volumeArray,
             });
         });
     }, [ticker, chartScale]);
