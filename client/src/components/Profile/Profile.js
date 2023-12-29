@@ -46,16 +46,16 @@ const Profile = props => {
     const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
     const [quoteIndex, setQuoteIndex] = useState(0);
-    // const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
+    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
-    // const wsInitial = () => {
-    //     unsubscribeAll();
-    //     const keyList = Object.keys(holdingList);
-    //     setSubscribe(keyList);
-    //     for (const symbol of keyList) {
-    //         sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
-    //     }
-    // };
+    const wsInitial = () => {
+        unsubscribeAll();
+        const keyList = Object.keys(holdingList);
+        setSubscribe(keyList);
+        for (const symbol of keyList) {
+            sendMessage(JSON.stringify({ type: 'subscribe', symbol: symbol }));
+        }
+    };
 
     const updateHoldingList = async () => {
         if (isHoldingLoaded) {
@@ -158,24 +158,18 @@ const Profile = props => {
         setIsHoldingLoaded(false);
         if (isHoldingLoaded) {
             updateHoldingList();
-            // wsInitial();
+            wsInitial();
         }
         // eslint-disable-next-line
     }, [isHoldingLoaded]);
 
-    // useEffect(() => {
-    //     if (lastMessage !== null) {
-    //         const json = JSON.parse(lastMessage.data);
-    //         const type = json.type;
-    //         if (type === 'trade') {
-    //             const data = json.data;
-    //             const price = data[0].p;
-    //             const symbol = data[0].s;
-    //             updatePrice(symbol, price);
-    //         }
-    //     }
-    //     // eslint-disable-next-line
-    // }, [lastMessage]);
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            updatePrice(json.symbol, parseFloat(json.price));
+        }
+        // eslint-disable-next-line
+    }, [lastMessage]);
 
     useEffect(() => {
         if (exRate !== 0 && userData !== undefined && isPriceLoaded) {

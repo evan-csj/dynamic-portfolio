@@ -27,19 +27,7 @@ module.exports = [
         symbol: 'UNH',
     },
     {
-        symbol: 'AVGO',
-    },
-    {
-        symbol: 'JPM',
-    },
-    {
         symbol: 'V',
-    },
-    {
-        symbol: 'XOM',
-    },
-    {
-        symbol: 'JNJ',
     },
     {
         symbol: 'HD',
@@ -54,13 +42,7 @@ module.exports = [
         symbol: 'ADBE',
     },
     {
-        symbol: 'CVX',
-    },
-    {
         symbol: 'CRM',
-    },
-    {
-        symbol: 'BAC',
     },
     {
         symbol: 'PEP',
@@ -81,9 +63,6 @@ module.exports = [
         symbol: 'NFLX',
     },
     {
-        symbol: 'CSCO',
-    },
-    {
         symbol: 'DIS',
     },
     {
@@ -94,9 +73,6 @@ module.exports = [
     },
     {
         symbol: 'NKE',
-    },
-    {
-        symbol: 'PFE',
     },
     {
         symbol: 'BA',

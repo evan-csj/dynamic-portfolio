@@ -91,7 +91,7 @@ const FundingForm = props => {
     const notZero = numberValue <= 0 ? false : true;
 
     useEffect(() => {
-        // props.unsubscribeAll();
+        props.unsubscribeAll();
         const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
         setUserId(username);

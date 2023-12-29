@@ -30,7 +30,7 @@ function App() {
     const [username, setUsername] = useState('');
     const [page, setPage] = useState('');
     const [toggle, setToggle] = useState(false);
-    // const [subscribe, setSubscribe] = useState([]);
+    const [subscribe, setSubscribe] = useState([]);
     const [waitForRes, setWaitForRes] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
@@ -53,8 +53,7 @@ function App() {
             sender: 'Bot',
         },
     ]);
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+
     const socketUrl = process.env.REACT_APP_SERVER_WS;
     const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
         onOpen: () => console.log('Link Start'),
@@ -70,13 +69,13 @@ function App() {
         setUsername(username);
     };
 
-    // const unsubscribeAll = () => {
-    //     for (const symbol of subscribe) {
-    //         sendMessage(
-    //             JSON.stringify({ type: 'unsubscribe', symbol: symbol })
-    //         );
-    //     }
-    // };
+    const unsubscribeAll = () => {
+        for (const symbol of subscribe) {
+            sendMessage(
+                JSON.stringify({ type: 'unsubscribe', symbol: symbol })
+            );
+        }
+    };
 
     const addMessage = (text, sender) => {
         setmessages([
@@ -137,18 +136,18 @@ function App() {
     };
 
     useEffect(() => {
-        console.log(lastMessage);
-        // if (lastMessage !== null) {
-        //     const json = JSON.parse(lastMessage.data);
-        //     const type = json.type;
-        //     if (type === 'trade') {
-        //         const data = json.data;
-        //         const price = data[0].p;
-        //         const symbol = data[0].s;
-        //         console.log(symbol, price);
-        //     }
-        // }
-    });
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            // console.log(json);
+            // if (type === 'trade') {
+            //     const data = json.data;
+            //     const price = data[0].p;
+            //     const symbol = data[0].s;
+            //     console.log(symbol, price);
+            // }
+        }
+    }, [lastMessage]);
 
     return (
         <>
@@ -168,7 +167,7 @@ function App() {
                     element={
                         <Login
                             login={login}
-                            // unsubscribeAll={unsubscribeAll}
+                            unsubscribeAll={unsubscribeAll}
                         />
                     }
                 />
@@ -177,7 +176,7 @@ function App() {
                     element={
                         <Login
                             login={login}
-                            // unsubscribeAll={unsubscribeAll}
+                            unsubscribeAll={unsubscribeAll}
                         />
                     }
                 />
@@ -185,7 +184,7 @@ function App() {
                     path="/signup"
                     element={
                         <SignUp
-                        // unsubscribeAll={unsubscribeAll}
+                        unsubscribeAll={unsubscribeAll}
                         />
                     }
                 />
@@ -196,10 +195,10 @@ function App() {
                             toggle={toggle}
                             userId={username}
                             changePage={changePage}
-                            // sendMessage={sendMessage}
-                            // lastMessage={lastMessage}
-                            // setSubscribe={setSubscribe}
-                            // unsubscribeAll={unsubscribeAll}
+                            sendMessage={sendMessage}
+                            lastMessage={lastMessage}
+                            setSubscribe={setSubscribe}
+                            unsubscribeAll={unsubscribeAll}
                         />
                     }
                 />
@@ -208,10 +207,10 @@ function App() {
                     element={
                         <Watchlist
                             userId={username}
-                            // sendMessage={sendMessage}
-                            // lastMessage={lastMessage}
-                            // setSubscribe={setSubscribe}
-                            // unsubscribeAll={unsubscribeAll}
+                            sendMessage={sendMessage}
+                            lastMessage={lastMessage}
+                            setSubscribe={setSubscribe}
+                            unsubscribeAll={unsubscribeAll}
                         />
                     }
                 />
@@ -221,7 +220,7 @@ function App() {
                         <Txn
                             toggle={toggle}
                             userId={username}
-                            // unsubscribeAll={unsubscribeAll}
+                            unsubscribeAll={unsubscribeAll}
                         />
                     }
                 />
@@ -315,7 +314,7 @@ function App() {
                         <FundingForm
                             userId={username}
                             changePage={changePage}
-                            // unsubscribeAll={unsubscribeAll}
+                            unsubscribeAll={unsubscribeAll}
                             closeDrawer={closeAllDrawer}
                             toggle={toggle}
                             updateToggle={setToggle}
@@ -337,10 +336,10 @@ function App() {
                         <TradingForm
                             userId={username}
                             changePage={changePage}
-                            // sendMessage={sendMessage}
-                            // lastMessage={lastMessage}
-                            // setSubscribe={setSubscribe}
-                            // unsubscribeAll={unsubscribeAll}
+                            sendMessage={sendMessage}
+                            lastMessage={lastMessage}
+                            setSubscribe={setSubscribe}
+                            unsubscribeAll={unsubscribeAll}
                             closeDrawer={closeAllDrawer}
                             toggle={toggle}
                             updateToggle={setToggle}

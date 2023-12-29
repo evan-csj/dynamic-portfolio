@@ -48,14 +48,7 @@ const TradingForm = props => {
     const [currency, setCurrency] = useState('');
     const symbolOptions = useRef([]);
     const holdings = useRef(undefined);
-    // const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
-
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-    //     onOpen: () => console.log('Link Start'),
-    //     shouldReconnect: closeEvent => true,
-    // });
+    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const title = type === 'buy' ? 'Buy' : type === 'sell' ? 'Sell' : 'Trading';
     const handleTypeChange = selected => setType(selected.value);
@@ -87,9 +80,9 @@ const TradingForm = props => {
         });
 
         setSymbol(selected.value);
-        // if (symbol !== '') wsChange('unsubscribe', symbol);
-        // wsChange('subscribe', selected.value);
-        // setSubscribe([selected.value]);
+        if (symbol !== '') wsChange('unsubscribe', symbol);
+        wsChange('subscribe', selected.value);
+        setSubscribe([selected.value]);
     };
 
     // const handleSymbolChange = event => {
@@ -137,12 +130,12 @@ const TradingForm = props => {
         }
     };
 
-    // const wsChange = useCallback(
-    //     (type, symbol) => {
-    //         sendMessage(JSON.stringify({ type: type, symbol: symbol }));
-    //     },
-    //     [sendMessage]
-    // );
+    const wsChange = useCallback(
+        (type, symbol) => {
+            sendMessage(JSON.stringify({ type: type, symbol: symbol }));
+        },
+        [sendMessage]
+    );
 
     useEffect(() => {
         getSymbols().then(response => {
@@ -175,7 +168,7 @@ const TradingForm = props => {
     }, [holdings, symbol]);
 
     useEffect(() => {
-        // unsubscribeAll();
+        unsubscribeAll();
         const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
         setUserId(username);
@@ -189,18 +182,12 @@ const TradingForm = props => {
         // eslint-disable-next-line
     }, []);
 
-    // useEffect(() => {
-    //     if (lastMessage !== null) {
-    //         const json = JSON.parse(lastMessage.data);
-    //         const type = json.type;
-    //         if (type === 'trade') {
-    //             const data = json.data;
-    //             const price = data[0].p;
-    //             const symbol = data[0].s;
-    //             setCurrentPrice(price);
-    //         }
-    //     }
-    // }, [lastMessage]);
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            setCurrentPrice(parseFloat(json.price));
+        }
+    }, [lastMessage]);
 
     const enoughShares = () => {
         const holdingArray = holdings.current;

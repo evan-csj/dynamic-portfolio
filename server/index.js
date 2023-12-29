@@ -4,7 +4,7 @@ const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const helmet = require('helmet');
 const passport = require('passport');
-const http = require('http');
+const { createServer } = require('http');
 const WebSocket = require('ws');
 const dayjs = require('dayjs');
 
@@ -13,7 +13,7 @@ const mysql = require('mysql2');
 const knexFile = require('./knexfile');
 
 const app = express();
-const server = http.createServer(app);
+const server = createServer(app);
 const wss = new WebSocket.Server({ server });
 const redis = require('redis');
 const PORT = process.env.PORT || 8080;
@@ -31,6 +31,7 @@ const symbolRoute = require('./routes/symbolRoute');
 const statRoute = require('./routes/statRoute');
 const authRoute = require('./routes/authRoute');
 const chatgptRoute = require('./routes/chatgptRoute');
+const { isAuth } = require('./middlewares/authentication');
 
 const mysqlConnection = mysql.createConnection(knexFile.connection);
 const sessionStore = new MySQLStore({}, mysqlConnection);
@@ -107,11 +108,13 @@ const socket = new WebSocket(
 
 socket.on('open', () => {
     symbolData.forEach(element => {
-        JSON.stringify({ type: 'subscribe', symbol: element.symbol });
+        socket.send(
+            JSON.stringify({ type: 'subscribe', symbol: element.symbol })
+        );
     });
-    socket.send(
-        JSON.stringify({ type: 'subscribe', symbol: 'BINANCE:BTCUSDT' })
-    );
+    // socket.send(
+    //     JSON.stringify({ type: 'subscribe', symbol: 'BINANCE:BTCUSDT' })
+    // );
 });
 
 socket.on('message', async data => {
@@ -123,9 +126,8 @@ socket.on('message', async data => {
                 const firstMessage = message.data[0];
                 await redisClient.set(firstMessage.s, firstMessage.p);
                 lastTime = currentTime;
-            } else {
-                console.log(message.type);
             }
+            // console.log('The message type is', message.type);
         } catch (error) {
             console.error(error);
         }
@@ -134,9 +136,57 @@ socket.on('message', async data => {
 
 socket.on('error', console.error);
 
-wss.on('connection', ws => {
+const clientSubscriptions = new Map();
+const sendInterval = (ws, symbol) => {
+    const symbolInterval = setInterval(async () => {
+        const price = await redisClient.get(symbol);
+        if (price) {
+            const jsonObj = {
+                symbol,
+                price,
+            };
+            ws.send(JSON.stringify(jsonObj));
+        }
+    }, 1000);
+
+    const clientSubs = clientSubscriptions.get(ws) || new Set();
+    clientSubs.add({ symbol, symbolInterval });
+    clientSubscriptions.set(ws, clientSubs);
+};
+const stopInterval = (ws, symbol) => {
+    const clientSubs = clientSubscriptions.get(ws);
+    if (clientSubs) {
+        const deleteSubs = [...clientSubs].find(sub => sub.symbol === symbol);
+        if (deleteSubs) {
+            clearInterval(deleteSubs.symbolInterval);
+            clientSubs.delete(deleteSubs);
+        }
+    }
+};
+
+wss.on('connection', (ws, request) => {
     console.log('A user connected');
-    ws.send('WS data');
+    ws.on('message', async message => {
+        const receivedData = JSON.parse(message);
+        const type = receivedData.type;
+        const symbol = receivedData.symbol;
+
+        if (type === 'subscribe') {
+            sendInterval(ws, symbol);
+        } else if (type === 'unsubscribe') {
+            stopInterval(ws, symbol);
+        }
+    });
+    ws.on('close', () => {
+        console.log('A user disconnected');
+        const clientSubs = clientSubscriptions.get(ws);
+        if (clientSubs) {
+            clientSubs.forEach(subs => {
+                clearInterval(subs.symbolInterval);
+            });
+            clientSubscriptions.delete(ws);
+        }
+    });
 });
 
 server.listen(PORT, () => {
