@@ -18,6 +18,7 @@ import {
     Tab,
     TabPanel,
     Skeleton,
+    Badge,
 } from '@chakra-ui/react';
 import ObjList from '../ObjList';
 import Portfolio from './Portfolio';
@@ -29,9 +30,8 @@ import {
     getHoldings,
     getCompanyProfile,
     putSymbolPrice,
-    putSymbolInfo,
 } from '../../global/axios';
-import { isMarketOpen } from '../../global/time';
+import { isMarketOpen, getMarketState } from '../../global/time';
 import '../../styles/global.scss';
 import dayjs from 'dayjs';
 import text from './text.json';
@@ -47,6 +47,7 @@ const Profile = props => {
     const [exRate, setExRate] = useState(0);
     const [accountDetail, setAccountDetail] = useState(undefined);
     const [quoteIndex, setQuoteIndex] = useState(0);
+    const [marketState, setMarketState] = useState('');
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -70,7 +71,7 @@ const Profile = props => {
                 if (holdingItem.currency === null) {
                     const profile = await getCompanyProfile(ticker);
 
-                    const { logo, currency } = profile.data;
+                    const { currency } = profile.data;
 
                     holdingItem.currency = currency;
                 }
@@ -166,6 +167,7 @@ const Profile = props => {
             const json = JSON.parse(lastMessage.data);
             updatePrice(json.symbol, parseFloat(json.price));
         }
+        setMarketState(getMarketState());
         // eslint-disable-next-line
     }, [lastMessage]);
 
@@ -406,6 +408,40 @@ const Profile = props => {
                 </TableContainer>
             </Flex>
 
+            <Box
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                my="8px"
+                w={{ xl: '1020px' }}
+            >
+                {marketState ? (
+                    <Badge
+                        color={
+                            marketState === 'Regular-Market-Hours'
+                                ? 'light.green'
+                                : marketState === 'After-Hours'
+                                ? 'light.white'
+                                : marketState === 'Market-Close'
+                                ? 'light.red'
+                                : 'light.grey'
+                        }
+                        background={
+                            marketState === 'Regular-Market-Hours'
+                                ? 'lightBG.green'
+                                : marketState === 'After-Hours'
+                                ? 'light.yellow'
+                                : marketState === 'Market-Close'
+                                ? 'lightBG.red'
+                                : ''
+                        }
+                    >
+                        {marketState}
+                    </Badge>
+                ) : (
+                    <></>
+                )}
+            </Box>
+
             {/* Holdings */}
             <Tabs
                 isFitted
@@ -413,7 +449,7 @@ const Profile = props => {
                 px={{ base: '16px', lg: '32px', xl: '0' }}
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
-                pt={8}
+                pt={2}
                 borderBottomColor="light.white"
             >
                 <TabList>

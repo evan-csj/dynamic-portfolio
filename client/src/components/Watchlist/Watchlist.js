@@ -17,6 +17,7 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    Badge,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
@@ -30,7 +31,7 @@ import {
     getCompanyProfile,
     putSymbolPrice,
 } from '../../global/axios';
-import { isMarketOpen } from '../../global/time';
+import { isMarketOpen, getMarketState } from '../../global/time';
 import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
@@ -54,6 +55,7 @@ const Watchlist = props => {
     const [searchTicker, setSearchTicker] = useState('');
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
+    const [marketState, setMarketState] = useState('');
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -206,6 +208,8 @@ const Watchlist = props => {
                 navigate('/');
             }
         });
+
+        setMarketState(getMarketState());
         // eslint-disable-next-line
     }, []);
 
@@ -483,6 +487,40 @@ const Watchlist = props => {
                     )}
                 </FormControl>
             </Flex>
+
+            <Box
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                mb="8px"
+                w={{ xl: '1020px' }}
+            >
+                {marketState ? (
+                    <Badge
+                        color={
+                            marketState === 'Regular-Market-Hours'
+                                ? 'light.green'
+                                : marketState === 'After-Hours'
+                                ? 'light.white'
+                                : marketState === 'Market-Close'
+                                ? 'light.red'
+                                : 'light.grey'
+                        }
+                        background={
+                            marketState === 'Regular-Market-Hours'
+                                ? 'lightBG.green'
+                                : marketState === 'After-Hours'
+                                ? 'light.yellow'
+                                : marketState === 'Market-Close'
+                                ? 'lightBG.red'
+                                : ''
+                        }
+                    >
+                        {marketState}
+                    </Badge>
+                ) : (
+                    <></>
+                )}
+            </Box>
 
             <Tabs
                 isFitted

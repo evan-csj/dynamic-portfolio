@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
 const isMarketOpen = () => {
     dayjs.extend(utc);
@@ -14,7 +13,7 @@ const isMarketOpen = () => {
     return result;
 };
 
-const marketState = () => {
+const getMarketState = () => {
     dayjs.extend(utc);
     const currentTime = dayjs().utc();
     const currentDay = currentTime.day();
@@ -27,15 +26,18 @@ const marketState = () => {
         currentDay === 6 ||
         (currentHour >= 2 && currentHour < 9)
     ) {
-        result = 'close';
-    } else if (currentHour >= 14 && currentMinute >= 30 && currentHour < 22) {
-        result = 'regular';
+        result = 'Market-Close';
+    } else if (
+        (currentHour === 14 && currentMinute >= 30) ||
+        (currentHour >= 15 && currentHour < 22)
+    ) {
+        result = 'Regular-Market-Hours';
     } else if (currentHour >= 22) {
-        result = 'after';
+        result = 'After-Hours';
     } else {
-        result = 'pre';
+        result = 'Pre-Market';
     }
     return result;
 };
 
-export { isMarketOpen, marketState };
+export { isMarketOpen, getMarketState };
