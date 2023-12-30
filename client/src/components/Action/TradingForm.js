@@ -22,6 +22,7 @@ import {
     getCompanyProfile,
     putSymbolInfo,
 } from '../../global/axios';
+import { isMarketOpen } from '../../global/time';
 import Balance from './Balance';
 import '../../styles/global.scss';
 // import useWebSocket from 'react-use-websocket';
@@ -183,7 +184,7 @@ const TradingForm = props => {
     }, []);
 
     useEffect(() => {
-        if (lastMessage !== null) {
+        if (isMarketOpen() && lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
             setCurrentPrice(parseFloat(json.price));
         }

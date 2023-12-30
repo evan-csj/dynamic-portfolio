@@ -41,7 +41,7 @@ const alpaca = (symbol, timeframe, from) => {
             start: from + 'T08:00:00Z',
             limit: 10000,
             adjustment: 'split',
-            feed: 'iex',
+            feed: 'sip',
             sort: 'asc',
         },
         headers: {

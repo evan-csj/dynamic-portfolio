@@ -13,6 +13,10 @@ import {
     TabPanels,
     Tab,
     TabPanel,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
@@ -26,6 +30,7 @@ import {
     getCompanyProfile,
     putSymbolPrice,
 } from '../../global/axios';
+import { isMarketOpen } from '../../global/time';
 import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
@@ -213,7 +218,7 @@ const Watchlist = props => {
     }, [isWatchlistLoaded]);
 
     useEffect(() => {
-        if (lastMessage !== null) {
+        if (isMarketOpen() && lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
             updatePrice(json.symbol, parseFloat(json.price));
         }
@@ -290,8 +295,8 @@ const Watchlist = props => {
     useEffect(() => {
         if (!ticker) return;
         getPriceHistory(ticker, chartScale).then(response => {
-            const localTime = new Date();
-            const timeZoneOffset = localTime.getTimezoneOffset() * 60;
+            const localTime = dayjs();
+            const timeZoneOffset = localTime.utcOffset() * 60;
 
             let ohlcArray = [];
             let volumeArray = [];
@@ -309,14 +314,14 @@ const Watchlist = props => {
                         ? 'rgba(38, 166, 154, 0.5)'
                         : 'rgba(239, 83, 80, 0.5)';
                 ohlcArray.push({
-                    time: dayjs(time).unix() - timeZoneOffset,
+                    time: dayjs(time).unix() + timeZoneOffset,
                     open,
                     high,
                     low,
                     close,
                 });
                 volumeArray.push({
-                    time: dayjs(time).unix() - timeZoneOffset,
+                    time: dayjs(time).unix() + timeZoneOffset,
                     value: volume,
                     color,
                 });
@@ -363,7 +368,59 @@ const Watchlist = props => {
                     }
                 ></CandleStick>
             </Box>
+
+            <Box
+                display={{ base: 'block', md: 'none' }}
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                zIndex={2}
+            >
+                <Menu>
+                    <MenuButton
+                        fontSize="16px"
+                        color="light.navy"
+                        px="4px"
+                        borderColor="light.navy"
+                        borderWidth="2px"
+                        borderRadius="4px"
+                    >
+                        {chartScale}
+                    </MenuButton>
+                    <MenuList>
+                        <MenuItem onClick={() => changeScale('1D')}>
+                            1D
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('5D')}>
+                            5D
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('1M')}>
+                            1M
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('3M')}>
+                            3M
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('6M')}>
+                            6M
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('YTD')}>
+                            YTD
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('1Y')}>
+                            1Y
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('5Y')}>
+                            5Y
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('ALL')}>
+                            ALL
+                        </MenuItem>
+                    </MenuList>
+                </Menu>
+            </Box>
+
             <Tabs
+                display={{ base: 'none', md: 'block' }}
                 variant="dateRange"
                 size="md"
                 px={{ base: '16px', lg: '32px', xl: '0' }}
@@ -373,7 +430,9 @@ const Watchlist = props => {
                 defaultIndex={6}
             >
                 <TabList>
-                    <Tab onClick={() => changeScale('1D')}>1D</Tab>
+                    <Tab ml="0" onClick={() => changeScale('1D')}>
+                        1D
+                    </Tab>
                     <Tab onClick={() => changeScale('5D')}>5D</Tab>
                     <Tab onClick={() => changeScale('1M')}>1M</Tab>
                     <Tab onClick={() => changeScale('3M')}>3M</Tab>

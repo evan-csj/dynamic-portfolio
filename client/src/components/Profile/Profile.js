@@ -31,6 +31,7 @@ import {
     putSymbolPrice,
     putSymbolInfo,
 } from '../../global/axios';
+import { isMarketOpen } from '../../global/time';
 import '../../styles/global.scss';
 import dayjs from 'dayjs';
 import text from './text.json';
@@ -69,10 +70,7 @@ const Profile = props => {
                 if (holdingItem.currency === null) {
                     const profile = await getCompanyProfile(ticker);
 
-                    const {
-                        logo,
-                        currency,
-                    } = profile.data;
+                    const { logo, currency } = profile.data;
 
                     holdingItem.currency = currency;
                 }
@@ -164,7 +162,7 @@ const Profile = props => {
     }, [isHoldingLoaded]);
 
     useEffect(() => {
-        if (lastMessage !== null) {
+        if (isMarketOpen() && lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
             updatePrice(json.symbol, parseFloat(json.price));
         }
