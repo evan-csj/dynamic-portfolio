@@ -53,8 +53,8 @@ function App() {
             sender: 'Bot',
         },
     ]);
-    const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
+
+    const socketUrl = process.env.REACT_APP_SERVER_WS;
     const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
         onOpen: () => console.log('Link Start'),
         onClose: () => console.log('You Lost'),
@@ -135,18 +135,19 @@ function App() {
         onClose();
     };
 
-    // useEffect(() => {
-    //     if (lastMessage !== null) {
-    //         const json = JSON.parse(lastMessage.data);
-    //         const type = json.type;
-    //         if (type === 'trade') {
-    //             const data = json.data;
-    //             const price = data[0].p;
-    //             const symbol = data[0].s;
-    //             console.log(symbol, price);
-    //         }
-    //     }
-    // }, [lastMessage]);
+    useEffect(() => {
+        if (lastMessage !== null) {
+            const json = JSON.parse(lastMessage.data);
+            const type = json.type;
+            // console.log(json);
+            // if (type === 'trade') {
+            //     const data = json.data;
+            //     const price = data[0].p;
+            //     const symbol = data[0].s;
+            //     console.log(symbol, price);
+            // }
+        }
+    }, [lastMessage]);
 
     return (
         <>
@@ -164,18 +165,28 @@ function App() {
                 <Route
                     path="/"
                     element={
-                        <Login login={login} unsubscribeAll={unsubscribeAll} />
+                        <Login
+                            login={login}
+                            unsubscribeAll={unsubscribeAll}
+                        />
                     }
                 />
                 <Route
                     path="/login"
                     element={
-                        <Login login={login} unsubscribeAll={unsubscribeAll} />
+                        <Login
+                            login={login}
+                            unsubscribeAll={unsubscribeAll}
+                        />
                     }
                 />
                 <Route
                     path="/signup"
-                    element={<SignUp unsubscribeAll={unsubscribeAll} />}
+                    element={
+                        <SignUp
+                        unsubscribeAll={unsubscribeAll}
+                        />
+                    }
                 />
                 <Route
                     path="/profile"

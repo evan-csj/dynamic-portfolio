@@ -166,13 +166,7 @@ const Profile = props => {
     useEffect(() => {
         if (lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
-            const type = json.type;
-            if (type === 'trade') {
-                const data = json.data;
-                const price = data[0].p;
-                const symbol = data[0].s;
-                updatePrice(symbol, price);
-            }
+            updatePrice(json.symbol, parseFloat(json.price));
         }
         // eslint-disable-next-line
     }, [lastMessage]);

@@ -50,13 +50,6 @@ const TradingForm = props => {
     const holdings = useRef(undefined);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-    //     onOpen: () => console.log('Link Start'),
-    //     shouldReconnect: closeEvent => true,
-    // });
-
     const title = type === 'buy' ? 'Buy' : type === 'sell' ? 'Sell' : 'Trading';
     const handleTypeChange = selected => setType(selected.value);
     const handleSymbolChange = selected => {
@@ -192,13 +185,7 @@ const TradingForm = props => {
     useEffect(() => {
         if (lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
-            const type = json.type;
-            if (type === 'trade') {
-                const data = json.data;
-                const price = data[0].p;
-                const symbol = data[0].s;
-                setCurrentPrice(price);
-            }
+            setCurrentPrice(parseFloat(json.price));
         }
     }, [lastMessage]);
 
