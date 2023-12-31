@@ -31,7 +31,6 @@ const symbolRoute = require('./routes/symbolRoute');
 const statRoute = require('./routes/statRoute');
 const authRoute = require('./routes/authRoute');
 const chatgptRoute = require('./routes/chatgptRoute');
-const { isAuth } = require('./middlewares/authentication');
 
 const mysqlConnection = mysql.createConnection(knexFile.connection);
 const sessionStore = new MySQLStore({}, mysqlConnection);
@@ -101,40 +100,72 @@ redisClient.on('error', err => console.log('Redis Client Error', err));
 redisClient.connect();
 
 let lastTime = 0;
+let clientCount = 0;
+let finnhubSocket;
 
-const socket = new WebSocket(
-    `wss://ws.finnhub.io?token=${process.env.FINNHUB_KEY}`
-);
-
-socket.on('open', () => {
-    symbolData.forEach(element => {
-        socket.send(
-            JSON.stringify({ type: 'subscribe', symbol: element.symbol })
+const openSocket = () => {
+    if (finnhubSocket) {
+        console.log(
+            'Finnhub Socket State (Check): %d / Client Count: %d',
+            finnhubSocket.readyState,
+            clientCount
         );
-    });
-    // socket.send(
-    //     JSON.stringify({ type: 'subscribe', symbol: 'BINANCE:BTCUSDT' })
-    // );
-});
-
-socket.on('message', async data => {
-    const currentTime = dayjs().unix();
-    if (currentTime - lastTime >= 1) {
-        try {
-            const message = JSON.parse(data);
-            if (message.type === 'trade') {
-                const firstMessage = message.data[0];
-                await redisClient.set(firstMessage.s, firstMessage.p);
-                lastTime = currentTime;
-            }
-            // console.log(message);
-        } catch (error) {
-            console.error(error);
+        if (finnhubSocket.readyState === WebSocket.OPEN) {
+            return;
         }
     }
-});
 
-socket.on('error', console.error);
+    finnhubSocket = new WebSocket(
+        `wss://ws.finnhub.io?token=${process.env.FINNHUB_KEY}`
+    );
+    finnhubSocket.on('open', () => {
+        console.log(
+            'Finnhub Socket State (Open): %d / Client Count: %d',
+            finnhubSocket.readyState,
+            clientCount
+        );
+        symbolData.forEach(element => {
+            finnhubSocket.send(
+                JSON.stringify({
+                    type: 'subscribe',
+                    symbol: element.symbol,
+                })
+            );
+        });
+    });
+    finnhubSocket.on('message', async data => {
+        const currentTime = dayjs().unix();
+        if (currentTime - lastTime >= 1) {
+            try {
+                const message = JSON.parse(data);
+                if (message.type === 'trade') {
+                    const firstMessage = message.data[0];
+                    await redisClient.set(firstMessage.s, firstMessage.p);
+                    lastTime = currentTime;
+                }
+                // console.log(message);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    });
+    finnhubSocket.on('close', () => {
+        console.log(
+            'Finnhub Socket State (Close): %d / Client Count: %d',
+            finnhubSocket.readyState,
+            clientCount
+        );
+    });
+    finnhubSocket.on('error', console.error);
+};
+
+const closeSocket = () => {
+    if (finnhubSocket) {
+        if (finnhubSocket.readyState === WebSocket.OPEN) {
+            finnhubSocket.close();
+        }
+    }
+};
 
 const clientSubscriptions = new Map();
 const sendInterval = (ws, symbol) => {
@@ -166,6 +197,8 @@ const stopInterval = (ws, symbol) => {
 
 wss.on('connection', ws => {
     console.log('A user connected');
+    clientCount++;
+    openSocket();
     ws.on('message', async message => {
         const receivedData = JSON.parse(message);
         const type = receivedData.type;
@@ -179,6 +212,8 @@ wss.on('connection', ws => {
     });
     ws.on('close', () => {
         console.log('A user disconnected');
+        clientCount--;
+        if (clientCount === 0) closeSocket();
         const clientSubs = clientSubscriptions.get(ws);
         if (clientSubs) {
             clientSubs.forEach(subs => {
