@@ -516,12 +516,6 @@ const updateUserData = async userData => {
     }
 };
 
-const logout = () => {
-    try {
-        axios.get(`${API_ADDRESS}/auth/logout`);
-    } catch (err) {}
-};
-
 export {
     getUser,
     getHoldings,
@@ -546,5 +540,4 @@ export {
     chatgpt,
     checkUserPassword,
     updateUserData,
-    logout,
 };

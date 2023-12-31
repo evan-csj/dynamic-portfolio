@@ -42,7 +42,7 @@ function Trading(props) {
                                 : ''
                         }
                     >
-                        {orderStatus.toUpperCase()}
+                        {orderStatus}
                     </Badge>
                 </Flex>
             </GridItem>

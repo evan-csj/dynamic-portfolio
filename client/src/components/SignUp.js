@@ -15,10 +15,10 @@ import { getUser, updateUserData } from '../global/axios';
 
 const SignUp = props => {
     const navigate = useNavigate();
-    const [oldUserId, setOldUserId] = useState('');
-    const [newUserId, setNewUserId] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [oldUserId, setOldUserId] = useState(' ');
+    const [newUserId, setNewUserId] = useState(' ');
+    const [firstName, setFirstName] = useState(' ');
+    const [lastName, setLastName] = useState(' ');
     const [isDuplicate, setIsDuplicate] = useState(false);
 
     const handleSave = () => {
@@ -42,17 +42,21 @@ const SignUp = props => {
 
     const handleIdChange = event => {
         const input = event.target.value;
-        setNewUserId(input);
+        const noSpace = input.replace(/\s/g, '');
+        setNewUserId(noSpace);
+        setIsDuplicate(false);
     };
 
     const handleFirstNameChange = event => {
         const input = event.target.value;
-        setFirstName(input);
+        const noSpace = input.replace(/\s/g, '');
+        setFirstName(noSpace);
     };
 
     const handleLastNameChange = event => {
         const input = event.target.value;
-        setLastName(input);
+        const noSpace = input.replace(/\s/g, '');
+        setLastName(noSpace);
     };
 
     useEffect(() => {
@@ -87,49 +91,78 @@ const SignUp = props => {
                 w={{ base: '100%', md: '320px' }}
                 alignSelf={{ base: 'flex-start', lg: 'center' }}
             >
-                <Stack spacing={8}>
+                <Stack spacing={2}>
                     <Box>
                         <FormLabel>Username</FormLabel>
                         <Input
-                            placeholder={oldUserId}
+                            placeholder={'User ID'}
+                            value={newUserId}
                             isRequired
-                            maxLength="10"
+                            maxLength="20"
                             onChange={handleIdChange}
                         />
                         {isDuplicate ? (
                             <FormHelperText color="light.red">
                                 User exists! Please try another one!
                             </FormHelperText>
+                        ) : newUserId === '' ? (
+                            <FormHelperText color="light.red">
+                                Don't leave it empty!
+                            </FormHelperText>
                         ) : (
-                            <></>
+                            <FormHelperText color="transparent">
+                                Placeholder
+                            </FormHelperText>
                         )}
                     </Box>
                     <Box>
                         <FormLabel>First Name</FormLabel>
                         <Input
-                            placeholder={firstName}
+                            placeholder={'First Name'}
+                            value={firstName}
                             isRequired
                             maxLength="20"
                             onChange={handleFirstNameChange}
                         />
                     </Box>
+                    {firstName === '' ? (
+                        <FormHelperText color="light.red">
+                            Don't leave it empty!
+                        </FormHelperText>
+                    ) : (
+                        <FormHelperText color="transparent">
+                            Placeholder
+                        </FormHelperText>
+                    )}
                     <Box>
                         <FormLabel>Last Name</FormLabel>
                         <Input
-                            placeholder={lastName}
+                            placeholder={'Last Name'}
+                            value={lastName}
                             isRequired
                             maxLength="20"
                             onChange={handleLastNameChange}
                         />
                     </Box>
-                    <Button
-                        variant="submit"
-                        type="submit"
-                        w="100%"
-                        onClick={handleSave}
-                    >
-                        Save
-                    </Button>
+                    {lastName === '' ? (
+                        <FormHelperText color="light.red">
+                            Don't leave it empty!
+                        </FormHelperText>
+                    ) : (
+                        <FormHelperText color="transparent">
+                            Placeholder
+                        </FormHelperText>
+                    )}
+                    <Box pt={2}>
+                        <Button
+                            variant="submit"
+                            type="submit"
+                            w="100%"
+                            onClick={handleSave}
+                        >
+                            Save
+                        </Button>
+                    </Box>
                 </Stack>
             </FormControl>
         </Flex>

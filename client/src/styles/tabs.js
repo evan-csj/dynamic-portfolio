@@ -8,7 +8,7 @@ const dateRangeVariant = definePartsStyle(() => {
     return {
         tab: {
             px: 0,
-            mx: 4,
+            mx: 2,
             borderBottom: '2px',
             borderBottomColor: 'light.white',
             _selected: {

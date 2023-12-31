@@ -71,7 +71,6 @@ const checkUser = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-    console.log(req.body);
     const { oldUserId, newUserId, firstName, lastName } = req.body;
     const validatedUserId = newUserId.toLowerCase();
 
@@ -79,6 +78,7 @@ const editUser = async (req, res) => {
         id: validatedUserId,
         first_name: firstName,
         last_name: lastName,
+        is_new: false,
     };
 
     try {

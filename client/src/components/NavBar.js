@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Flex, Box, Circle } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Logout, Fund } from '../styles/icons';
-import { logout } from '../global/axios';
 import '../styles/global.scss';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
@@ -83,7 +82,7 @@ const NavBar = props => {
                     />
                     <Box _hover={{ color: 'light.yellow' }}>
                         <NavLink
-                            to="/login"
+                            to={`${SERVER_URL}/logout`}
                             onClick={() => {
                                 closeAllDrawer();
                                 sessionStorage.clear();
@@ -177,7 +176,6 @@ const NavBar = props => {
                         onClick={() => {
                             closeAllDrawer();
                             sessionStorage.clear();
-                            logout();
                         }}
                     >
                         <Logout variant="btn" />

@@ -13,6 +13,11 @@ import {
     TabPanels,
     Tab,
     TabPanel,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    Badge,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import {
@@ -26,6 +31,7 @@ import {
     getCompanyProfile,
     putSymbolPrice,
 } from '../../global/axios';
+import { isMarketOpen, getMarketState } from '../../global/time';
 import CandleStick from './CandleStick';
 import Statistics from './Statistics';
 import ObjList from '../ObjList';
@@ -49,6 +55,7 @@ const Watchlist = props => {
     const [searchTicker, setSearchTicker] = useState('');
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
+    const [marketState, setMarketState] = useState('');
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -213,16 +220,11 @@ const Watchlist = props => {
     }, [isWatchlistLoaded]);
 
     useEffect(() => {
-        if (lastMessage !== null) {
+        if (isMarketOpen() && lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
-            const type = json.type;
-            if (type === 'trade') {
-                const data = json.data;
-                const price = data[0].p;
-                const symbol = data[0].s;
-                updatePrice(symbol, price);
-            }
+            updatePrice(json.symbol, parseFloat(json.price));
         }
+        setMarketState(getMarketState());
         // eslint-disable-next-line
     }, [lastMessage]);
 
@@ -296,9 +298,41 @@ const Watchlist = props => {
     useEffect(() => {
         if (!ticker) return;
         getPriceHistory(ticker, chartScale).then(response => {
+            const localTime = dayjs();
+            const timeZoneOffset = localTime.utcOffset() * 60;
+
+            let ohlcArray = [];
+            let volumeArray = [];
+
+            for (const {
+                o: open,
+                h: high,
+                l: low,
+                c: close,
+                v: volume,
+                t: time,
+            } of response.data) {
+                const color =
+                    close - open >= 0
+                        ? 'rgba(38, 166, 154, 0.5)'
+                        : 'rgba(239, 83, 80, 0.5)';
+                ohlcArray.push({
+                    time: dayjs(time).unix() + timeZoneOffset,
+                    open,
+                    high,
+                    low,
+                    close,
+                });
+                volumeArray.push({
+                    time: dayjs(time).unix() + timeZoneOffset,
+                    value: volume,
+                    color,
+                });
+            }
+
             setCandleStickData({
-                priceData: response.data.ohlc,
-                volumeData: response.data.v,
+                priceData: ohlcArray,
+                volumeData: volumeArray,
             });
         });
     }, [ticker, chartScale]);
@@ -337,7 +371,59 @@ const Watchlist = props => {
                     }
                 ></CandleStick>
             </Box>
+
+            <Box
+                display={{ base: 'block', md: 'none' }}
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                w={{ xl: '1020px' }}
+                zIndex={2}
+            >
+                <Menu>
+                    <MenuButton
+                        fontSize="16px"
+                        color="light.navy"
+                        px="4px"
+                        borderColor="light.navy"
+                        borderWidth="2px"
+                        borderRadius="4px"
+                    >
+                        {chartScale}
+                    </MenuButton>
+                    <MenuList>
+                        <MenuItem onClick={() => changeScale('1D')}>
+                            1D
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('5D')}>
+                            5D
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('1M')}>
+                            1M
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('3M')}>
+                            3M
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('6M')}>
+                            6M
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('YTD')}>
+                            YTD
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('1Y')}>
+                            1Y
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('5Y')}>
+                            5Y
+                        </MenuItem>
+                        <MenuItem onClick={() => changeScale('ALL')}>
+                            ALL
+                        </MenuItem>
+                    </MenuList>
+                </Menu>
+            </Box>
+
             <Tabs
+                display={{ base: 'none', md: 'block' }}
                 variant="dateRange"
                 size="md"
                 px={{ base: '16px', lg: '32px', xl: '0' }}
@@ -347,7 +433,9 @@ const Watchlist = props => {
                 defaultIndex={6}
             >
                 <TabList>
-                    <Tab onClick={() => changeScale('1D')}>1D</Tab>
+                    <Tab ml="0" onClick={() => changeScale('1D')}>
+                        1D
+                    </Tab>
                     <Tab onClick={() => changeScale('5D')}>5D</Tab>
                     <Tab onClick={() => changeScale('1M')}>1M</Tab>
                     <Tab onClick={() => changeScale('3M')}>3M</Tab>
@@ -398,6 +486,40 @@ const Watchlist = props => {
                     )}
                 </FormControl>
             </Flex>
+
+            <Box
+                px={{ base: '16px', lg: '32px', xl: '0' }}
+                mx={{ xl: 'auto' }}
+                mb="8px"
+                w={{ xl: '1020px' }}
+            >
+                {marketState ? (
+                    <Badge
+                        color={
+                            marketState === 'Regular-Market-Hours'
+                                ? 'light.green'
+                                : marketState === 'After-Hours'
+                                ? 'light.white'
+                                : marketState === 'Market-Close'
+                                ? 'light.red'
+                                : 'light.grey'
+                        }
+                        background={
+                            marketState === 'Regular-Market-Hours'
+                                ? 'lightBG.green'
+                                : marketState === 'After-Hours'
+                                ? 'light.yellow'
+                                : marketState === 'Market-Close'
+                                ? 'lightBG.red'
+                                : ''
+                        }
+                    >
+                        {marketState}
+                    </Badge>
+                ) : (
+                    <></>
+                )}
+            </Box>
 
             <Tabs
                 isFitted

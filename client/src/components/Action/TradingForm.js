@@ -22,6 +22,7 @@ import {
     getCompanyProfile,
     putSymbolInfo,
 } from '../../global/axios';
+import { isMarketOpen } from '../../global/time';
 import Balance from './Balance';
 import '../../styles/global.scss';
 // import useWebSocket from 'react-use-websocket';
@@ -49,13 +50,6 @@ const TradingForm = props => {
     const symbolOptions = useRef([]);
     const holdings = useRef(undefined);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
-
-    // const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
-    // const socketUrl = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
-    // const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-    //     onOpen: () => console.log('Link Start'),
-    //     shouldReconnect: closeEvent => true,
-    // });
 
     const title = type === 'buy' ? 'Buy' : type === 'sell' ? 'Sell' : 'Trading';
     const handleTypeChange = selected => setType(selected.value);
@@ -190,15 +184,9 @@ const TradingForm = props => {
     }, []);
 
     useEffect(() => {
-        if (lastMessage !== null) {
+        if (isMarketOpen() && lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
-            const type = json.type;
-            if (type === 'trade') {
-                const data = json.data;
-                const price = data[0].p;
-                const symbol = data[0].s;
-                setCurrentPrice(price);
-            }
+            setCurrentPrice(parseFloat(json.price));
         }
     }, [lastMessage]);
 
