@@ -82,7 +82,7 @@ const NavBar = props => {
                     />
                     <Box _hover={{ color: 'light.yellow' }}>
                         <NavLink
-                            to="/login"
+                            to={`${SERVER_URL}/logout`}
                             onClick={() => {
                                 closeAllDrawer();
                                 sessionStorage.clear();
