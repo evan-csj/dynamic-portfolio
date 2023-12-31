@@ -208,8 +208,6 @@ const Watchlist = props => {
                 navigate('/');
             }
         });
-
-        setMarketState(getMarketState());
         // eslint-disable-next-line
     }, []);
 
@@ -226,6 +224,7 @@ const Watchlist = props => {
             const json = JSON.parse(lastMessage.data);
             updatePrice(json.symbol, parseFloat(json.price));
         }
+        setMarketState(getMarketState());
         // eslint-disable-next-line
     }, [lastMessage]);
 

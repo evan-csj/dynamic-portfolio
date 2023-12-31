@@ -33,7 +33,6 @@ passport.use(
 
 passport.serializeUser(async (userOAuth, done) => {
     const { provider } = userOAuth;
-    
     try {
         let keyField, keyValue, defaultId;
 
@@ -98,11 +97,7 @@ passport.deserializeUser(async (sessionObj, done) => {
             if (userDB) {
                 done(null, userDB.id);
             } else {
-                done(
-                    new Error(
-                        `User with github id ${githubUsername} is not found!`
-                    )
-                );
+                done(null, false);
             }
         } else if (provider === 'google') {
             const gmail = sessionObj.emails[0].value;
@@ -113,7 +108,7 @@ passport.deserializeUser(async (sessionObj, done) => {
             if (userDB) {
                 done(null, userDB.id);
             } else {
-                done(new Error(`User with gmail ${gmail} is not found!`));
+                done(null, false);
             }
         } else {
             done(new Error('Undefined Authentication!'));
