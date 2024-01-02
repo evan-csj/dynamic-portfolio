@@ -44,7 +44,7 @@ const Profile = props => {
     const [holdingList, setHoldingList] = useState({});
     const [isHoldingLoaded, setIsHoldingLoaded] = useState(false);
     const [isPriceLoaded, setIsPriceLoaded] = useState(false);
-    const [exRate, setExRate] = useState(0);
+    const [exRate, setExRate] = useState(1);
     const [accountDetail, setAccountDetail] = useState(undefined);
     const [quoteIndex, setQuoteIndex] = useState(0);
     const [marketState, setMarketState] = useState('');

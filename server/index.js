@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const MySQLStore = require('express-mysql-session')(session);
+// const MySQLStore = require('express-mysql-session')(session);
+
 const helmet = require('helmet');
 const passport = require('passport');
 const { createServer } = require('http');
@@ -10,6 +11,7 @@ const dayjs = require('dayjs');
 
 require('dotenv').config();
 const mysql = require('mysql2');
+const pg = require('pg');
 const knexFile = require('./knexfile');
 
 const app = express();
@@ -32,8 +34,8 @@ const statRoute = require('./routes/statRoute');
 const authRoute = require('./routes/authRoute');
 const chatgptRoute = require('./routes/chatgptRoute');
 
-const mysqlConnection = mysql.createConnection(knexFile.connection);
-const sessionStore = new MySQLStore({}, mysqlConnection);
+// const mysqlConnection = mysql.createConnection(knexFile.connection);
+// const sessionStore = new MySQLStore({}, mysqlConnection);
 
 app.use(express.json());
 app.use(helmet());
@@ -42,7 +44,7 @@ app.use(
         secret: process.env.JWT_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: sessionStore,
+        // store: sessionStore,
         cookie: {
             secure: false,
             maxAge: 24 * 60 * 60 * 1000,
