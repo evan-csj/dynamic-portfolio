@@ -49,7 +49,9 @@ function Trading(props) {
             <GridItem fontWeight="bold" textAlign="right">
                 ${price} {currency.toUpperCase()}
             </GridItem>
-            <GridItem>{dayjs(timestamp).format('MMM DD, YYYY')}</GridItem>
+            <GridItem>
+                {dayjs(timestamp).format('MMM DD, YYYY HH:mm:ss')}
+            </GridItem>
             <GridItem textAlign="right">
                 <Text
                     as="span"
