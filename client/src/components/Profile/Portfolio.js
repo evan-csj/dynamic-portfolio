@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import {
     Box,
@@ -36,7 +35,6 @@ const jsonObj2Array = jsonObj => {
 
 const Portfolio = props => {
     const userData = props.user;
-    const navigate = useNavigate();
     const [portfolioList, setPortfolioList] = useState([]);
     const [availablePct, setAvailablePct] = useState(0);
     const [searchTicker, setSearchTicker] = useState('');
@@ -172,11 +170,15 @@ const Portfolio = props => {
                 currency: 'USD',
             };
 
-            if (sharesRound > 0) postTrading(newTrade);
+            if (sharesRound > 0) await postTrading(newTrade);
         }
-
-        props.changePage('history');
-        navigate('/history');
+        if (props.toggle) {
+            props.updateToggle(false);
+        } else {
+            props.updateToggle(true);
+        }
+        setProcessing(false);
+        return;
     };
 
     useEffect(() => {

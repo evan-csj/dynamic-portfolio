@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import {
     Heading,
@@ -38,7 +37,6 @@ const TradingForm = props => {
             label: 'Sell',
         },
     ];
-    const navigate = useNavigate();
     const [userId, setUserId] = useState(null);
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
@@ -103,7 +101,7 @@ const TradingForm = props => {
         setQuantity(fracNum);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (
             enoughFund() &&
             enoughShares() &&
@@ -121,7 +119,7 @@ const TradingForm = props => {
                 orderStatus: 'pending',
                 currency,
             };
-            postTrading(newTrade);
+            await postTrading(newTrade);
             props.closeDrawer();
             if (props.toggle) {
                 props.updateToggle(false);

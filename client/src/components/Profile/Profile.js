@@ -48,7 +48,14 @@ const Profile = props => {
     const [accountDetail, setAccountDetail] = useState(undefined);
     const [quoteIndex, setQuoteIndex] = useState(0);
     const [marketState, setMarketState] = useState('');
-    const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
+    const [internalToggle, setInternalToggle] = useState(false);
+    const {
+        lastMessage,
+        sendMessage,
+        setSubscribe,
+        unsubscribeAll,
+        toggle: externalToggle,
+    } = props;
 
     const wsInitial = () => {
         unsubscribeAll();
@@ -151,7 +158,7 @@ const Profile = props => {
             })
             .catch(error => console.error(error));
         // eslint-disable-next-line
-    }, [props.toggle]);
+    }, [externalToggle, internalToggle]);
 
     useEffect(() => {
         setIsHoldingLoaded(false);
@@ -489,6 +496,8 @@ const Profile = props => {
                             user={userData}
                             userId={userId}
                             changePage={props.changePage}
+                            toggle={internalToggle}
+                            updateToggle={setInternalToggle}
                         />
                     </TabPanel>
                 </TabPanels>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import {
     Heading,
@@ -41,7 +40,6 @@ const FundingForm = props => {
             label: 'CAD',
         },
     ];
-    const navigate = useNavigate();
     const [userId, setUserId] = useState(null);
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
@@ -102,7 +100,7 @@ const FundingForm = props => {
         // eslint-disable-next-line
     }, []);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (type !== '' && account !== '' && notZero && enoughFund()) {
             const newFunding = {
                 userId: userId,
@@ -110,7 +108,7 @@ const FundingForm = props => {
                 type: type,
                 currency: account,
             };
-            postFunding(newFunding);
+            await postFunding(newFunding);
             props.closeDrawer();
             if (props.toggle) {
                 props.updateToggle(false);
