@@ -18,8 +18,8 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocket.Server({ server });
 const redis = require('redis');
-const PORT = process.env.PORT || 8080;
-const { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD } = process.env;
+const { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, CLIENT_URL, PORT, JWT_SECRET, FINNHUB_KEY } =
+    process.env;
 const symbolData = require('./seed_data/symbols');
 
 const userRoute = require('./routes/userRoute');
@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(
     session({
-        secret: process.env.JWT_SECRET,
+        secret: JWT_SECRET,
         resave: false,
         saveUninitialized: false,
         // store: sessionStore,
@@ -57,7 +57,7 @@ require('./passport-setup');
 
 app.use(
     cors({
-        origin: 'http://localhost:3000',
+        origin: CLIENT_URL,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     })
@@ -86,7 +86,7 @@ app.get('/logout', (req, res) => {
         } else {
             console.log('logout success');
         }
-        res.redirect(process.env.CLIENT_URL);
+        res.redirect(CLIENT_URL);
     });
 });
 
@@ -118,7 +118,7 @@ const openSocket = () => {
     }
 
     finnhubSocket = new WebSocket(
-        `wss://ws.finnhub.io?token=${process.env.FINNHUB_KEY}`
+        `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
     );
     finnhubSocket.on('open', () => {
         console.log(

@@ -1,9 +1,11 @@
 const { encode } = require('gpt-3-encoder');
 const { Configuration, OpenAIApi } = require('openai');
+require('dotenv').config();
+const { OPENAI_KEY } = process.env;
 
 const openai = new OpenAIApi(
     new Configuration({
-        apiKey: process.env.OPENAI_KEY,
+        apiKey: OPENAI_KEY,
     })
 );
 const maxToken = 50;

@@ -1,6 +1,7 @@
 const passport = require('passport');
 require('dotenv').config();
 const knex = require('knex')(require('../knexfile'));
+const { CLIENT_URL } = process.env;
 
 const githubOAuth = passport.authenticate('github');
 const googleOAuth = passport.authenticate('google');
@@ -37,16 +38,16 @@ const callbackRedirect = async (req, res) => {
                 .first();
 
             if (!userDB.is_new) {
-                return res.redirect(`${process.env.CLIENT_URL}/profile`);
+                return res.redirect(`${CLIENT_URL}/profile`);
             } else {
-                return res.redirect(`${process.env.CLIENT_URL}/signup`);
+                return res.redirect(`${CLIENT_URL}/signup`);
             }
         } else {
-            return res.redirect(`${process.env.CLIENT_URL}/login`);
+            return res.redirect(`${CLIENT_URL}/login`);
         }
     } catch (error) {
         console.error('Error', error);
-        return res.redirect(`${process.env.CLIENT_URL}/login`);
+        return res.redirect(`${CLIENT_URL}/login`);
     }
 };
 

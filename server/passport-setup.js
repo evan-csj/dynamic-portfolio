@@ -2,13 +2,22 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const knex = require('knex')(require('./knexfile'));
+require('dotenv').config();
+const {
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+    GITHUB_CALLBACK_URL,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_CALLBACK_URL,
+} = process.env;
 
 passport.use(
     new GitHubStrategy(
         {
-            clientID: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            callbackURL: process.env.GITHUB_CALLBACK_URL,
+            clientID: GITHUB_CLIENT_ID,
+            clientSecret: GITHUB_CLIENT_SECRET,
+            callbackURL: GITHUB_CALLBACK_URL,
             scope: ['profile', 'email'],
         },
         (_accessToken, _refreshToken, profile, done) => {
@@ -20,9 +29,9 @@ passport.use(
 passport.use(
     new GoogleStrategy(
         {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            clientID: GOOGLE_CLIENT_ID,
+            clientSecret: GOOGLE_CLIENT_SECRET,
+            callbackURL: GOOGLE_CALLBACK_URL,
             scope: ['profile', 'email'],
         },
         (_accessToken, _refreshToken, profile, done) => {

@@ -1,6 +1,8 @@
 const knex = require('knex')(require('../knexfile'));
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const { JWT_SECRET } = process.env;
 
 const singleUser = async (req, res) => {
     const userId = req.params.userId || req.user || '';
@@ -54,7 +56,7 @@ const checkUser = async (req, res) => {
                         username: username,
                         loginTime: Date.now(),
                     },
-                    process.env.JWT_SECRET,
+                    JWT_SECRET,
                     { expiresIn: '1d' }
                 );
                 return res.status(200).json(token);
@@ -88,7 +90,9 @@ const editUser = async (req, res) => {
         }
 
         if (!user) {
-            const updatedUser = await knex('user').where({ id: oldUserId }).update(updateUserData);
+            const updatedUser = await knex('user')
+                .where({ id: oldUserId })
+                .update(updateUserData);
             return res.status(200).json(updatedUser);
         } else {
             return res.status(403).json({ error: 'User Exist!' });

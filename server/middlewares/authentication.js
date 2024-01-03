@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const { JWT_SECRET } = process.env;
 
 const isAuth = (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -15,17 +16,13 @@ const isAuth = (req, res, next) => {
         ) {
             return res.status(401).json('Invalid token');
         }
-        jwt.verify(
-            authTokenArray[1],
-            process.env.JWT_SECRET,
-            (err, decoded) => {
-                if (err) {
-                    return res.status(401).json('The token is expired or invalid');
-                }
-                req.jwtPayload = decoded;
-                next();
+        jwt.verify(authTokenArray[1], JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(401).json('The token is expired or invalid');
             }
-        );
+            req.jwtPayload = decoded;
+            next();
+        });
     }
 };
 
