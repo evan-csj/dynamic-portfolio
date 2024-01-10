@@ -1,7 +1,6 @@
 import axios from 'axios';
 const dayjs = require('dayjs');
-const API_PORT = 8080;
-const API_ADDRESS = `http://localhost:${API_PORT}`;
+const API_ADDRESS = process.env.REACT_APP_SERVER_URL;
 
 const axiosStandard = axios.create({
     withCredentials: true,

@@ -15,6 +15,7 @@
     "dependencies": {
         "argon2": "^0.30.3",
         "axios": "^1.4.0",
+        "connect-pg-simple": "^9.0.1",
         "cors": "^2.8.5",
         "dayjs": "^1.11.7",
         "dotenv": "^16.0.3",

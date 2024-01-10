@@ -84,6 +84,11 @@ exports.up = function (knex) {
             table.string('symbol').primary().unique().notNullable();
             table.float('last_price', 12, 4).notNullable();
             table.timestamps(true, true);
+        })
+        .createTable('oauth', table => {
+            table.string('sid').primary().unique().notNullable();
+            table.timestamp('expire').notNullable();
+            table.jsonb('sess').notNullable();
         });
 };
 
@@ -99,5 +104,6 @@ exports.down = function (knex) {
         .dropTable('holding')
         .dropTable('trade')
         .dropTable('symbol')
-        .dropTable('user');
+        .dropTable('user')
+        .dropTable('oauth');
 };

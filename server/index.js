@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 // const MySQLStore = require('express-mysql-session')(session);
 
 const helmet = require('helmet');
@@ -18,8 +19,19 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocket.Server({ server });
 const redis = require('redis');
-const { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, CLIENT_URL, PORT, JWT_SECRET, FINNHUB_KEY } =
-    process.env;
+
+const {
+    SECURE,
+    REDIS_HOST,
+    REDIS_PORT,
+    REDIS_PASSWORD,
+    CLIENT_URL,
+    PORT,
+    JWT_SECRET,
+    FINNHUB_KEY,
+    DB_PG_URL,
+} = process.env;
+
 const symbolData = require('./seed_data/symbols');
 
 const userRoute = require('./routes/userRoute');
@@ -36,6 +48,13 @@ const chatgptRoute = require('./routes/chatgptRoute');
 
 // const mysqlConnection = mysql.createConnection(knexFile.connection);
 // const sessionStore = new MySQLStore({}, mysqlConnection);
+const pgSessionStore = new pgSession({
+    conObject: {
+        connectionString: DB_PG_URL,
+        ssl: true,
+    },
+    tableName: 'oauth',
+});
 
 app.use(express.json());
 app.use(helmet());
@@ -44,9 +63,9 @@ app.use(
         secret: JWT_SECRET,
         resave: false,
         saveUninitialized: false,
-        // store: sessionStore,
+        store: pgSessionStore,
         cookie: {
-            secure: false,
+            secure: SECURE ? true : false,
             maxAge: 24 * 60 * 60 * 1000,
         },
     })
@@ -117,9 +136,7 @@ const openSocket = () => {
         }
     }
 
-    finnhubSocket = new WebSocket(
-        `wss://ws.finnhub.io?token=${FINNHUB_KEY}`
-    );
+    finnhubSocket = new WebSocket(`wss://ws.finnhub.io?token=${FINNHUB_KEY}`);
     finnhubSocket.on('open', () => {
         console.log(
             'Finnhub Socket State (Open): %d / Client Count: %d',
