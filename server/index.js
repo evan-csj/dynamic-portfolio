@@ -1,22 +1,24 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
-// const MySQLStore = require('express-mysql-session')(session);
 
 const helmet = require('helmet');
 const passport = require('passport');
-const { createServer } = require('http');
+const WebServer = require('http');
 const WebSocket = require('ws');
 const dayjs = require('dayjs');
 
 require('dotenv').config();
-const mysql = require('mysql2');
-const pg = require('pg');
-const knexFile = require('./knexfile');
+
+const serverOptions = {
+    cert: fs.readFileSync('./certificates/cert.pem'),
+    key: fs.readFileSync('./certificates/key.pem'),
+};
 
 const app = express();
-const server = createServer(app);
+const server = WebServer.createServer(app);
 const wss = new WebSocket.Server({ server });
 const redis = require('redis');
 
@@ -46,8 +48,6 @@ const statRoute = require('./routes/statRoute');
 const authRoute = require('./routes/authRoute');
 const chatgptRoute = require('./routes/chatgptRoute');
 
-// const mysqlConnection = mysql.createConnection(knexFile.connection);
-// const sessionStore = new MySQLStore({}, mysqlConnection);
 const pgSessionStore = new pgSession({
     conObject: {
         connectionString: DB_PG_URL,
@@ -56,6 +56,7 @@ const pgSessionStore = new pgSession({
     tableName: 'oauth',
 });
 
+app.enable('trust proxy');
 app.use(express.json());
 app.use(helmet());
 app.use(
@@ -64,7 +65,9 @@ app.use(
         resave: false,
         saveUninitialized: false,
         store: pgSessionStore,
+        proxy: true,
         cookie: {
+            httpOnly: false,
             secure: SECURE ? true : false,
             maxAge: 24 * 60 * 60 * 1000,
         },

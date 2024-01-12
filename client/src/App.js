@@ -158,28 +158,18 @@ function App() {
                 <Route
                     path="/"
                     element={
-                        <Login
-                            login={login}
-                            unsubscribeAll={unsubscribeAll}
-                        />
+                        <Login login={login} unsubscribeAll={unsubscribeAll} />
                     }
                 />
                 <Route
                     path="/login"
                     element={
-                        <Login
-                            login={login}
-                            unsubscribeAll={unsubscribeAll}
-                        />
+                        <Login login={login} unsubscribeAll={unsubscribeAll} />
                     }
                 />
                 <Route
                     path="/signup"
-                    element={
-                        <SignUp
-                        unsubscribeAll={unsubscribeAll}
-                        />
-                    }
+                    element={<SignUp unsubscribeAll={unsubscribeAll} />}
                 />
                 <Route
                     path="/profile"
