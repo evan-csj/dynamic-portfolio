@@ -505,9 +505,15 @@ const checkUserPassword = async login => {
 
 const updateUserData = async userData => {
     try {
+        const token = sessionStorage.getItem('JWT');
         const newUserData = await axiosStandard.put(
             `${API_ADDRESS}/user`,
-            userData
+            userData,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
         );
         return newUserData;
     } catch (err) {

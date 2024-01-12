@@ -38,16 +38,16 @@ const callbackRedirect = async (req, res) => {
                 .first();
 
             if (!userDB.is_new) {
-                return res.redirect(`${CLIENT_URL}/profile`);
+                return res.redirect(`${CLIENT_URL}/#/profile`);
             } else {
-                return res.redirect(`${CLIENT_URL}/signup`);
+                return res.redirect(`${CLIENT_URL}/#/signup`);
             }
         } else {
-            return res.redirect(`${CLIENT_URL}/login`);
+            return res.redirect(`${CLIENT_URL}/#/login`);
         }
     } catch (error) {
         console.error('Error', error);
-        return res.redirect(`${CLIENT_URL}/login`);
+        return res.redirect(`${CLIENT_URL}/#/login`);
     }
 };
 
