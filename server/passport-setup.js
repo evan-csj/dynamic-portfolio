@@ -101,7 +101,7 @@ passport.deserializeUser(async (sessionObj, done) => {
             const githubUsername = sessionObj.username;
             userDB = await knex('user')
                 .select('id', 'github_username')
-                .where('github_username', githubUsername)
+                .where({ github_username: githubUsername })
                 .first();
             if (userDB) {
                 done(null, userDB.id);
@@ -112,7 +112,7 @@ passport.deserializeUser(async (sessionObj, done) => {
             const gmail = sessionObj.emails[0].value;
             userDB = await knex('user')
                 .select('id', 'user_gmail')
-                .where('user_gmail', gmail)
+                .where({ user_gmail: gmail })
                 .first();
             if (userDB) {
                 done(null, userDB.id);

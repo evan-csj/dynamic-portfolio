@@ -17,7 +17,7 @@ const getHolding = async (req, res) => {
                 'currency',
                 'updated_at'
             )
-            .where('user_id', userId);
+            .where({ user_id: userId });
         if (!holding) {
             return res
                 .status(404)

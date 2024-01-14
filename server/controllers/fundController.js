@@ -6,8 +6,7 @@ const getFundHistory = async (req, res) => {
 
     try {
         const fundHistory = await knex('fund')
-            .select('*')
-            .where('user_id', userId)
+            .where({ user_id: userId })
             .orderBy('created_at', 'desc');
         if (!fundHistory) {
             return res

@@ -8,7 +8,7 @@ const getTradeHistory = async (req, res) => {
     try {
         const tradeHistory = await knex('trade')
             .select('*')
-            .where('user_id', userId)
+            .where({ user_id: userId })
             .orderBy('created_at', 'desc');
         if (!tradeHistory) {
             return res
@@ -67,8 +67,7 @@ const addTrade = async (req, res) => {
 
         const holdingData = await knex('holding')
             .select('buy_shares', 'sell_shares', 'avg_price')
-            .where({ user_id: userId })
-            .andWhere({ ticker: ticker })
+            .where({ user_id: userId, ticker: ticker })
             .first();
 
         if (!holdingData && type === 'sell') {
@@ -77,7 +76,7 @@ const addTrade = async (req, res) => {
                 .json({ error: `Ticker ${ticker} not found` });
         } else if (!holdingData && type === 'buy') {
             const newHolding = {
-                id: userId + '-' + ticker,
+                id: v1(),
                 user_id: userId,
                 ticker: ticker,
                 avg_price: 0,

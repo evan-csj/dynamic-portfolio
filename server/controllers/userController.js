@@ -17,7 +17,7 @@ const singleUser = async (req, res) => {
                 'cash_cad',
                 'dp'
             )
-            .where('id', userId)
+            .where({ id: userId })
             .first();
 
         if (!user) {
@@ -44,7 +44,7 @@ const checkUser = async (req, res) => {
     try {
         const user = await knex('user')
             .select('id', 'password')
-            .where('id', validatedUsername)
+            .where({ id: validatedUsername })
             .first();
 
         if (user) {

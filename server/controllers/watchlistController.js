@@ -1,5 +1,6 @@
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
+const { v1 } = require('uuid');
 
 const getWatchlist = async (req, res) => {
     const userId = req.params.userId || req.user || '';
@@ -37,10 +38,8 @@ const addWatchItem = async (req, res) => {
     const { ticker, name, exchange, sector, logo, price, prevClose, currency } =
         req.body;
 
-    const addItemId = `${userId}-${ticker}`;
-
     const newWatchItem = {
-        id: addItemId,
+        id: v1(),
         user_id: userId,
         ticker,
     };
@@ -60,9 +59,7 @@ const addWatchItem = async (req, res) => {
         await knex('symbol').update(updateStockInfo).where({ symbol: ticker });
 
         const watchlistItem = await knex('watchlist')
-            .where({
-                id: addItemId,
-            })
+            .where({ user_id: userId, ticker: ticker })
             .first();
 
         if (watchlistItem) {
@@ -82,19 +79,21 @@ const addWatchItem = async (req, res) => {
 const deleteWatchItem = async (req, res) => {
     const userId = req.body.userId || req.user || '';
     const ticker = req.body.ticker;
-    const deleteItemId = `${userId}-${ticker}`;
 
     try {
         const watchlistItem = await knex('watchlist')
             .where({
-                id: deleteItemId,
+                user_id: userId,
+                ticker: ticker,
             })
             .first();
 
         if (!watchlistItem) {
             return res.status(400).json({ error: `Item does not exist` });
         } else {
-            await knex('watchlist').where({ id: deleteItemId }).del();
+            await knex('watchlist')
+                .where({ user_id: userId, ticker: ticker })
+                .del();
             return res.status(200).json({
                 message: `${ticker} has been deleted from ${userId} watchlist`,
             });
