@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation  } from 'react-router-dom';
 import { Flex, Box, Circle } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Logout, Fund } from '../styles/icons';
 import '../styles/global.scss';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const NavBar = props => {
-    const [navSelect, setNavSelect] = useState(undefined);
+    const [navSelect, setNavSelect] = useState('/');
     const isOpen = props.isOpen;
     const openFunding = props.openFunding;
     const openTrading = props.openTrading;
     const openDrawer = props.openDrawer;
     const closeAllDrawer = props.closeAllDrawer;
 
+    let location = useLocation();
+    let pathname = location.pathname;
+
     useEffect(() => {
-        const pathname = window.location.pathname;
         if (pathname[0] === '/') setNavSelect(pathname.split('/')[1]);
     });
 

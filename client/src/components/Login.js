@@ -3,7 +3,6 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import {
     Flex,
-    Spacer,
     Box,
     Center,
     Input,
@@ -13,6 +12,9 @@ import {
     FormLabel,
     Button,
     Image,
+    Spinner,
+    SkeletonCircle,
+    Skeleton,
 } from '@chakra-ui/react';
 import { checkUserPassword } from '../global/axios';
 import logo from '../assets/logo.svg';
@@ -22,8 +24,6 @@ import googleIcon from '../assets/Google_Icon.png';
 import googleLogo from '../assets/Google_Logo.png';
 import '../styles/global.scss';
 
-import axios from 'axios';
-import { GitHubLogin } from '../styles/icons';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const Login = props => {
@@ -33,14 +33,9 @@ const Login = props => {
     const [isUsernameCorrect, setIsUsernameCorrect] = useState(true);
     const [isPasswordCorrect, setIsPasswordCorrect] = useState(true);
     const [show, setShow] = useState(false);
+    const isConnect = props.wsStatus === 'Open';
     const rotateDeg = 25;
     const shiftDis = 20;
-    const google = window.google;
-    const GOOGLE_ID = process.env.REACT_APP_GOOGLE_ID;
-
-    const [isAuthenticating, setIsAuthenticating] = useState(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [profileData, setProfileData] = useState(null);
 
     const handleChange = (event, setFc) => {
         const input = event.target.value;
@@ -51,7 +46,7 @@ const Login = props => {
     };
 
     const handleLogin = async () => {
-        if (username === '' || password === '') return;
+        if (username === '' || password === '' || !isConnect) return;
         const response = await checkUserPassword({
             username: username,
             password: password,
@@ -70,58 +65,10 @@ const Login = props => {
         }
     };
 
-    const handleGoogleLogin = response => {
-        console.log(jwt_decode(response.credential));
-    };
-
     useEffect(() => {
-        // props.unsubscribeAll();
+        props.unsubscribeAll();
         // eslint-disable-next-line
     }, []);
-
-    // useEffect(() => {
-    //     google.accounts.id.initialize({
-    //         client_id: GOOGLE_ID,
-    //         callback: handleGoogleLogin,
-    //     });
-
-    //     google.accounts.id.renderButton(
-    //         document.getElementById('google-signin'),
-    //         {
-    //             type: 'standard',
-    //             shape: 'pill',
-    //             theme: 'outline',
-    //             size: 'large',
-    //             logo_alignment: 'left',
-    //             width: '320px',
-    //         }
-    //     );
-    //     // eslint-disable-next-line
-    // }, []);
-
-    // useEffect(() => {
-    //     // Send a GET request for profile information
-    //     // If user is currently logged in, we will get profile data, if they are not logged in, we will get 401 (Unauthorized) that we can handle in `.catch`
-    //     // Note that we need to use `withCredentials` in order to pass the cookie to a server
-    //     axios
-    //         .get(`${SERVER_URL}/auth/profile`, { withCredentials: true })
-    //         .then(res => {
-    //             // Update the state: done authenticating, user is logged in, set the profile data
-    //             setIsAuthenticating(false);
-    //             setIsLoggedIn(true);
-    //             setProfileData(res.data);
-    //         })
-    //         .catch(err => {
-    //             // If we are getting back 401 (Unauthorized) back from the server, means we need to log in
-    //             if (err.response.status === 401) {
-    //                 // Update the state: done authenticating, user is not logged in
-    //                 setIsAuthenticating(false);
-    //                 setIsLoggedIn(false);
-    //             } else {
-    //                 console.log('Error authenticating', err);
-    //             }
-    //         });
-    // }, []);
 
     return (
         <Center
@@ -242,8 +189,9 @@ const Login = props => {
                                     borderColor: 'light.navy',
                                 }}
                                 onClick={handleLogin}
+                                cursor={isConnect ? 'pointer' : 'wait'}
                             >
-                                Login
+                                {isConnect ? <>Login</> : <Spinner size="md" />}
                             </Button>
                             <Flex
                                 w="100%"
@@ -251,46 +199,89 @@ const Login = props => {
                                 direction={{ base: 'column', md: 'row' }}
                                 flexWrap="wrap"
                             >
-                                <Center flex="1">
-                                    <NavLink to={`${SERVER_URL}/auth/google`}>
-                                        <Flex
-                                            direction="row"
-                                            gap={1}
-                                            alignItems="flex-end"
+                                <Center
+                                    flex="1"
+                                    cursor={isConnect ? 'pointer' : 'wait'}
+                                >
+                                    {isConnect ? (
+                                        <NavLink
+                                            to={`${SERVER_URL}/auth/google`}
                                         >
-                                            <Image
-                                                h={8}
-                                                src={googleIcon}
-                                                alt="google-icon"
-                                            />
-                                            <Image
-                                                h={7}
-                                                src={googleLogo}
-                                                alt="google-logo"
-                                            />
-                                        </Flex>
-                                    </NavLink>
-                                </Center>
-
-                                <Center flex="1">
-                                    <NavLink to={`${SERVER_URL}/auth/github`}>
+                                            <Flex
+                                                direction="row"
+                                                gap={1}
+                                                alignItems="flex-end"
+                                            >
+                                                <Image
+                                                    h={8}
+                                                    src={googleIcon}
+                                                    alt="google-icon"
+                                                />
+                                                <Image
+                                                    h={7}
+                                                    src={googleLogo}
+                                                    alt="google-logo"
+                                                />
+                                            </Flex>
+                                        </NavLink>
+                                    ) : (
                                         <Flex
                                             direction="row"
-                                            gap="0"
+                                            gap="2"
                                             alignItems="center"
                                         >
-                                            <Image
+                                            <SkeletonCircle h={8} />
+
+                                            <Skeleton
                                                 h={8}
-                                                src={githubIcon}
-                                                alt="github-icon"
-                                            />
-                                            <Image
-                                                h={5}
-                                                src={githubLogo}
-                                                alt="github-logo"
+                                                w={28}
+                                                borderRadius={8}
                                             />
                                         </Flex>
-                                    </NavLink>
+                                    )}
+                                </Center>
+
+                                <Center
+                                    flex="1"
+                                    cursor={isConnect ? 'pointer' : 'wait'}
+                                >
+                                    {isConnect ? (
+                                        <NavLink
+                                            to={`${SERVER_URL}/auth/github`}
+                                        >
+                                            <Flex
+                                                direction="row"
+                                                gap="0"
+                                                alignItems="center"
+                                            >
+                                                <Image
+                                                    h={8}
+                                                    src={githubIcon}
+                                                    alt="github-icon"
+                                                />
+
+                                                <Image
+                                                    h={5}
+                                                    src={githubLogo}
+                                                    alt="github-logo"
+                                                />
+                                            </Flex>
+                                        </NavLink>
+                                    ) : (
+                                        <Flex
+                                            direction="row"
+                                            gap="2"
+                                            alignItems="center"
+                                        >
+                                            <SkeletonCircle h={8} />
+
+                                            <Skeleton
+                                                h={8}
+                                                w={28}
+                                                borderRadius={8}
+                                            />
+                                        </Flex>
+                                    )}
                                 </Center>
                             </Flex>
                         </Flex>

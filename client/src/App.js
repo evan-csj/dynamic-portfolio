@@ -10,7 +10,7 @@ import ChatBot from './components/ChatBot/ChatBot';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import { chatgpt } from './global/axios';
-import useWebSocket from 'react-use-websocket';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 import {
     Flex,
     SkeletonCircle,
@@ -55,11 +55,17 @@ function App() {
     ]);
 
     const socketUrl = process.env.REACT_APP_SERVER_WS;
-    const { sendMessage, lastMessage } = useWebSocket(socketUrl, {
-        onOpen: () => console.log('Link Start'),
-        onClose: () => console.log('You Lost'),
+    const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
         shouldReconnect: closeEvent => true,
     });
+
+    const connectionStatus = {
+        [ReadyState.CONNECTING]: 'Connecting',
+        [ReadyState.OPEN]: 'Open',
+        [ReadyState.CLOSING]: 'Closing',
+        [ReadyState.CLOSED]: 'Closed',
+        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+    }[readyState];
 
     const changePage = path => {
         setPage(path);
@@ -138,9 +144,12 @@ function App() {
     useEffect(() => {
         if (lastMessage !== null) {
             const json = JSON.parse(lastMessage.data);
-            // console.log(json);
         }
     }, [lastMessage]);
+
+    useEffect(() => {
+        console.log('WS Status:', connectionStatus);
+    }, [connectionStatus]);
 
     return (
         <>
@@ -158,13 +167,21 @@ function App() {
                 <Route
                     path="/"
                     element={
-                        <Login login={login} unsubscribeAll={unsubscribeAll} />
+                        <Login
+                            login={login}
+                            unsubscribeAll={unsubscribeAll}
+                            wsStatus={connectionStatus}
+                        />
                     }
                 />
                 <Route
                     path="/login"
                     element={
-                        <Login login={login} unsubscribeAll={unsubscribeAll} />
+                        <Login
+                            login={login}
+                            unsubscribeAll={unsubscribeAll}
+                            wsStatus={connectionStatus}
+                        />
                     }
                 />
                 <Route
