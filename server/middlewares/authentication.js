@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { JWT_SECRET } = process.env;
 
-const isAuth = (req, res, next) => {
+const isAuth = async (req, res, next) => {
     if (req.isAuthenticated()) {
         next();
     } else {

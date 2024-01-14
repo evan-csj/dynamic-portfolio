@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const pgSession = require('connect-pg-simple')(session);
 
 const helmet = require('helmet');
@@ -12,11 +13,6 @@ const dayjs = require('dayjs');
 
 require('dotenv').config();
 
-const serverOptions = {
-    cert: fs.readFileSync('./certificates/cert.pem'),
-    key: fs.readFileSync('./certificates/key.pem'),
-};
-
 const app = express();
 const server = WebServer.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -24,6 +20,9 @@ const redis = require('redis');
 
 const {
     SECURE,
+    SAMESITE,
+    RESAVE,
+    SAVEUNINIT,
     REDIS_HOST,
     REDIS_PORT,
     REDIS_PASSWORD,
@@ -56,18 +55,20 @@ const pgSessionStore = new pgSession({
     tableName: 'oauth',
 });
 
-app.enable('trust proxy');
+app.set('trust proxy', 1);
+app.use(cookieParser());
 app.use(express.json());
 app.use(helmet());
 app.use(
     session({
         secret: JWT_SECRET,
-        resave: false,
-        saveUninitialized: false,
+        resave: RESAVE ? true : false,
+        saveUninitialized: SAVEUNINIT ? true : false,
         store: pgSessionStore,
         proxy: true,
         cookie: {
-            httpOnly: false,
+            httpOnly: true,
+            sameSite: SAMESITE,
             secure: SECURE ? true : false,
             maxAge: 24 * 60 * 60 * 1000,
         },

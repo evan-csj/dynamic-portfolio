@@ -33,6 +33,7 @@ exports.seed = async function (knex) {
     await knex('fund').del();
     await knex('watchlist').del();
     await knex('forex').del();
+    await knex('oauth').del()
 
     await knex('symbol').insert(symbolData);
     await knex('user').insert(userData);
