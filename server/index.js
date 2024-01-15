@@ -67,7 +67,7 @@ app.use(
         store: pgSessionStore,
         proxy: true,
         cookie: {
-            httpOnly: true,
+            httpOnly: false,
             sameSite: SAMESITE,
             secure: SECURE ? true : false,
             maxAge: 24 * 60 * 60 * 1000,

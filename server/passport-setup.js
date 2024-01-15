@@ -2,6 +2,7 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const knex = require('knex')(require('./knexfile'));
+const { v1 } = require('uuid');
 require('dotenv').config();
 const {
     GITHUB_CLIENT_ID,
@@ -73,7 +74,7 @@ passport.serializeUser(async (userOAuth, done) => {
 
             if (!userDB) {
                 const newUser = {
-                    id: defaultId,
+                    id: defaultId.toLowerCase(),
                     [keyField]: keyValue,
                     first_name: firstName,
                     last_name: lastName,
@@ -81,7 +82,26 @@ passport.serializeUser(async (userOAuth, done) => {
                     cash_cad: 100,
                 };
 
+                const watchlistForNewUser = [
+                    {
+                        id: v1(),
+                        user_id: defaultId.toLowerCase(),
+                        ticker: 'AAPL',
+                    },
+                    {
+                        id: v1(),
+                        user_id: defaultId.toLowerCase(),
+                        ticker: 'NVDA',
+                    },
+                    {
+                        id: v1(),
+                        user_id: defaultId.toLowerCase(),
+                        ticker: 'TSLA',
+                    },
+                ];
+
                 await knex('user').insert(newUser);
+                await knex('watchlist').insert(watchlistForNewUser);
             }
 
             done(null, userOAuth);

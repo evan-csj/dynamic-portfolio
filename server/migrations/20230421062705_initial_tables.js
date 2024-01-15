@@ -45,7 +45,7 @@ exports.up = function (knex) {
             table.timestamps(true, true);
         })
         .createTable('holding', table => {
-            table.string('id').primary().unique().notNullable();
+            table.uuid('id').primary().unique().notNullable();
             table
                 .string('user_id')
                 .references('id')
@@ -71,7 +71,7 @@ exports.up = function (knex) {
             table.timestamps(true, true);
         })
         .createTable('watchlist', table => {
-            table.string('id').primary().unique().notNullable();
+            table.uuid('id').primary().unique().notNullable();
             table
                 .string('user_id')
                 .references('id')

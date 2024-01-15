@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useLocation  } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Flex, Box, Circle } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Logout, Fund } from '../styles/icons';
 import '../styles/global.scss';
@@ -22,6 +22,7 @@ const NavBar = props => {
 
     return (
         <Box display={props.display}>
+            {/* top */}
             <Flex
                 justifyContent="space-between"
                 bg="light.white"
@@ -96,6 +97,7 @@ const NavBar = props => {
                 </Flex>
             </Flex>
 
+            {/* bottom */}
             <Flex
                 bg="light.white"
                 shadow={isOpen ? '' : 'mainTab'}

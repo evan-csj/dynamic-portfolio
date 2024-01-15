@@ -20,10 +20,10 @@ exports.seed = async function (knex) {
         item['id'] = v1();
     });
     holdingData.map(item => {
-        item['id'] = item.user_id + '-' + item.ticker;
+        item['id'] = v1();
     });
     watchlistData.map(item => {
-        item['id'] = item.user_id + '-' + item.ticker;
+        item['id'] = v1();
     });
 
     await knex('user').del();
@@ -33,7 +33,7 @@ exports.seed = async function (knex) {
     await knex('fund').del();
     await knex('watchlist').del();
     await knex('forex').del();
-    await knex('oauth').del()
+    await knex('oauth').del();
 
     await knex('symbol').insert(symbolData);
     await knex('user').insert(userData);

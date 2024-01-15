@@ -5,10 +5,10 @@ module.exports = [
     },
     {
         user_id: 'evancheng',
-        ticker: 'AMD',
+        ticker: 'NVDA',
     },
     {
         user_id: 'evancheng',
-        ticker: 'COST',
+        ticker: 'TSLA',
     },
 ];
