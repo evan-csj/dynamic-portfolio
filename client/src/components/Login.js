@@ -16,7 +16,7 @@ import {
     SkeletonCircle,
     Skeleton,
 } from '@chakra-ui/react';
-import { checkUserPassword, callbackSuccess } from '../global/axios';
+import { checkUserPassword } from '../global/axios';
 import logo from '../assets/logo.svg';
 import githubIcon from '../assets/GitHub_Icon.png';
 import githubLogo from '../assets/GitHub_Logo.png';
@@ -66,9 +66,6 @@ const Login = props => {
     };
 
     useEffect(() => {
-        callbackSuccess().then(response => {
-            console.log(response.data);
-        });
         props.unsubscribeAll();
         // eslint-disable-next-line
     }, []);

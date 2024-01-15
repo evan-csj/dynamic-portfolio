@@ -3,6 +3,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const knex = require('knex')(require('./knexfile'));
 const { v1 } = require('uuid');
+const dayjs = require('dayjs');
 require('dotenv').config();
 const {
     GITHUB_CLIENT_ID,
@@ -73,8 +74,9 @@ passport.serializeUser(async (userOAuth, done) => {
                 .first();
 
             if (!userDB) {
+                const idLowerCase = defaultId.toLowerCase();
                 const newUser = {
-                    id: defaultId.toLowerCase(),
+                    id: idLowerCase,
                     [keyField]: keyValue,
                     first_name: firstName,
                     last_name: lastName,
@@ -85,23 +87,44 @@ passport.serializeUser(async (userOAuth, done) => {
                 const watchlistForNewUser = [
                     {
                         id: v1(),
-                        user_id: defaultId.toLowerCase(),
+                        user_id: idLowerCase,
                         ticker: 'AAPL',
                     },
                     {
                         id: v1(),
-                        user_id: defaultId.toLowerCase(),
+                        user_id: idLowerCase,
                         ticker: 'NVDA',
                     },
                     {
                         id: v1(),
-                        user_id: defaultId.toLowerCase(),
+                        user_id: idLowerCase,
                         ticker: 'TSLA',
                     },
                 ];
 
+                const userSession = {
+                    sid: v1(),
+                    provider: provider,
+                    provider_id: keyValue,
+                    user_id: idLowerCase,
+                };
+
                 await knex('user').insert(newUser);
                 await knex('watchlist').insert(watchlistForNewUser);
+                await knex('oauth-backup').insert(userSession);
+            } else {
+                const userSessionDB = await knex('oauth-backup')
+                    .where({ user_id: userDB.id })
+                    .first();
+                if (!userSessionDB) {
+                    const userSession = {
+                        sid: v1(),
+                        provider: provider,
+                        provider_id: keyValue,
+                        user_id: userDB.id,
+                    };
+                    await knex('oauth-backup').insert(userSession);
+                }
             }
 
             done(null, userOAuth);

@@ -12,6 +12,4 @@ router
     .route('/google/callback')
     .get(authController.googleCallback, authController.callbackRedirect);
 
-router.route('/success-callback').get(authController.callbackSuccess);
-
 module.exports = router;

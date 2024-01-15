@@ -166,7 +166,6 @@ const openSocket = () => {
                     await redisClient.set(firstMessage.s, firstMessage.p);
                     lastTime = currentTime;
                 }
-                // console.log(message);
             } catch (error) {
                 console.error(error);
             }
