@@ -37,11 +37,12 @@ const callbackRedirect = async (req, res) => {
                 .where(keyField, keyValue)
                 .first();
 
-            if (!userDB.is_new) {
-                return res.redirect(`${CLIENT_URL}/#/profile`);
-            } else {
-                return res.redirect(`${CLIENT_URL}/#/signup`);
-            }
+            // if (!userDB.is_new) {
+            //     return res.redirect(`${CLIENT_URL}/#/profile`);
+            // } else {
+            //     return res.redirect(`${CLIENT_URL}/#/signup`);
+            // }
+            return res.redirect(`${CLIENT_URL}/#/login`);
         } else {
             return res.redirect(`${CLIENT_URL}/#/login`);
         }
@@ -51,13 +52,12 @@ const callbackRedirect = async (req, res) => {
     }
 };
 
-// const callbackSuccess = (req, res) => {
-//     if (req.user) {
-//         return res.status(200).json(req.user);
-//     } else {
-//         return res.status(401).json({ message: 'User is not logged in' });
-//     }
-// };
+const callbackSuccess = (req, res) => {
+    // if (req.user) {
+    //     return res.status(200).json(req.user);
+    // }
+    res.status(200).json(req.user);
+};
 
 module.exports = {
     githubOAuth,
@@ -65,5 +65,5 @@ module.exports = {
     githubCallback,
     googleCallback,
     callbackRedirect,
-    // callbackSuccess,
+    callbackSuccess,
 };

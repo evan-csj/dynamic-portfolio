@@ -521,6 +521,17 @@ const updateUserData = async userData => {
     }
 };
 
+const callbackSuccess = async () => {
+    try {
+        const data = await axiosStandard.get(
+            `${API_ADDRESS}/auth/success-callback`
+        );
+        return data;
+    } catch (err) {
+        return err.response;
+    }
+};
+
 export {
     getUser,
     getHoldings,
@@ -545,4 +556,5 @@ export {
     chatgpt,
     checkUserPassword,
     updateUserData,
+    callbackSuccess,
 };
