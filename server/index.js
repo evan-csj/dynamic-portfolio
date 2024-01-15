@@ -46,6 +46,7 @@ const symbolRoute = require('./routes/symbolRoute');
 const statRoute = require('./routes/statRoute');
 const authRoute = require('./routes/authRoute');
 const chatgptRoute = require('./routes/chatgptRoute');
+const { close } = require('inspector');
 
 const pgSessionStore = new pgSession({
     conObject: {
@@ -127,14 +128,17 @@ redisClient.connect();
 let lastTime = 0;
 let clientCount = 0;
 let finnhubSocket;
+let closeWSTimeOut;
+const getWSSStatus = readyState =>
+    ({
+        [WebSocket.CONNECTING]: 'Connecting',
+        [WebSocket.OPEN]: 'Open',
+        [WebSocket.CLOSING]: 'Closing',
+        [WebSocket.CLOSED]: 'Closed',
+    }[readyState]);
 
 const openSocket = () => {
     if (finnhubSocket) {
-        console.log(
-            'Finnhub Socket State (Check): %d / Client Count: %d',
-            finnhubSocket.readyState,
-            clientCount
-        );
         if (finnhubSocket.readyState === WebSocket.OPEN) {
             return;
         }
@@ -143,9 +147,9 @@ const openSocket = () => {
     finnhubSocket = new WebSocket(`wss://ws.finnhub.io?token=${FINNHUB_KEY}`);
     finnhubSocket.on('open', () => {
         console.log(
-            'Finnhub Socket State (Open): %d / Client Count: %d',
-            finnhubSocket.readyState,
-            clientCount
+            `Finnhub Socket State: ${getWSSStatus(
+                finnhubSocket.readyState
+            )} / Client Count: ${clientCount}`
         );
         symbolData.forEach(element => {
             finnhubSocket.send(
@@ -173,9 +177,9 @@ const openSocket = () => {
     });
     finnhubSocket.on('close', () => {
         console.log(
-            'Finnhub Socket State (Close): %d / Client Count: %d',
-            finnhubSocket.readyState,
-            clientCount
+            `Finnhub Socket State: ${getWSSStatus(
+                finnhubSocket.readyState
+            )} / Client Count: ${clientCount}`
         );
     });
     finnhubSocket.on('error', console.error);
@@ -220,6 +224,7 @@ const stopInterval = (ws, symbol) => {
 wss.on('connection', ws => {
     console.log('A user connected');
     clientCount++;
+    clearTimeout(closeWSTimeOut);
     openSocket();
     ws.on('message', async message => {
         const receivedData = JSON.parse(message);
@@ -235,7 +240,11 @@ wss.on('connection', ws => {
     ws.on('close', () => {
         console.log('A user disconnected');
         clientCount--;
-        if (clientCount === 0) closeSocket();
+        if (clientCount === 0) {
+            closeWSTimeOut = setTimeout(() => {
+                closeSocket();
+            }, 5000);
+        }
         const clientSubs = clientSubscriptions.get(ws);
         if (clientSubs) {
             clientSubs.forEach(subs => {
