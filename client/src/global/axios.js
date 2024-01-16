@@ -13,6 +13,7 @@ const axiosStandard = axios.create({
 const getUser = async id => {
     try {
         const tokenCookie = Cookies.get('JWT');
+        console.log(tokenCookie);
         const tokenLocal = sessionStorage.getItem('JWT');
         const token = tokenLocal || tokenCookie;
         const user = await axiosStandard.get(`${API_ADDRESS}/user/${id}`, {

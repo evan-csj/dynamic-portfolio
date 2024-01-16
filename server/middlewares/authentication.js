@@ -6,9 +6,6 @@ const isAuth = async (req, res, next) => {
     if (req.isAuthenticated()) {
         next();
     } else {
-        if (!req.headers.jwt) {
-            return res.status(401).json('No token found');
-        }
         const authTokenArray = req.headers.jwt.split(' ');
         if (
             authTokenArray[0].toLowerCase() !== 'bearer' ||
