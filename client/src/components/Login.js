@@ -70,6 +70,7 @@ const Login = props => {
         props.unsubscribeAll();
         const urlString = window.location.hash;
         const tokenString = urlString.split('?token=')[1];
+        console.log(tokenString);
         if (tokenString) {
             sessionStorage.setItem('JWT', tokenString);
             navigate('/profile');
