@@ -69,12 +69,16 @@ const Login = props => {
     useEffect(() => {
         props.unsubscribeAll();
         const urlString = window.location.hash;
-        const tokenString = urlString.split('?token=')[1];
-        console.log(tokenString);
-        if (tokenString) {
-            sessionStorage.setItem('JWT', tokenString);
-            navigate('/profile');
-        }
+        try {
+            const paramString = urlString.split('?user=')[1];
+            const [userId, token] = paramString.split('&token=');
+
+            if (userId && token) {
+                sessionStorage.setItem('userId', userId);
+                sessionStorage.setItem('JWT', token);
+                navigate('/profile');
+            }
+        } catch (error) {}
 
         // eslint-disable-next-line
     }, []);

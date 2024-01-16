@@ -47,9 +47,13 @@ const callbackRedirect = async (req, res) => {
             );
 
             if (!userDB.is_new) {
-                return res.redirect(`${CLIENT_URL}/#/login?token=${token}`);
+                return res.redirect(
+                    `${CLIENT_URL}/#/login?user=${userDB.id}&token=${token}`
+                );
             } else {
-                return res.redirect(`${CLIENT_URL}/#/signup?token=${token}`);
+                return res.redirect(
+                    `${CLIENT_URL}/#/signup?user=${userDB.id}&token=${token}`
+                );
             }
         } else {
             return res.redirect(`${CLIENT_URL}/#/login`);
