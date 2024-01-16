@@ -15,7 +15,8 @@ const singleUser = async (req, res) => {
                 'last_name',
                 'cash_usd',
                 'cash_cad',
-                'dp'
+                'dp',
+                'is_new'
             )
             .where({ id: userId })
             .first();

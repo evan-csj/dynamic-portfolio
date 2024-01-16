@@ -19,6 +19,7 @@ const SignUp = props => {
     const [newUserId, setNewUserId] = useState(' ');
     const [firstName, setFirstName] = useState(' ');
     const [lastName, setLastName] = useState(' ');
+    const [isNew, setIsNew] = useState(false);
     const [isDuplicate, setIsDuplicate] = useState(false);
 
     const handleSave = () => {
@@ -61,15 +62,32 @@ const SignUp = props => {
 
     useEffect(() => {
         props.unsubscribeAll();
+        const urlString = window.location.hash;
+        try {
+            const paramString = urlString.split('?')[1];
+            const searchParams = new URLSearchParams(paramString);
+            for (const [key, value] of searchParams.entries()) {
+                if (key === 'user') sessionStorage.setItem('userId', value);
+                if (key === 'token') sessionStorage.setItem('JWT', value);
+            }
+        } catch (error) {}
+
         const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
 
         getUser(username).then(response => {
             if (response.status === 200) {
-                setFirstName(response.data.first_name);
-                setLastName(response.data.last_name);
-                setOldUserId(response.data.id);
-                setNewUserId(response.data.id);
+                const {
+                    first_name: firstName,
+                    last_name: lastName,
+                    id,
+                    is_new: isNew,
+                } = response.data;
+                setFirstName(firstName);
+                setLastName(lastName);
+                setOldUserId(id);
+                setNewUserId(id);
+                setIsNew(isNew);
             } else {
                 navigate('/');
             }
@@ -86,7 +104,7 @@ const SignUp = props => {
             pt={12}
             gap={8}
         >
-            <Heading size="3xl">Sign Up</Heading>
+            <Heading size="3xl">{isNew ? 'Sign Up' : 'Update'}</Heading>
             <FormControl
                 w={{ base: '100%', md: '320px' }}
                 alignSelf={{ base: 'flex-start', lg: 'center' }}

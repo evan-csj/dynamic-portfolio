@@ -26,8 +26,6 @@ import '../styles/global.scss';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const Login = props => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -70,12 +68,21 @@ const Login = props => {
         props.unsubscribeAll();
         const urlString = window.location.hash;
         try {
-            const paramString = urlString.split('?user=')[1];
-            const [userId, token] = paramString.split('&token=');
+            let userId, token;
+            const paramString = urlString.split('?')[1];
+            const searchParams = new URLSearchParams(paramString);
+            for (const [key, value] of searchParams.entries()) {
+                if (key === 'user') {
+                    userId = value;
+                    sessionStorage.setItem('userId', value);
+                }
+                if (key === 'token') {
+                    token = value;
+                    sessionStorage.setItem('JWT', value);
+                }
+            }
 
             if (userId && token) {
-                sessionStorage.setItem('userId', userId);
-                sessionStorage.setItem('JWT', token);
                 navigate('/profile');
             }
         } catch (error) {}
