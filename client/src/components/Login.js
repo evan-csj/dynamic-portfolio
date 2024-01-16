@@ -26,6 +26,8 @@ import '../styles/global.scss';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const Login = props => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -66,6 +68,13 @@ const Login = props => {
 
     useEffect(() => {
         props.unsubscribeAll();
+        const urlString = window.location.hash;
+        const tokenString = urlString.split('?token=')[1];
+        if (tokenString) {
+            sessionStorage.setItem('JWT', tokenString);
+            navigate('/profile');
+        }
+
         // eslint-disable-next-line
     }, []);
 

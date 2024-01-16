@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 const dayjs = require('dayjs');
 const API_ADDRESS = process.env.REACT_APP_SERVER_URL;
 
@@ -12,10 +11,7 @@ const axiosStandard = axios.create({
 
 const getUser = async id => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        console.log(tokenCookie);
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const user = await axiosStandard.get(`${API_ADDRESS}/user/${id}`, {
             headers: {
                 JWT: `Bearer ${token}`,
@@ -30,9 +26,7 @@ const getUser = async id => {
 
 const getHoldings = async id => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const holdings = await axiosStandard.get(
             `${API_ADDRESS}/holding/user/${id}`,
             {
@@ -50,9 +44,7 @@ const getHoldings = async id => {
 
 const getTrading = async id => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const trades = await axiosStandard.get(
             `${API_ADDRESS}/trade/user/${id}`,
             {
@@ -70,9 +62,7 @@ const getTrading = async id => {
 
 const getFunding = async id => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const funding = await axiosStandard.get(
             `${API_ADDRESS}/fund/user/${id}`,
             {
@@ -90,9 +80,7 @@ const getFunding = async id => {
 
 const getCurrency = async () => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const exRate = await axiosStandard.get(`${API_ADDRESS}/price/forex`, {
             headers: {
                 JWT: `Bearer ${token}`,
@@ -106,9 +94,7 @@ const getCurrency = async () => {
 
 const getWatchlist = async id => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const watchlist = await axiosStandard.get(
             `${API_ADDRESS}/watchlist/user/${id}`,
             {
@@ -180,9 +166,7 @@ const getPriceHistory = async (ticker, scale) => {
     };
 
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const priceHistory = await axiosStandard.get(
             `${API_ADDRESS}/price/candles`,
             {
@@ -279,9 +263,7 @@ const getPriceHistory = async (ticker, scale) => {
 
 const getLastPrice = async ticker => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const lastPrice = await axiosStandard.get(
             `${API_ADDRESS}/price/quote`,
             {
@@ -299,9 +281,7 @@ const getLastPrice = async ticker => {
 
 const getSymbols = async () => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const symbols = await axiosStandard.get(`${API_ADDRESS}/symbols`, {
             headers: {
                 JWT: `Bearer ${token}`,
@@ -315,9 +295,7 @@ const getSymbols = async () => {
 
 const putSymbolInfo = async symbolInfo => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.put(
             `${API_ADDRESS}/symbols/info`,
             symbolInfo,
@@ -333,9 +311,7 @@ const putSymbolInfo = async symbolInfo => {
 
 const putSymbolPrice = async symbolPrice => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.put(
             `${API_ADDRESS}/symbols/price`,
             symbolPrice,
@@ -351,9 +327,7 @@ const putSymbolPrice = async symbolPrice => {
 
 const getPortfolio = async id => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const portfolio = await axiosStandard.get(
             `${API_ADDRESS}/portfolio/user/${id}`,
             {
@@ -368,9 +342,7 @@ const getPortfolio = async id => {
 
 const getCompanyProfile = async ticker => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const profile = await axiosStandard.get(`${API_ADDRESS}/stat/profile`, {
             params: {
                 ticker: ticker,
@@ -385,9 +357,7 @@ const getCompanyProfile = async ticker => {
 
 const getEps = async ticker => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const eps = await axiosStandard.get(`${API_ADDRESS}/stat/eps`, {
             params: {
                 ticker: ticker,
@@ -402,9 +372,7 @@ const getEps = async ticker => {
 
 const getTrends = async ticker => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const eps = await axiosStandard.get(`${API_ADDRESS}/stat/trends`, {
             params: {
                 ticker: ticker,
@@ -419,9 +387,7 @@ const getTrends = async ticker => {
 
 const putPortfolio = async (id, dp) => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.put(
             `${API_ADDRESS}/portfolio/user/${id}`,
             dp,
@@ -437,9 +403,7 @@ const putPortfolio = async (id, dp) => {
 
 const postFunding = async funding => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const newFunding = await axiosStandard.post(
             `${API_ADDRESS}/fund`,
             funding,
@@ -455,9 +419,7 @@ const postFunding = async funding => {
 
 const postTrading = async trading => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const newTrading = await axiosStandard.post(
             `${API_ADDRESS}/trade`,
             trading,
@@ -473,9 +435,7 @@ const postTrading = async trading => {
 
 const addWatchItem = async item => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const newItem = await axiosStandard.post(
             `${API_ADDRESS}/watchlist`,
             item,
@@ -491,9 +451,7 @@ const addWatchItem = async item => {
 
 const deleteWatchItem = async item => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const deleteItem = await axiosStandard.put(
             `${API_ADDRESS}/watchlist`,
             item,
@@ -513,9 +471,7 @@ const chatgpt = async text => {
     };
 
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const response = await axiosStandard.post(
             `${API_ADDRESS}/chatgpt`,
             newMessage,
@@ -549,9 +505,7 @@ const checkUserPassword = async login => {
 
 const updateUserData = async userData => {
     try {
-        const tokenCookie = Cookies.get('JWT');
-        const tokenLocal = sessionStorage.getItem('JWT');
-        const token = tokenLocal || tokenCookie;
+        const token = sessionStorage.getItem('JWT');
         const newUserData = await axiosStandard.put(
             `${API_ADDRESS}/user`,
             userData,

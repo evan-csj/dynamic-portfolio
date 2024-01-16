@@ -46,13 +46,10 @@ const callbackRedirect = async (req, res) => {
                 { expiresIn: '1d' }
             );
 
-            res.cookie('userId', userDB.id);
-            res.cookie('JWT', token);
-
             if (!userDB.is_new) {
-                return res.redirect(`${CLIENT_URL}/#/profile`);
+                return res.redirect(`${CLIENT_URL}/#/login?token=${token}`);
             } else {
-                return res.redirect(`${CLIENT_URL}/#/signup`);
+                return res.redirect(`${CLIENT_URL}/#/signup?token=${token}`);
             }
         } else {
             return res.redirect(`${CLIENT_URL}/#/login`);
