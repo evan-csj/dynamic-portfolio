@@ -52,9 +52,7 @@ const checkUser = async (req, res) => {
             if (isCorrect) {
                 const token = jwt.sign(
                     {
-                        name: user.name,
-                        username: username,
-                        loginTime: Date.now(),
+                        id: user.id,
                     },
                     JWT_SECRET,
                     { expiresIn: '1d' }

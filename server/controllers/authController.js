@@ -1,7 +1,8 @@
 const passport = require('passport');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const knex = require('knex')(require('../knexfile'));
-const { CLIENT_URL } = process.env;
+const { CLIENT_URL, JWT_SECRET } = process.env;
 
 const githubOAuth = passport.authenticate('github');
 const googleOAuth = passport.authenticate('google');
@@ -33,9 +34,20 @@ const callbackRedirect = async (req, res) => {
             }
 
             const userDB = await knex('user')
-                .select('is_new', keyField)
+                .select('id', 'is_new', keyField)
                 .where(keyField, keyValue)
                 .first();
+
+            const token = jwt.sign(
+                {
+                    id: userDB.id,
+                },
+                JWT_SECRET,
+                { expiresIn: '1d' }
+            );
+
+            res.cookie('userId', userDB.id);
+            res.cookie('JWT', token);
 
             if (!userDB.is_new) {
                 return res.redirect(`${CLIENT_URL}/#/profile`);
