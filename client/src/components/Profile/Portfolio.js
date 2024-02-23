@@ -161,7 +161,7 @@ const Portfolio = props => {
             const sharesRound = Math.floor(shares * 1000) / 1000;
 
             const newTrade = {
-                user_id: props.userId,
+                userId: props.userId,
                 ticker: item.ticker,
                 price: price,
                 shares: sharesRound,

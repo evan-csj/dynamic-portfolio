@@ -20,6 +20,7 @@ const redis = require('redis');
 
 const {
     SECURE,
+    HTTPONLY,
     SAMESITE,
     RESAVE,
     SAVEUNINIT,
@@ -68,7 +69,7 @@ app.use(
         store: pgSessionStore,
         proxy: true,
         cookie: {
-            httpOnly: false,
+            httpOnly: HTTPONLY ? true : false,
             sameSite: SAMESITE,
             secure: SECURE ? true : false,
             maxAge: 24 * 60 * 60 * 1000,

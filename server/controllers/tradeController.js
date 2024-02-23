@@ -25,7 +25,7 @@ const getTradeHistory = async (req, res) => {
 
 const addTrade = async (req, res) => {
     const { type, currency, price, shares, ticker, orderStatus } = req.body;
-    const userId = req.body.userId ? req.body.userId : req.user || '';
+    const userId = req.body.userId || req.user || '';
     const newTrading = {
         user_id: userId,
         type,
