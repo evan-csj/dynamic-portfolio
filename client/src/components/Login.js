@@ -171,6 +171,8 @@ const Login = props => {
                                         }}
                                         onMouseDown={() => setShow(true)}
                                         onMouseUp={() => setShow(false)}
+                                        onTouchStart={() => setShow(true)}
+                                        onTouchEnd={() => setShow(false)}
                                     >
                                         {show ? 'Hide' : 'Show'}
                                     </Button>
