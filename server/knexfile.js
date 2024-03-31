@@ -18,24 +18,6 @@ const {
 // module.exports = {
 //     client: 'mysql2',
 //     connection: {
-//         host: DB_HOST,
-//         user: DB_USER,
-//         port: '3306',
-//         password: DB_PASSWORD,
-//         database: DB_DBNAME,
-//         charset: 'utf8',
-//     },
-//     migrations: {
-//         directory: './migrations',
-//     },
-//     seeds: {
-//         directory: './seeds',
-//     },
-// };
-
-// module.exports = {
-//     client: 'mysql2',
-//     connection: {
 //         host: '127.0.0.1',
 //         user: DB_LOCAL_USER,
 //         password: DB_LOCAL_PASSWORD,
@@ -72,11 +54,7 @@ module.exports = {
     client: 'pg',
     connection: {
         connectionString: DB_PG_URL,
-        host: DB_PG_HOST,
-        user: DB_PG_USER,
         port: DB_PG_PORT,
-        password: DB_PG_PASSWORD,
-        database: DB_PG_NAME,
         ssl: true,
         charset: 'utf8',
     },
