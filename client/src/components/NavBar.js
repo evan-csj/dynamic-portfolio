@@ -26,11 +26,12 @@ const NavBar = props => {
             <Flex
                 justifyContent="space-between"
                 bg="light.white"
-                w="1020px"
-                mx="auto"
+                w="100%"
+                px={5}
                 py={2}
+                pos="fixed"
                 display={{ base: 'none', xl: 'flex' }}
-                zIndex={10}
+                zIndex={2}
                 fontSize="18px"
             >
                 <Flex gap={4} justifyContent="flex-start">

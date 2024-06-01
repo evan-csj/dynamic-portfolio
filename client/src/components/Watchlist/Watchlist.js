@@ -5,6 +5,7 @@ import {
     Heading,
     Flex,
     Box,
+    HStack,
     Center,
     FormControl,
     FormHelperText,
@@ -246,55 +247,6 @@ const Watchlist = props => {
         // eslint-disable-next-line
     }, []);
 
-    // useEffect(() => {
-    //     if (ticker === '') return;
-    //     getPriceHistory(ticker, chartScale).then(response => {
-    //         if (response.data.s !== 'ok') return;
-    //         const {
-    //             c: close,
-    //             h: high,
-    //             l: low,
-    //             o: open,
-    //             t: time,
-    //             v: volume,
-    //         } = response.data;
-    //         const lengths = [time, close, high, low, open, volume].map(
-    //             arr => arr.length
-    //         );
-    //         const isSame = lengths.every(len => len === lengths[0]);
-    //         if (!isSame) return;
-
-    //         const priceData = time.map((time, i) => {
-    //             const offset = dayjs.unix(time).tz('America/Vancouver').$offset;
-    //             const newElement = {
-    //                 time: time + offset * 60,
-    //                 open: open[i],
-    //                 close: close[i],
-    //                 high: high[i],
-    //                 low: low[i],
-    //             };
-    //             return newElement;
-    //         });
-
-    //         const volumeData = time.map((time, i) => {
-    //             const newElement = {
-    //                 time: priceData[i].time,
-    //                 value: volume[i],
-    //                 color:
-    //                     close[i] - open[i] >= 0
-    //                         ? 'rgba(38, 166, 154, 0.5)'
-    //                         : 'rgba(239, 83, 80, 0.5)',
-    //             };
-    //             return newElement;
-    //         });
-
-    //         setCandleStickData({
-    //             priceData: priceData,
-    //             volumeData: volumeData,
-    //         });
-    //     });
-    // }, [ticker, chartScale]);
-
     useEffect(() => {
         if (!ticker) return;
         getPriceHistory(ticker, chartScale).then(response => {
@@ -354,29 +306,24 @@ const Watchlist = props => {
                 </Heading>
             </Center>
 
-            <Box
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                w={{ xl: '1020px' }}
-                pt={4}
-            >
-                <CandleStick
-                    data={
-                        candlestickData !== null
-                            ? candlestickData
-                            : {
-                                  priceData: [],
-                                  volumeData: [],
-                              }
-                    }
-                ></CandleStick>
-            </Box>
+            <Flex direction="row" px={{ base: '16px', lg: '32px' }} pt={4}>
+                <Box w={window.innerWidth - 64 - 300}>
+                    <CandleStick
+                        data={
+                            candlestickData || {
+                                priceData: [],
+                                volumeData: [],
+                            }
+                        }
+                    ></CandleStick>
+                </Box>
+                <Box w="300px"></Box>
+            </Flex>
 
             <Box
                 display={{ base: 'block', md: 'none' }}
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                w={{ xl: '1020px' }}
+                px={{ base: '16px', lg: '32px' }}
+                w="100%"
                 zIndex={2}
             >
                 <Menu>
@@ -426,9 +373,8 @@ const Watchlist = props => {
                 display={{ base: 'none', md: 'block' }}
                 variant="dateRange"
                 size="md"
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                w={{ xl: '1020px' }}
+                px={{ base: '16px', lg: '32px' }}
+                w="100%"
                 color="light.grey"
                 defaultIndex={6}
             >
@@ -449,9 +395,8 @@ const Watchlist = props => {
 
             <Flex
                 className="flex-col"
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                w={{ xl: '1020px' }}
+                px={{ base: '16px', lg: '32px' }}
+                w="100%"
             >
                 <FormControl py={4}>
                     <Flex w="100%" gap={4} justifyContent="space-between">

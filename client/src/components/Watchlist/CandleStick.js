@@ -28,7 +28,7 @@ const CandleStick = props => {
                 textColor,
             },
             width: chartContainerRef.current.clientWidth,
-            height: 300,
+            height: 500,
         });
 
         const candlestickSeries = chart.addCandlestickSeries({

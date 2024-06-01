@@ -163,6 +163,7 @@ function App() {
                 openTrading={tradingOpen}
                 closeAllDrawer={closeAllDrawer}
             />
+            <Box display={{ base: 'none', xl: 'block' }} w='100%' h='48px' />
             <Routes>
                 <Route
                     path="/"

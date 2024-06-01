@@ -61,6 +61,7 @@ const WatchItem = props => {
             _hover={{ bg: 'light.yellow' }}
             h={12}
             pl={2}
+            gap={2}
         >
             <GridItem>
                 {logo !== null ? (
@@ -80,7 +81,7 @@ const WatchItem = props => {
             <GridItem fontWeight="bold" textAlign="right">
                 <HStack justify="end">
                     {price !== 0 && Math.abs(diff) > 0.001 ? (
-                        <Stat color={diff > 0 ? 'light.green' : 'light.red'}>
+                        <Stat color={diff > 0 ? 'light.green' : 'light.red'} w='max-content'>
                             {diff > 0 ? (
                                 <StatArrow
                                     type="increase"
