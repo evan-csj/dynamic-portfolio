@@ -5,7 +5,6 @@ import {
     Heading,
     Flex,
     Box,
-    HStack,
     Center,
     FormControl,
     FormHelperText,
@@ -57,6 +56,7 @@ const Watchlist = props => {
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
     const [marketState, setMarketState] = useState('');
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -193,6 +193,10 @@ const Watchlist = props => {
         }
     };
 
+    const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+    };
+
     useEffect(() => {
         const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
@@ -289,6 +293,13 @@ const Watchlist = props => {
         });
     }, [ticker, chartScale]);
 
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     return (
         <Flex
             className="flex-col"
@@ -307,7 +318,7 @@ const Watchlist = props => {
             </Center>
 
             <Flex direction="row" px={{ base: '16px', lg: '32px' }} pt={4}>
-                <Box w={window.innerWidth - 64 - 300}>
+                <Box w={windowWidth - 64 - 300}>
                     <CandleStick
                         data={
                             candlestickData || {
@@ -317,7 +328,16 @@ const Watchlist = props => {
                         }
                     ></CandleStick>
                 </Box>
-                <Box w="300px"></Box>
+                <Box w="300px">
+                    <ObjList
+                        key={0}
+                        type={'watchlist'}
+                        list={watchlist}
+                        usd2cad={exRate}
+                        changeTicker={changeTicker}
+                        deleteTicker={deleteItem}
+                    />
+                </Box>
             </Flex>
 
             <Box
