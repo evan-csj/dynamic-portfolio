@@ -317,8 +317,13 @@ const Watchlist = props => {
                 </Heading>
             </Center>
 
-            <Flex direction="row" px={{ base: '16px', lg: '32px' }} pt={4}>
-                <Box w={windowWidth - 64 - 300}>
+            <Flex
+                direction="row"
+                justifyContent="space-between"
+                px={{ base: '16px', lg: '32px' }}
+                pt={4}
+            >
+                <Box w={{ base: '100%', xl: windowWidth - 64 - 350 }}>
                     <CandleStick
                         data={
                             candlestickData || {
@@ -327,8 +332,160 @@ const Watchlist = props => {
                             }
                         }
                     ></CandleStick>
+                    <Box
+                        display={{ base: 'block', md: 'none' }}
+                        px={{ base: '16px', lg: '32px' }}
+                        w="100%"
+                        zIndex={2}
+                    >
+                        <Menu>
+                            <MenuButton
+                                fontSize="16px"
+                                color="light.navy"
+                                px="4px"
+                                borderColor="light.navy"
+                                borderWidth="2px"
+                                borderRadius="4px"
+                            >
+                                {chartScale}
+                            </MenuButton>
+                            <MenuList>
+                                <MenuItem onClick={() => changeScale('1D')}>
+                                    1D
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('5D')}>
+                                    5D
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('1M')}>
+                                    1M
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('3M')}>
+                                    3M
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('6M')}>
+                                    6M
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('YTD')}>
+                                    YTD
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('1Y')}>
+                                    1Y
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('5Y')}>
+                                    5Y
+                                </MenuItem>
+                                <MenuItem onClick={() => changeScale('ALL')}>
+                                    ALL
+                                </MenuItem>
+                            </MenuList>
+                        </Menu>
+                    </Box>
+
+                    <Tabs
+                        display={{ base: 'none', md: 'block' }}
+                        variant="dateRange"
+                        size="md"
+                        w="100%"
+                        color="light.grey"
+                        defaultIndex={6}
+                    >
+                        <TabList>
+                            <Tab ml="0" onClick={() => changeScale('1D')}>
+                                1D
+                            </Tab>
+                            <Tab onClick={() => changeScale('5D')}>5D</Tab>
+                            <Tab onClick={() => changeScale('1M')}>1M</Tab>
+                            <Tab onClick={() => changeScale('3M')}>3M</Tab>
+                            <Tab onClick={() => changeScale('6M')}>6M</Tab>
+                            <Tab onClick={() => changeScale('YTD')}>YTD</Tab>
+                            <Tab onClick={() => changeScale('1Y')}>1Y</Tab>
+                            <Tab onClick={() => changeScale('5Y')}>5Y</Tab>
+                            <Tab onClick={() => changeScale('ALL')}>ALL</Tab>
+                        </TabList>
+                    </Tabs>
+
+                    <Box mb="8px" w="100%">
+                        {marketState ? (
+                            <Badge
+                                color={
+                                    marketState === 'Regular-Market-Hours'
+                                        ? 'light.green'
+                                        : marketState === 'After-Hours'
+                                        ? 'light.white'
+                                        : marketState === 'Market-Close'
+                                        ? 'light.red'
+                                        : 'light.grey'
+                                }
+                                background={
+                                    marketState === 'Regular-Market-Hours'
+                                        ? 'lightBG.green'
+                                        : marketState === 'After-Hours'
+                                        ? 'light.yellow'
+                                        : marketState === 'Market-Close'
+                                        ? 'lightBG.red'
+                                        : ''
+                                }
+                            >
+                                {marketState}
+                            </Badge>
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
+
+                    <Box
+                        w="100%"
+                        display={{ base: 'none', xl: 'block' }}
+                        key={1}
+                    >
+                        {ticker ? (
+                            <Statistics key={ticker} ticker={ticker} />
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
                 </Box>
-                <Box w="300px">
+
+                <Box
+                    display={{ base: 'none', xl: 'block' }}
+                    w="350px"
+                    borderLeft="1px"
+                    borderLeftColor="light.grey"
+                    pl={4}
+                >
+                    <FormControl pb={4}>
+                        <Flex w="100%" gap={4} justifyContent="space-between">
+                            <Box flex="1" zIndex={1}>
+                                <Select
+                                    key={listLength}
+                                    placeholder="Type Symbol"
+                                    options={symbolOptions.current}
+                                    isRequired
+                                    onChange={findTicker}
+                                ></Select>
+                            </Box>
+
+                            <Center
+                                bg="light.black"
+                                boxSize="38px"
+                                justifyItems="center"
+                                alignItems="center"
+                                cursor="pointer"
+                                borderRadius={4}
+                                onClick={addTicker}
+                            >
+                                <AddIcon color="light.white" />
+                            </Center>
+                        </Flex>
+                        {existing ? (
+                            <FormHelperText color="light.red">
+                                Already existing!
+                            </FormHelperText>
+                        ) : (
+                            <></>
+                        )}
+                    </FormControl>
+
                     <ObjList
                         key={0}
                         type={'watchlist'}
@@ -340,80 +497,8 @@ const Watchlist = props => {
                 </Box>
             </Flex>
 
-            <Box
-                display={{ base: 'block', md: 'none' }}
-                px={{ base: '16px', lg: '32px' }}
-                w="100%"
-                zIndex={2}
-            >
-                <Menu>
-                    <MenuButton
-                        fontSize="16px"
-                        color="light.navy"
-                        px="4px"
-                        borderColor="light.navy"
-                        borderWidth="2px"
-                        borderRadius="4px"
-                    >
-                        {chartScale}
-                    </MenuButton>
-                    <MenuList>
-                        <MenuItem onClick={() => changeScale('1D')}>
-                            1D
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('5D')}>
-                            5D
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('1M')}>
-                            1M
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('3M')}>
-                            3M
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('6M')}>
-                            6M
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('YTD')}>
-                            YTD
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('1Y')}>
-                            1Y
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('5Y')}>
-                            5Y
-                        </MenuItem>
-                        <MenuItem onClick={() => changeScale('ALL')}>
-                            ALL
-                        </MenuItem>
-                    </MenuList>
-                </Menu>
-            </Box>
-
-            <Tabs
-                display={{ base: 'none', md: 'block' }}
-                variant="dateRange"
-                size="md"
-                px={{ base: '16px', lg: '32px' }}
-                w="100%"
-                color="light.grey"
-                defaultIndex={6}
-            >
-                <TabList>
-                    <Tab ml="0" onClick={() => changeScale('1D')}>
-                        1D
-                    </Tab>
-                    <Tab onClick={() => changeScale('5D')}>5D</Tab>
-                    <Tab onClick={() => changeScale('1M')}>1M</Tab>
-                    <Tab onClick={() => changeScale('3M')}>3M</Tab>
-                    <Tab onClick={() => changeScale('6M')}>6M</Tab>
-                    <Tab onClick={() => changeScale('YTD')}>YTD</Tab>
-                    <Tab onClick={() => changeScale('1Y')}>1Y</Tab>
-                    <Tab onClick={() => changeScale('5Y')}>5Y</Tab>
-                    <Tab onClick={() => changeScale('ALL')}>ALL</Tab>
-                </TabList>
-            </Tabs>
-
             <Flex
+                display={{ base: 'flex', xl: 'none' }}
                 className="flex-col"
                 px={{ base: '16px', lg: '32px' }}
                 w="100%"
@@ -452,46 +537,11 @@ const Watchlist = props => {
                 </FormControl>
             </Flex>
 
-            <Box
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                mb="8px"
-                w={{ xl: '1020px' }}
-            >
-                {marketState ? (
-                    <Badge
-                        color={
-                            marketState === 'Regular-Market-Hours'
-                                ? 'light.green'
-                                : marketState === 'After-Hours'
-                                ? 'light.white'
-                                : marketState === 'Market-Close'
-                                ? 'light.red'
-                                : 'light.grey'
-                        }
-                        background={
-                            marketState === 'Regular-Market-Hours'
-                                ? 'lightBG.green'
-                                : marketState === 'After-Hours'
-                                ? 'light.yellow'
-                                : marketState === 'Market-Close'
-                                ? 'lightBG.red'
-                                : ''
-                        }
-                    >
-                        {marketState}
-                    </Badge>
-                ) : (
-                    <></>
-                )}
-            </Box>
-
             <Tabs
                 isFitted
                 variant="enclosed"
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                w={{ xl: '1020px' }}
+                display={{ base: 'block', xl: 'none' }}
+                px={{ base: '16px', lg: '32px' }}
                 borderBottomColor="light.white"
             >
                 <TabList>
@@ -536,7 +586,8 @@ const Watchlist = props => {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            <Box h={48} />
+
+            <Box h={48} display={{ base: 'block', xl: 'none' }} />
         </Flex>
     );
 };

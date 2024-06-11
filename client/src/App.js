@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import {
+    Routes,
+    Route,
+    useNavigate,
+    Navigate,
+    useLocation,
+} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import FundingForm from './components/Action/FundingForm';
 import TradingForm from './components/Action/TradingForm';
@@ -27,6 +33,9 @@ import { Funding, Trading } from './styles/icons';
 
 function App() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const hiddenNavPaths = ['/', '/login', '/resume'];
+    const showNavbar = !hiddenNavPaths.includes(location.pathname);
     const [username, setUsername] = useState('');
     const [page, setPage] = useState('');
     const [toggle, setToggle] = useState(false);
@@ -153,17 +162,26 @@ function App() {
 
     return (
         <>
-            <NavBar
-                page={page}
-                changePage={changePage}
-                display={{ base: 'none', xl: 'block' }}
-                isOpen={isOpen}
-                openDrawer={onOpen}
-                openFunding={fundingOpen}
-                openTrading={tradingOpen}
-                closeAllDrawer={closeAllDrawer}
-            />
-            <Box display={{ base: 'none', xl: 'block' }} w='100%' h='48px' />
+            {showNavbar && (
+                <>
+                    <NavBar
+                        page={page}
+                        changePage={changePage}
+                        display={{ base: 'none', xl: 'block' }}
+                        isOpen={isOpen}
+                        openDrawer={onOpen}
+                        openFunding={fundingOpen}
+                        openTrading={tradingOpen}
+                        closeAllDrawer={closeAllDrawer}
+                    />
+                    <Box
+                        display={{ base: 'none', xl: 'block' }}
+                        w="100%"
+                        h="48px"
+                    />
+                </>
+            )}
+
             <Routes>
                 <Route
                     path="/"
@@ -227,21 +245,27 @@ function App() {
                 />
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
-            <ChatBot
-                messages={messages}
-                addMessage={addMessage}
-                inputStatus={waitForRes}
-            />
-            <NavBar
-                page={page}
-                changePage={changePage}
-                display={{ base: 'block', xl: 'none' }}
-                isOpen={isOpen}
-                openDrawer={onOpen}
-                openFunding={fundingOpen}
-                openTrading={tradingOpen}
-                closeAllDrawer={closeAllDrawer}
-            />
+
+            {showNavbar && (
+                <>
+                    <ChatBot
+                        messages={messages}
+                        addMessage={addMessage}
+                        inputStatus={waitForRes}
+                    />
+                    <NavBar
+                        page={page}
+                        changePage={changePage}
+                        display={{ base: 'block', xl: 'none' }}
+                        isOpen={isOpen}
+                        openDrawer={onOpen}
+                        openFunding={fundingOpen}
+                        openTrading={tradingOpen}
+                        closeAllDrawer={closeAllDrawer}
+                    />
+                </>
+            )}
+
             <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay zIndex={1} display={{ xl: 'none' }} />
                 <DrawerContent shadow="none" borderTopRadius={20}>
