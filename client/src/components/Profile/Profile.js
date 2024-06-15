@@ -232,7 +232,7 @@ const Profile = props => {
             {/* Profile Header in Mobile */}
             <Flex
                 bg="light.navy"
-                px={{ base: '16px', lg: '32px', xl: '0' }}
+                px={{ base: '16px', lg: '32px' }}
                 pt={8}
                 pb={4}
                 borderBottomColor="light.yellow"
@@ -241,12 +241,7 @@ const Profile = props => {
                 justifyContent="space-between"
                 className="flex-col"
             >
-                <Flex
-                    className="flex-col"
-                    gap={4}
-                    mx={{ xl: 'auto' }}
-                    w={{ xl: '1020px' }}
-                >
+                <Flex className="flex-col" gap={4}>
                     <Flex direction="row" justifyContent="space-between">
                         <Box>
                             <Heading
@@ -302,158 +297,200 @@ const Profile = props => {
 
             {/* Account Details */}
             <Flex
-                className="flex-col"
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                w={{ xl: '1020px' }}
+                justifyContent="space-between"
+                gap={8}
+                px={{ base: '16px', lg: '32px' }}
+                pt={{ base: '8px', lg: '16px' }}
             >
-                <Heading
-                    pt={{ base: '16px', lg: '32px' }}
-                    pb="16px"
-                    color="light.black"
-                    size={{ base: 'sm', md: 'md', lg: 'lg' }}
+                <Flex
+                    direction="column"
+                    flex={1}
+                    gap={{ base: '4px', xl: '8px' }}
                 >
-                    Account Details
-                </Heading>
-                <TableContainer borderColor="light.yellow">
-                    <Table
-                        size="sm"
-                        variant="simple"
-                        className="table-user"
-                        borderColor="light.yellow"
+                    <Heading
+                        pt={{ base: '8px', lg: '16px' }}
+                        color="light.black"
+                        size={{ base: 'sm', md: 'md', lg: 'lg' }}
                     >
-                        <Thead borderColor="light.yellow">
-                            <Tr borderColor="light.yellow">
-                                <Th w="10%"></Th>
-                                <Th w="30%" isNumeric>
-                                    CAD
-                                </Th>
-                                <Th w="30%" isNumeric>
-                                    USD
-                                </Th>
-                                <Th w="30%" isNumeric>
-                                    Total
-                                </Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody borderColor="light.yellow">
-                            <Tr>
-                                <Th>Assets</Th>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={accountDetail && userData}
-                                        value={equityCAD + cashCAD}
-                                    />
-                                </Td>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={accountDetail && userData}
-                                        value={equityUSD + cashUSD}
-                                    />
-                                </Td>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={accountDetail && userData}
-                                        value={
-                                            equityTotal +
-                                            cashCAD +
-                                            cashUSD * usd2cad
-                                        }
-                                    />
-                                </Td>
-                            </Tr>
-                            <Tr>
-                                <Th>Equity</Th>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={accountDetail}
-                                        value={equityCAD}
-                                    />
-                                </Td>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={accountDetail}
-                                        value={equityUSD}
-                                    />
-                                </Td>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={accountDetail}
-                                        value={equityTotal}
-                                    />
-                                </Td>
-                            </Tr>
-                            <Tr>
-                                <Th>Cash</Th>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={userData}
-                                        value={cashCAD}
-                                    />
-                                </Td>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={userData}
-                                        value={cashUSD}
-                                    />
-                                </Td>
-                                <Td isNumeric>
-                                    <SkeletonDollar
-                                        condition={accountDetail && userData}
-                                        value={cashCAD + cashUSD * usd2cad}
-                                    />
-                                </Td>
-                            </Tr>
-                            {/* <Tr>
+                        Account Details
+                    </Heading>
+                    <TableContainer borderColor="light.yellow">
+                        <Table
+                            size="sm"
+                            variant="simple"
+                            className="table-user"
+                            borderColor="light.yellow"
+                        >
+                            <Thead borderColor="light.yellow">
+                                <Tr borderColor="light.yellow">
+                                    <Th w="10%"></Th>
+                                    <Th w="30%" isNumeric>
+                                        CAD
+                                    </Th>
+                                    <Th w="30%" isNumeric>
+                                        USD
+                                    </Th>
+                                    <Th w="30%" isNumeric>
+                                        Total
+                                    </Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody borderColor="light.yellow">
+                                <Tr>
+                                    <Th>Assets</Th>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={
+                                                accountDetail && userData
+                                            }
+                                            value={equityCAD + cashCAD}
+                                        />
+                                    </Td>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={
+                                                accountDetail && userData
+                                            }
+                                            value={equityUSD + cashUSD}
+                                        />
+                                    </Td>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={
+                                                accountDetail && userData
+                                            }
+                                            value={
+                                                equityTotal +
+                                                cashCAD +
+                                                cashUSD * usd2cad
+                                            }
+                                        />
+                                    </Td>
+                                </Tr>
+                                <Tr>
+                                    <Th>Equity</Th>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={accountDetail}
+                                            value={equityCAD}
+                                        />
+                                    </Td>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={accountDetail}
+                                            value={equityUSD}
+                                        />
+                                    </Td>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={accountDetail}
+                                            value={equityTotal}
+                                        />
+                                    </Td>
+                                </Tr>
+                                <Tr>
+                                    <Th>Cash</Th>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={userData}
+                                            value={cashCAD}
+                                        />
+                                    </Td>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={userData}
+                                            value={cashUSD}
+                                        />
+                                    </Td>
+                                    <Td isNumeric>
+                                        <SkeletonDollar
+                                            condition={
+                                                accountDetail && userData
+                                            }
+                                            value={cashCAD + cashUSD * usd2cad}
+                                        />
+                                    </Td>
+                                </Tr>
+                                {/* <Tr>
                                     <Th>Gain/Loss</Th>
                                     <Td isNumeric>CAD</Td>
                                     <Td isNumeric>USD</Td>
                                     <Td isNumeric>Total</Td>
                                 </Tr> */}
-                        </Tbody>
-                    </Table>
-                </TableContainer>
-            </Flex>
-
-            <Box
-                px={{ base: '16px', lg: '32px', xl: '0' }}
-                mx={{ xl: 'auto' }}
-                my="8px"
-                w={{ xl: '1020px' }}
-            >
-                {marketState ? (
-                    <Badge
-                        color={
-                            marketState === 'Regular-Market-Hours'
-                                ? 'light.green'
-                                : marketState === 'After-Hours'
-                                ? 'light.white'
-                                : marketState === 'Market-Close'
-                                ? 'light.red'
-                                : 'light.grey'
-                        }
-                        background={
-                            marketState === 'Regular-Market-Hours'
-                                ? 'lightBG.green'
-                                : marketState === 'After-Hours'
-                                ? 'light.yellow'
-                                : marketState === 'Market-Close'
-                                ? 'lightBG.red'
-                                : ''
-                        }
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
+                    <Box my="8px">
+                        {marketState ? (
+                            <Badge
+                                color={
+                                    marketState === 'Regular-Market-Hours'
+                                        ? 'light.green'
+                                        : marketState === 'After-Hours'
+                                        ? 'light.white'
+                                        : marketState === 'Market-Close'
+                                        ? 'light.red'
+                                        : 'light.grey'
+                                }
+                                background={
+                                    marketState === 'Regular-Market-Hours'
+                                        ? 'lightBG.green'
+                                        : marketState === 'After-Hours'
+                                        ? 'light.yellow'
+                                        : marketState === 'Market-Close'
+                                        ? 'lightBG.red'
+                                        : ''
+                                }
+                            >
+                                {marketState}
+                            </Badge>
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
+                    <Box display={{ base: 'none', xl: 'block' }}>
+                        <Portfolio
+                            key={1}
+                            user={userData}
+                            userId={userId}
+                            changePage={props.changePage}
+                            toggle={internalToggle}
+                            updateToggle={setInternalToggle}
+                        />
+                    </Box>
+                </Flex>
+                <Box
+                    w="450px"
+                    display={{ base: 'none', xl: 'block' }}
+                    borderLeftColor="light.grey"
+                    borderLeftWidth="1px"
+                    pl={4}
+                >
+                    <Heading
+                        pt={{ base: '8px', lg: '16px' }}
+                        pb="16px"
+                        color="light.black"
+                        size={{ base: 'sm', md: 'md', lg: 'lg' }}
+                        borderBottomColor="light.grey"
+                        borderBottomWidth="1px"
                     >
-                        {marketState}
-                    </Badge>
-                ) : (
-                    <></>
-                )}
-            </Box>
+                        Holdings
+                    </Heading>
+                    <ObjList
+                        key={0}
+                        type={'holding'}
+                        list={holdingList}
+                        usd2cad={accountDetail ? accountDetail.usd2cad : 1}
+                    />
+                </Box>
+            </Flex>
 
             {/* Holdings */}
             <Tabs
                 isFitted
+                display={{ base: 'block', xl: 'none' }}
                 variant="enclosed"
-                px={{ base: '16px', lg: '32px', xl: '0' }}
+                px={{ base: '16px', lg: '32px' }}
                 mx={{ xl: 'auto' }}
                 w={{ xl: '1020px' }}
                 pt={2}
@@ -502,7 +539,7 @@ const Profile = props => {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            <Box h={48} />
+            <Box h={48} display={{ base: 'none', xl: 'block' }} />
         </Flex>
     );
 };
