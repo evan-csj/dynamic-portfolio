@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Flex, Box, Circle } from '@chakra-ui/react';
+import { getUser } from '../global/axios';
+import { Flex, Box, Circle, Avatar } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Logout, Fund } from '../styles/icons';
 import '../styles/global.scss';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const NavBar = props => {
     const [navSelect, setNavSelect] = useState('/');
+    const [avatar, setAvatar] = useState('');
+    const [name, setName] = useState('');
     const isOpen = props.isOpen;
     const openFunding = props.openFunding;
     const openTrading = props.openTrading;
@@ -19,6 +22,21 @@ const NavBar = props => {
     useEffect(() => {
         if (pathname[0] === '/') setNavSelect(pathname.split('/')[1]);
     });
+
+    useEffect(() => {
+        const userIdSession = sessionStorage.getItem('userId');
+        const username = userIdSession ?? '';
+
+        getUser(username)
+            .then(response => {
+                if (response.status === 200) {
+                    const { avatar, first_name, last_name } = response.data;
+                    setAvatar(avatar);
+                    setName(first_name + ' ' + last_name);
+                }
+            })
+            .catch(error => console.error(error));
+    }, []);
 
     return (
         <Box display={props.display}>
@@ -80,10 +98,7 @@ const NavBar = props => {
                     </Box>
                 </Flex>
                 <Flex gap={4} justifyContent="flex-end">
-                    <Circle
-                        size={{ base: '36px', lg: '32px' }}
-                        bg="light.yellow"
-                    />
+                    <Avatar size="sm" name={name} src={avatar} />
                     <Box _hover={{ color: 'light.yellow' }}>
                         <NavLink
                             to={`${SERVER_URL}/logout`}

@@ -13,6 +13,7 @@ const singleUser = async (req, res) => {
                 'id',
                 'first_name',
                 'last_name',
+                'avatar',
                 'cash_usd',
                 'cash_cad',
                 'dp',
@@ -20,7 +21,7 @@ const singleUser = async (req, res) => {
             )
             .where({ id: userId })
             .first();
-
+            
         if (!user) {
             return res
                 .status(404)

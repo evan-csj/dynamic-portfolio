@@ -7,6 +7,7 @@ module.exports = [
         user_gmail: 'evancheng2014@gmail.com',
         first_name: 'Evan',
         last_name: 'Cheng',
+        avatar: '',
         cash_usd: 10000,
         cash_cad: 100,
         dp: {

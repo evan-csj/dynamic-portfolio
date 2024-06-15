@@ -11,6 +11,7 @@ exports.up = function (knex) {
             table.string('user_gmail').unique();
             table.string('first_name').defaultTo('');
             table.string('last_name').defaultTo('');
+            table.string('avatar').defaultTo('');
             table.float('cash_usd', 20, 7).unsigned().defaultTo(0);
             table.float('cash_cad', 20, 7).unsigned().defaultTo(0);
             table.jsonb('dp').defaultTo({});

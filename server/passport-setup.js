@@ -44,7 +44,7 @@ passport.use(
 passport.serializeUser(async (userOAuth, done) => {
     const { provider } = userOAuth;
     try {
-        let keyField, keyValue, defaultId;
+        let keyField, keyValue, defaultId, firstName, lastName, avatar;
 
         if (provider) {
             switch (provider) {
@@ -54,6 +54,7 @@ passport.serializeUser(async (userOAuth, done) => {
                     defaultId = keyValue + '@github';
                     firstName = userOAuth.displayName;
                     lastName = '';
+                    avatar = userOAuth.photos[0].value;
                     break;
                 case 'google':
                     keyField = 'user_gmail';
@@ -61,6 +62,7 @@ passport.serializeUser(async (userOAuth, done) => {
                     defaultId = keyValue.split('@')[0] + '@google';
                     firstName = userOAuth.name.givenName;
                     lastName = userOAuth.name.familyName;
+                    avatar = userOAuth.photos[0].value;
                     break;
                 default:
                     done(new Error('Undefined Authentication!'));
@@ -103,6 +105,13 @@ passport.serializeUser(async (userOAuth, done) => {
 
                 await knex('user').insert(newUser);
                 await knex('watchlist').insert(watchlistForNewUser);
+            } else {
+                const updatedUserInfo = {
+                    avatar: avatar,
+                };
+                await knex('user')
+                    .update(updatedUserInfo)
+                    .where(keyField, keyValue);
             }
 
             done(null, userOAuth);
