@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import '../../styles/global.scss';
 
-function Holding(props) {
+const Holding = props => {
     const {
         ticker,
         currency,
@@ -59,6 +59,6 @@ function Holding(props) {
             </GridItem>
         </Grid>
     );
-}
+};
 
 export default Holding;

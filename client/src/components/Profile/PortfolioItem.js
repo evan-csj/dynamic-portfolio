@@ -10,7 +10,7 @@ import {
     Tooltip,
 } from '@chakra-ui/react';
 
-function PortfolioItem(props) {
+const PortfolioItem = props => {
     const ticker = props.ticker;
     const pct = props.pct;
     const max = props.max;
@@ -19,7 +19,7 @@ function PortfolioItem(props) {
     const [showTooltip, setShowTooltip] = useState(false);
 
     return (
-        <Grid className="grid-portfolio" zIndex='1'>
+        <Grid className="grid-portfolio" zIndex="1">
             <GridItem fontWeight="bold">{ticker}</GridItem>
             <GridItem>
                 <Slider
@@ -51,7 +51,10 @@ function PortfolioItem(props) {
                         isOpen={showTooltip}
                         label={`${sliderValue}%`}
                     >
-                        <SliderThumb borderColor="light.yellow" borderWidth='2px'/>
+                        <SliderThumb
+                            borderColor="light.yellow"
+                            borderWidth="2px"
+                        />
                     </Tooltip>
                 </Slider>
             </GridItem>
@@ -64,6 +67,6 @@ function PortfolioItem(props) {
             </GridItem>
         </Grid>
     );
-}
+};
 
 export default PortfolioItem;

@@ -586,8 +586,6 @@ const Watchlist = props => {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-
-            <Box h={48} display={{ base: 'block', xl: 'none' }} />
         </Flex>
     );
 };

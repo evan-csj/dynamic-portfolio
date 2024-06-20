@@ -4,7 +4,7 @@ import '../styles/global.scss';
 import WatchItem from './Watchlist/WatchItem';
 import Holding from './Profile/Holding';
 
-function ObjList(props) {
+const ObjList = props => {
     const list = props.list;
     const usd2cad = props.usd2cad || 1;
 
@@ -50,6 +50,6 @@ function ObjList(props) {
     } else {
         return <></>;
     }
-}
+};
 
 export default ObjList;

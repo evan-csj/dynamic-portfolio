@@ -4,7 +4,7 @@ import '../../styles/global.scss';
 
 const dayjs = require('dayjs');
 
-function Funding(props) {
+const Funding = props => {
     const { amount, type, currency, created_at: timestamp } = props.detail;
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -38,6 +38,6 @@ function Funding(props) {
             </GridItem>
         </Grid>
     );
-}
+};
 
 export default Funding;

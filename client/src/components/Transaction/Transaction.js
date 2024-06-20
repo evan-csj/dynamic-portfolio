@@ -10,20 +10,25 @@ import {
     TabPanels,
     Tab,
     TabPanel,
+    useCheckboxGroup,
 } from '@chakra-ui/react';
 import { getTrading, getFunding } from '../../global/axios';
+import CheckBox from './CheckBox';
 import List from '../List';
 import '../../styles/global.scss';
 
-function Transaction(props) {
+const Transaction = props => {
     const navigate = useNavigate();
     const [tradingList, setTradingList] = useState([]);
     const [fundingList, setFundingList] = useState([]);
 
-    useEffect(() => {
-        // props.unsubscribeAll();
-        const userIdSession = sessionStorage.getItem('userId');
+    const { value, getCheckboxProps } = useCheckboxGroup({
+        defaultValue: ['2'],
+    });
 
+    useEffect(() => {
+        props.unsubscribeAll();
+        const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
 
         getTrading(username).then(response => {
@@ -62,6 +67,7 @@ function Transaction(props) {
             </Center>
             <Tabs
                 isFitted
+                display={{ base: 'block', xl: 'none' }}
                 variant="enclosed"
                 px={{ base: '16px', lg: '32px', xl: '0' }}
                 mx={{ xl: 'auto' }}
@@ -100,9 +106,13 @@ function Transaction(props) {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            <Box h={48} />
+            <Box display={{ base: 'none', xl: 'block' }}>
+                <CheckBox {...getCheckboxProps({ value: '1' })} />
+                <CheckBox {...getCheckboxProps({ value: '2' })} />
+                <CheckBox {...getCheckboxProps({ value: '3' })} />
+            </Box>
         </Flex>
     );
-}
+};
 
 export default Transaction;

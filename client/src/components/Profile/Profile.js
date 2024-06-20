@@ -539,7 +539,6 @@ const Profile = props => {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            <Box h={48} display={{ base: 'none', xl: 'block' }} />
         </Flex>
     );
 };

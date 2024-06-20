@@ -4,7 +4,7 @@ import '../../styles/global.scss';
 
 const dayjs = require('dayjs');
 
-function Trading(props) {
+const Trading = props => {
     const {
         ticker,
         price,
@@ -69,6 +69,6 @@ function Trading(props) {
             </GridItem>
         </Grid>
     );
-}
+};
 
 export default Trading;
