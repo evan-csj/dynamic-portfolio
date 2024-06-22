@@ -10,21 +10,25 @@ import {
     TabPanels,
     Tab,
     TabPanel,
-    useCheckboxGroup,
+    Checkbox,
 } from '@chakra-ui/react';
 import { getTrading, getFunding } from '../../global/axios';
-import CheckBox from './CheckBox';
 import List from '../List';
 import '../../styles/global.scss';
 
 const Transaction = props => {
     const navigate = useNavigate();
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [tradingList, setTradingList] = useState([]);
     const [fundingList, setFundingList] = useState([]);
+    const [checkedItems, setCheckedItems] = useState([true, true, true, true]);
 
-    const { value, getCheckboxProps } = useCheckboxGroup({
-        defaultValue: ['2'],
-    });
+    const allChecked = checkedItems.every(Boolean);
+    const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
+
+    const handleResize = () => {
+        setWindowHeight(window.innerHeight);
+    };
 
     useEffect(() => {
         props.unsubscribeAll();
@@ -49,9 +53,16 @@ const Transaction = props => {
         // eslint-disable-next-line
     }, [props.toggle]);
 
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     return (
         <Flex
-            className="flex-col"
+            direction="column"
             fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}
         >
             <Center
@@ -106,11 +117,92 @@ const Transaction = props => {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            <Box display={{ base: 'none', xl: 'block' }}>
-                <CheckBox {...getCheckboxProps({ value: '1' })} />
-                <CheckBox {...getCheckboxProps({ value: '2' })} />
-                <CheckBox {...getCheckboxProps({ value: '3' })} />
-            </Box>
+
+            <Flex
+                display={{ base: 'none', xl: 'flex' }}
+                justifyContent="space-between"
+                px={{ base: '16px', lg: '32px' }}
+                pt={8}
+            >
+                <Box
+                    w="200px"
+                    minH={windowHeight - 172}
+                    borderRightColor="light.grey"
+                    borderRightWidth="1px"
+                >
+                    <Checkbox
+                        isChecked={allChecked}
+                        isIndeterminate={isIndeterminate}
+                        onChange={e =>
+                            setCheckedItems([
+                                e.target.checked,
+                                e.target.checked,
+                                e.target.checked,
+                                e.target.checked,
+                            ])
+                        }
+                    >
+                        All
+                    </Checkbox>
+                    <Flex pl={6} direction="column">
+                        <Checkbox
+                            isChecked={checkedItems[0]}
+                            onChange={e => {
+                                setCheckedItems([
+                                    e.target.checked,
+                                    checkedItems[1],
+                                    checkedItems[2],
+                                    checkedItems[3],
+                                ]);
+                            }}
+                        >
+                            Buy
+                        </Checkbox>
+                        <Checkbox
+                            isChecked={checkedItems[1]}
+                            onChange={e => {
+                                setCheckedItems([
+                                    checkedItems[0],
+                                    e.target.checked,
+                                    checkedItems[2],
+                                    checkedItems[3],
+                                ]);
+                            }}
+                        >
+                            Sell
+                        </Checkbox>
+                        <Checkbox
+                            isChecked={checkedItems[2]}
+                            onChange={e => {
+                                setCheckedItems([
+                                    checkedItems[0],
+                                    checkedItems[1],
+                                    e.target.checked,
+                                    checkedItems[3],
+                                ]);
+                            }}
+                        >
+                            Deposit
+                        </Checkbox>
+                        <Checkbox
+                            isChecked={checkedItems[3]}
+                            onChange={e => {
+                                setCheckedItems([
+                                    checkedItems[0],
+                                    checkedItems[1],
+                                    checkedItems[2],
+                                    e.target.checked,
+                                ]);
+                            }}
+                        >
+                            Withdraw
+                        </Checkbox>
+                    </Flex>
+                </Box>
+                <Box flex={1} pl={8}>
+                    <List key={0} type={'trading'} list={tradingList} />
+                </Box>
+            </Flex>
         </Flex>
     );
 };

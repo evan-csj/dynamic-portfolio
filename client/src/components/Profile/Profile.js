@@ -49,6 +49,7 @@ const Profile = props => {
     const [quoteIndex, setQuoteIndex] = useState(0);
     const [marketState, setMarketState] = useState('');
     const [internalToggle, setInternalToggle] = useState(false);
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const {
         lastMessage,
         sendMessage,
@@ -116,6 +117,10 @@ const Profile = props => {
                 dict[item.ticker] = item;
         }
         return dict;
+    };
+
+    const handleResize = () => {
+        setWindowHeight(window.innerHeight);
     };
 
     useEffect(() => {
@@ -214,6 +219,13 @@ const Profile = props => {
 
     useEffect(() => {
         setQuoteIndex(Math.floor(Math.random() * text.quotes.length));
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     const cashCAD = userData ? userData.cashCAD : 0;
@@ -465,6 +477,7 @@ const Profile = props => {
                     borderLeftColor="light.grey"
                     borderLeftWidth="1px"
                     pl={4}
+                    minH={windowHeight - 317}
                 >
                     <Heading
                         pt={{ base: '8px', lg: '16px' }}

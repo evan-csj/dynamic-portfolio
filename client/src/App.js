@@ -246,7 +246,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
 
-            <Box h={{ base: '192px', xl: '96px' }} />
+            <Box h={{ base: '192px', xl: '0px' }} />
 
             {showNavbar && (
                 <>

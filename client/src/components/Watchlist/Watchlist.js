@@ -57,6 +57,7 @@ const Watchlist = props => {
     const symbolOptions = useRef([]);
     const [marketState, setMarketState] = useState('');
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -195,6 +196,7 @@ const Watchlist = props => {
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
+        setWindowHeight(window.innerHeight);
     };
 
     useEffect(() => {
@@ -302,7 +304,7 @@ const Watchlist = props => {
 
     return (
         <Flex
-            className="flex-col"
+            direction="column"
             fontSize={{ base: '12px', md: '14px', lg: '16px', xl: '18px' }}
         >
             <Center
@@ -451,6 +453,7 @@ const Watchlist = props => {
                     w="350px"
                     borderLeft="1px"
                     borderLeftColor="light.grey"
+                    minH={windowHeight - 172}
                     pl={4}
                 >
                     <FormControl pb={4}>
@@ -499,7 +502,7 @@ const Watchlist = props => {
 
             <Flex
                 display={{ base: 'flex', xl: 'none' }}
-                className="flex-col"
+                direction="column"
                 px={{ base: '16px', lg: '32px' }}
                 w="100%"
             >
