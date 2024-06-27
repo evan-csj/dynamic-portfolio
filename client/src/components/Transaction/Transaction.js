@@ -11,6 +11,8 @@ import {
     Tab,
     TabPanel,
     Checkbox,
+    Text,
+    Tag,
 } from '@chakra-ui/react';
 import { getTrading, getFunding } from '../../global/axios';
 import List from '../List';
@@ -34,16 +36,34 @@ const Transaction = props => {
         props.unsubscribeAll();
         const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
+        const tradingType =
+            checkedItems[0] && checkedItems[1]
+                ? 'all'
+                : checkedItems[0]
+                ? 'buy'
+                : checkedItems[1]
+                ? 'sell'
+                : '';
 
-        getTrading(username).then(response => {
+        const fundingType =
+            checkedItems[2] && checkedItems[3]
+                ? 'all'
+                : checkedItems[2]
+                ? 'deposit'
+                : checkedItems[3]
+                ? 'withdraw'
+                : '';
+
+        getTrading(username, tradingType).then(response => {
             if (response.status === 200) {
                 setTradingList(response.data);
+                console.log(response.data)
             } else {
                 navigate('/');
             }
         });
 
-        getFunding(username).then(response => {
+        getFunding(username, fundingType).then(response => {
             if (response.status === 200) {
                 setFundingList(response.data);
             } else {
@@ -51,7 +71,7 @@ const Transaction = props => {
             }
         });
         // eslint-disable-next-line
-    }, [props.toggle]);
+    }, [props.toggle, checkedItems]);
 
     useEffect(() => {
         window.addEventListener('resize', handleResize);
@@ -199,9 +219,29 @@ const Transaction = props => {
                         </Checkbox>
                     </Flex>
                 </Box>
-                <Box flex={1} pl={8}>
-                    <List key={0} type={'trading'} list={tradingList} />
-                </Box>
+                <Flex direction="column" gap={8} flex={1} pl={8}>
+                    {tradingList.length > 0 ? (
+                        <Box>
+                            <Tag size="lg" variant="outline" color="light.navy">
+                                Trading
+                            </Tag>
+                            <List key={0} type={'trading'} list={tradingList} />
+                        </Box>
+                    ) : (
+                        <></>
+                    )}
+
+                    {fundingList.length > 0 ? (
+                        <Box>
+                            <Tag size="lg" variant="outline" color="light.navy">
+                                Funding
+                            </Tag>
+                            <List key={1} type={'funding'} list={fundingList} />
+                        </Box>
+                    ) : (
+                        <></>
+                    )}
+                </Flex>
             </Flex>
         </Flex>
     );

@@ -3,10 +3,16 @@ const { v1 } = require('uuid');
 
 const getFundHistory = async (req, res) => {
     const userId = req.params.userId || req.user || '';
+    const { type } = req.query;
 
     try {
         const fundHistory = await knex('fund')
             .where({ user_id: userId })
+            .modify(queryBuilder => {
+                if (type !== 'all') {
+                    queryBuilder.where({ type: type });
+                }
+            })
             .orderBy('created_at', 'desc');
         if (!fundHistory) {
             return res
