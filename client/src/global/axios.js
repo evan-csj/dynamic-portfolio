@@ -42,7 +42,7 @@ const getHoldings = async id => {
     }
 };
 
-const getTrading = async (id, type) => {
+const getTrading = async (id, type, startTime, endTime) => {
     try {
         const token = sessionStorage.getItem('JWT');
         const trades = await axiosStandard.get(
@@ -50,6 +50,8 @@ const getTrading = async (id, type) => {
             {
                 params: {
                     type: type,
+                    startTime: startTime,
+                    endTime: endTime,
                 },
                 headers: {
                     JWT: `Bearer ${token}`,
@@ -63,7 +65,7 @@ const getTrading = async (id, type) => {
     }
 };
 
-const getFunding = async (id, type) => {
+const getFunding = async (id, type, startTime, endTime) => {
     try {
         const token = sessionStorage.getItem('JWT');
         const funding = await axiosStandard.get(
@@ -71,6 +73,8 @@ const getFunding = async (id, type) => {
             {
                 params: {
                     type: type,
+                    startTime: startTime,
+                    endTime: endTime,
                 },
                 headers: {
                     JWT: `Bearer ${token}`,

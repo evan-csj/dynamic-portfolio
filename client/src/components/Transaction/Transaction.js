@@ -13,10 +13,13 @@ import {
     Checkbox,
     Text,
     Tag,
+    Radio,
+    RadioGroup,
 } from '@chakra-ui/react';
 import { getTrading, getFunding } from '../../global/axios';
 import List from '../List';
 import '../../styles/global.scss';
+import dayjs from 'dayjs';
 
 const Transaction = props => {
     const navigate = useNavigate();
@@ -24,6 +27,9 @@ const Transaction = props => {
     const [tradingList, setTradingList] = useState([]);
     const [fundingList, setFundingList] = useState([]);
     const [checkedItems, setCheckedItems] = useState([true, true, true, true]);
+    const [timeRange, setTimeRange] = useState('');
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
 
     const allChecked = checkedItems.every(Boolean);
     const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
@@ -54,16 +60,15 @@ const Transaction = props => {
                 ? 'withdraw'
                 : '';
 
-        getTrading(username, tradingType).then(response => {
+        getTrading(username, tradingType, startTime, endTime).then(response => {
             if (response.status === 200) {
                 setTradingList(response.data);
-                console.log(response.data)
             } else {
                 navigate('/');
             }
         });
 
-        getFunding(username, fundingType).then(response => {
+        getFunding(username, fundingType, startTime, endTime).then(response => {
             if (response.status === 200) {
                 setFundingList(response.data);
             } else {
@@ -71,7 +76,19 @@ const Transaction = props => {
             }
         });
         // eslint-disable-next-line
-    }, [props.toggle, checkedItems]);
+    }, [props.toggle, checkedItems, startTime]);
+
+    useEffect(() => {
+        const currentMoment = dayjs();
+        const dayOfWeek = currentMoment.day();
+        const timeFrame = Number(timeRange);
+        if (timeFrame === 0) {
+            setStartTime('');
+        } else {
+            setStartTime(dayjs().day(dayOfWeek - timeFrame));
+        }
+        setEndTime(dayjs());
+    }, [timeRange]);
 
     useEffect(() => {
         window.addEventListener('resize', handleResize);
@@ -92,7 +109,7 @@ const Transaction = props => {
                 borderBottomColor="light.yellow"
                 borderBottomWidth={4}
             >
-                <Heading size={{ base: 'md', lg: 'lg' }}>
+                <Heading size={{ base: 'md', lg: 'lg' }} userSelect="none">
                     Transaction History
                 </Heading>
             </Center>
@@ -150,6 +167,9 @@ const Transaction = props => {
                     borderRightColor="light.grey"
                     borderRightWidth="1px"
                 >
+                    <Heading size="md" pb={4} userSelect="none">
+                        Type
+                    </Heading>
                     <Checkbox
                         isChecked={allChecked}
                         isIndeterminate={isIndeterminate}
@@ -218,11 +238,28 @@ const Transaction = props => {
                             Withdraw
                         </Checkbox>
                     </Flex>
+                    <Heading size="md" pb={4} pt={8} userSelect="none">
+                        Time Frame
+                    </Heading>
+                    <RadioGroup onChange={setTimeRange} value={timeRange}>
+                        <Flex direction="column">
+                            <Radio value="">All</Radio>
+                            <Radio value="7">Last week</Radio>
+                            <Radio value="30">Last 30 days</Radio>
+                            <Radio value="60">Last 60 days</Radio>
+                            <Radio value="90">Last 90 days</Radio>
+                        </Flex>
+                    </RadioGroup>
                 </Box>
                 <Flex direction="column" gap={8} flex={1} pl={8}>
                     {tradingList.length > 0 ? (
                         <Box>
-                            <Tag size="lg" variant="outline" color="light.navy">
+                            <Tag
+                                size="lg"
+                                variant="outline"
+                                color="light.navy"
+                                userSelect="none"
+                            >
                                 Trading
                             </Tag>
                             <List key={0} type={'trading'} list={tradingList} />
@@ -233,7 +270,12 @@ const Transaction = props => {
 
                     {fundingList.length > 0 ? (
                         <Box>
-                            <Tag size="lg" variant="outline" color="light.navy">
+                            <Tag
+                                size="lg"
+                                variant="outline"
+                                color="light.navy"
+                                userSelect="none"
+                            >
                                 Funding
                             </Tag>
                             <List key={1} type={'funding'} list={fundingList} />

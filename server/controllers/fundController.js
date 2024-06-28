@@ -3,7 +3,7 @@ const { v1 } = require('uuid');
 
 const getFundHistory = async (req, res) => {
     const userId = req.params.userId || req.user || '';
-    const { type } = req.query;
+    const { type, startTime, endTime } = req.query;
 
     try {
         const fundHistory = await knex('fund')
@@ -11,6 +11,12 @@ const getFundHistory = async (req, res) => {
             .modify(queryBuilder => {
                 if (type !== 'all') {
                     queryBuilder.where({ type: type });
+                }
+                if (startTime !== '') {
+                    queryBuilder.whereRaw(
+                        'created_at >= ? AND created_at <= ?',
+                        [startTime, endTime]
+                    );
                 }
             })
             .orderBy('created_at', 'desc');

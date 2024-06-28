@@ -432,35 +432,36 @@ const Profile = props => {
                             </Tbody>
                         </Table>
                     </TableContainer>
-                    <Box my="8px">
-                        {marketState ? (
-                            <Badge
-                                color={
-                                    marketState === 'Regular-Market-Hours'
-                                        ? 'light.green'
-                                        : marketState === 'After-Hours'
-                                        ? 'light.white'
-                                        : marketState === 'Market-Close'
-                                        ? 'light.red'
-                                        : 'light.grey'
-                                }
-                                background={
-                                    marketState === 'Regular-Market-Hours'
-                                        ? 'lightBG.green'
-                                        : marketState === 'After-Hours'
-                                        ? 'light.yellow'
-                                        : marketState === 'Market-Close'
-                                        ? 'lightBG.red'
-                                        : ''
-                                }
-                            >
-                                {marketState}
-                            </Badge>
-                        ) : (
-                            <></>
-                        )}
-                    </Box>
+
                     <Box display={{ base: 'none', xl: 'block' }}>
+                        <Box>
+                            {marketState ? (
+                                <Badge
+                                    color={
+                                        marketState === 'Regular-Market-Hours'
+                                            ? 'light.green'
+                                            : marketState === 'After-Hours'
+                                            ? 'light.white'
+                                            : marketState === 'Market-Close'
+                                            ? 'light.red'
+                                            : 'light.grey'
+                                    }
+                                    background={
+                                        marketState === 'Regular-Market-Hours'
+                                            ? 'lightBG.green'
+                                            : marketState === 'After-Hours'
+                                            ? 'light.yellow'
+                                            : marketState === 'Market-Close'
+                                            ? 'lightBG.red'
+                                            : ''
+                                    }
+                                >
+                                    {marketState}
+                                </Badge>
+                            ) : (
+                                <></>
+                            )}
+                        </Box>
                         <Portfolio
                             key={1}
                             user={userData}
