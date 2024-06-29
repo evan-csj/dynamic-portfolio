@@ -1,9 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const pgSession = require('connect-pg-simple')(session);
 
 const helmet = require('helmet');
 const passport = require('passport');
@@ -31,7 +29,6 @@ const {
     PORT,
     JWT_SECRET,
     FINNHUB_KEY,
-    DB_PG_URL,
 } = process.env;
 
 const symbolData = require('./seed_data/symbols');
@@ -47,18 +44,7 @@ const symbolRoute = require('./routes/symbolRoute');
 const statRoute = require('./routes/statRoute');
 const authRoute = require('./routes/authRoute');
 const chatgptRoute = require('./routes/chatgptRoute');
-const { close } = require('inspector');
 
-const pgSessionStore = new pgSession({
-    conObject: {
-        connectionString: DB_PG_URL,
-        ssl: true,
-    },
-    tableName: 'oauth',
-});
-
-app.set('trust proxy', 1);
-app.use(cookieParser());
 app.use(express.json());
 app.use(helmet());
 app.use(
@@ -66,16 +52,12 @@ app.use(
         secret: JWT_SECRET,
         resave: RESAVE ? true : false,
         saveUninitialized: SAVEUNINIT ? true : false,
-        store: pgSessionStore,
-        proxy: true,
         cookie: {
-            httpOnly: HTTPONLY ? true : false,
-            sameSite: SAMESITE,
             secure: SECURE ? true : false,
-            maxAge: 24 * 60 * 60 * 1000,
         },
     })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 require('./passport-setup');
