@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
 
 const helmet = require('helmet');
 const passport = require('passport');
@@ -18,8 +17,6 @@ const redis = require('redis');
 
 const {
     SECURE,
-    HTTPONLY,
-    SAMESITE,
     RESAVE,
     SAVEUNINIT,
     REDIS_HOST,
