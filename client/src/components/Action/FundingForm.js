@@ -3,6 +3,7 @@ import Select from 'react-select';
 import {
     Heading,
     Box,
+    Text,
     Flex,
     Stack,
     Button,
@@ -13,8 +14,9 @@ import {
     InputGroup,
     InputLeftElement,
     InputRightElement,
+    useToast,
 } from '@chakra-ui/react';
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import { getUser, postFunding } from '../../global/axios';
 import Balance from './Balance';
 import '../../styles/global.scss';
@@ -40,6 +42,7 @@ const FundingForm = props => {
             label: 'CAD',
         },
     ];
+    const toast = useToast();
     const [userId, setUserId] = useState(null);
     const [userData, setUserData] = useState(undefined);
     const [type, setType] = useState('');
@@ -86,6 +89,38 @@ const FundingForm = props => {
         return true;
     };
 
+    const addToast = () => {
+        toast({
+            duration: 10000,
+            isClosable: true,
+            position: 'bottom',
+            render: () => (
+                <Flex
+                    pos="absolute"
+                    bottom={{ base: '72px', xl: '32px' }}
+                    direction="row"
+                    gap={4}
+                    justifyContent="flex-start"
+                    alignItems="center"
+                    color="white"
+                    p={4}
+                    bg={type === 'deposit' ? 'light.green' : 'light.red'}
+                    borderRadius={8}
+                    w="300px"
+                    h="80px"
+                >
+                    <CheckCircleIcon boxSize={6} />
+                    <Box>
+                        <Heading size="sm">Successfully</Heading>
+                        <Text>
+                            {title} {amount} {account.toUpperCase()}
+                        </Text>
+                    </Box>
+                </Flex>
+            ),
+        });
+    };
+
     const notZero = numberValue <= 0 ? false : true;
 
     useEffect(() => {
@@ -108,7 +143,11 @@ const FundingForm = props => {
                 type: type,
                 currency: account,
             };
-            await postFunding(newFunding);
+            const res = await postFunding(newFunding);
+            if (res.status === 200) {
+                addToast();
+            }
+
             props.closeDrawer();
             if (props.toggle) {
                 props.updateToggle(false);

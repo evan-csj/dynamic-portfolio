@@ -311,8 +311,7 @@ const Profile = props => {
             <Flex
                 justifyContent="space-between"
                 gap={8}
-                px={{ base: '16px', lg: '32px' }}
-                pt={{ base: '8px', lg: '16px' }}
+                p={{ base: '16px', lg: '32px' }}
             >
                 <Flex
                     direction="column"

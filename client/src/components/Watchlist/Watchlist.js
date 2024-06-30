@@ -322,8 +322,7 @@ const Watchlist = props => {
             <Flex
                 direction="row"
                 justifyContent="space-between"
-                px={{ base: '16px', lg: '32px' }}
-                pt={4}
+                p={{ base: '16px', lg: '32px' }}
             >
                 <Box w={{ base: '100%', xl: windowWidth - 64 - 350 }}>
                     <CandleStick

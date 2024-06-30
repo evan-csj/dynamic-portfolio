@@ -158,8 +158,7 @@ const Transaction = props => {
             <Flex
                 display={{ base: 'none', xl: 'flex' }}
                 justifyContent="space-between"
-                px={{ base: '16px', lg: '32px' }}
-                pt={8}
+                p={{ base: '16px', lg: '32px' }}
             >
                 <Box
                     w="200px"
