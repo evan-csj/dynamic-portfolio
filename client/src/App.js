@@ -22,18 +22,22 @@ import {
     SkeletonCircle,
     Text,
     Box,
+    Heading,
     useDisclosure,
     Drawer,
     DrawerBody,
     DrawerOverlay,
     DrawerContent,
     DrawerCloseButton,
+    useToast,
 } from '@chakra-ui/react';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import { Funding, Trading } from './styles/icons';
 
 function App() {
     const navigate = useNavigate();
     const location = useLocation();
+    const toast = useToast();
     const hiddenNavPaths = ['/', '/login', '/resume'];
     const showNavbar = !hiddenNavPaths.includes(location.pathname);
     const [username, setUsername] = useState('');
@@ -41,6 +45,7 @@ function App() {
     const [toggle, setToggle] = useState(false);
     const [subscribe, setSubscribe] = useState([]);
     const [waitForRes, setWaitForRes] = useState(false);
+    const [width, height] = [window.innerWidth, window.innerHeight];
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
         isOpen: isFundingOpen,
@@ -148,6 +153,60 @@ function App() {
         fundingClose();
         tradingClose();
         onClose();
+    };
+
+    const addToast = (action, amount, currency, ticker) => {
+        console.log(ticker);
+        toast({
+            duration: 5000,
+            isClosable: true,
+            position: 'bottom',
+            render: () => (
+                <Flex
+                    pos="absolute"
+                    bottom={{ base: '0', md: '72px', xl: '32px' }}
+                    left={{ base: '0', md: 'auto' }}
+                    direction={{ base: 'column', md: 'row' }}
+                    gap={4}
+                    justifyContent={{ base: 'center', md: 'flex-start' }}
+                    alignItems="center"
+                    color="white"
+                    p={4}
+                    bg={
+                        action === 'Deposit' || action === 'Buy'
+                            ? 'light.green'
+                            : action === 'Withdraw' || action === 'Sell'
+                            ? 'light.red'
+                            : 'light.navy'
+                    }
+                    borderRadius={{
+                        base: '0',
+                        md: '12px',
+                    }}
+                    w={{ base: width, md: '300px' }}
+                    h={{ base: height, md: '80px' }}
+                >
+                    <CheckCircleIcon boxSize={6} />
+                    <Flex
+                        direction="column"
+                        alignItems={{ base: 'center', md: 'flex-start' }}
+                    >
+                        <Heading size="sm">Successfully</Heading>
+                        {ticker ? (
+                            <Text>
+                                {action} {amount}{' '}
+                                {Number(amount) === 1 ? 'share' : 'shares'}{' '}
+                                {ticker}
+                            </Text>
+                        ) : (
+                            <Text>
+                                {action} {amount} {currency.toUpperCase()}
+                            </Text>
+                        )}
+                    </Flex>
+                </Flex>
+            ),
+        });
     };
 
     useEffect(() => {
@@ -329,7 +388,7 @@ function App() {
             </Drawer>
 
             <Drawer
-                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
+                placement={width >= 1280 ? 'right' : 'bottom'}
                 onClose={fundingClose}
                 isOpen={isFundingOpen}
                 size={{ base: 'full', xl: 'md' }}
@@ -345,13 +404,14 @@ function App() {
                             closeDrawer={closeAllDrawer}
                             toggle={toggle}
                             updateToggle={setToggle}
+                            addToast={addToast}
                         />
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
 
             <Drawer
-                placement={window.innerWidth >= 1280 ? 'right' : 'bottom'}
+                placement={width >= 1280 ? 'right' : 'bottom'}
                 onClose={tradingClose}
                 isOpen={isTradingOpen}
                 size={{ base: 'full', xl: 'md' }}
@@ -370,6 +430,7 @@ function App() {
                             closeDrawer={closeAllDrawer}
                             toggle={toggle}
                             updateToggle={setToggle}
+                            addToast={addToast}
                         />
                     </DrawerBody>
                 </DrawerContent>

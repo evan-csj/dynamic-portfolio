@@ -24,7 +24,6 @@ import {
 import { isMarketOpen } from '../../global/time';
 import Balance from './Balance';
 import '../../styles/global.scss';
-// import useWebSocket from 'react-use-websocket';
 
 const TradingForm = props => {
     const typeOptions = [
@@ -119,7 +118,12 @@ const TradingForm = props => {
                 orderStatus: 'pending',
                 currency,
             };
-            await postTrading(newTrade);
+
+            const res = await postTrading(newTrade);
+            if (res.status === 200) {
+                console.log(shares, symbol);
+                props.addToast(title, quantity, currency, symbol);
+            }
             props.closeDrawer();
             if (props.toggle) {
                 props.updateToggle(false);
