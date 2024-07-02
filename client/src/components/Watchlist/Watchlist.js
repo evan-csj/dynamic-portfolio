@@ -322,7 +322,8 @@ const Watchlist = props => {
             <Flex
                 direction="row"
                 justifyContent="space-between"
-                p={{ base: '16px', lg: '32px' }}
+                px={{ base: '16px', lg: '32px' }}
+                pt={{ base: '16px', lg: '32px' }}
             >
                 <Box w={{ base: '100%', xl: windowWidth - 64 - 350 }}>
                     <CandleStick
@@ -335,9 +336,8 @@ const Watchlist = props => {
                     ></CandleStick>
                     <Box
                         display={{ base: 'block', md: 'none' }}
-                        px={{ base: '16px', lg: '32px' }}
                         w="100%"
-                        zIndex={2}
+                        pb={4}
                     >
                         <Menu>
                             <MenuButton
@@ -350,7 +350,7 @@ const Watchlist = props => {
                             >
                                 {chartScale}
                             </MenuButton>
-                            <MenuList>
+                            <MenuList zIndex={2}>
                                 <MenuItem onClick={() => changeScale('1D')}>
                                     1D
                                 </MenuItem>
