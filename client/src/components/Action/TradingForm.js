@@ -15,6 +15,7 @@ import {
 import {
     getUser,
     getSymbols,
+    getSymbol,
     getLastPrice,
     getHoldings,
     postTrading,
@@ -54,27 +55,31 @@ const TradingForm = props => {
         getLastPrice(selected.value).then(response => {
             setCurrentPrice(response.data.c);
         });
-        getCompanyProfile(selected.value).then(response => {
-            const {
-                ticker,
-                name,
-                exchange,
-                finnhubIndustry: sector,
-                logo,
-                currency,
-            } = response.data;
+        getSymbol(selected.value).then(response => {
+            const currency = response.data.currency;
+            if (!currency) {
+                getCompanyProfile(selected.value).then(response => {
+                    const {
+                        name,
+                        exchange,
+                        finnhubIndustry: sector,
+                        logo,
+                        currency,
+                    } = response.data;
 
-            const updateSymbol = {
-                ticker: ticker,
-                name: name,
-                exchange: exchange,
-                sector: sector,
-                logo: logo,
-                currency: currency,
-            };
+                    const updateSymbol = {
+                        ticker: selected.value,
+                        name: name,
+                        exchange: exchange,
+                        sector: sector,
+                        logo: logo,
+                        currency: currency,
+                    };
 
-            putSymbolInfo(updateSymbol);
-            setCurrency(currency);
+                    putSymbolInfo(updateSymbol);
+                    setCurrency(currency);
+                });
+            }
         });
 
         setSymbol(selected.value);
@@ -121,7 +126,6 @@ const TradingForm = props => {
 
             const res = await postTrading(newTrade);
             if (res.status === 200) {
-                console.log(shares, symbol);
                 props.addToast(title, quantity, currency, symbol);
             }
             props.closeDrawer();

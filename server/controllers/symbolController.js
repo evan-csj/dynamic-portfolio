@@ -13,6 +13,16 @@ const getSymbols = async (req, res) => {
     }
 };
 
+const getSymbol = async (req, res) => {
+    const ticker = req.params.ticker || '';
+    const symbol = await knex('symbol')
+        .where({
+            symbol: ticker,
+        })
+        .first();
+    return res.status(200).json(symbol);
+};
+
 const updateSymbolInfo = async (req, res) => {
     const { ticker, name, exchange, sector, logo, currency } = req.body;
 
@@ -39,4 +49,29 @@ const updateSymbolPrice = async (req, res) => {
     return res.status(200).json(updatePrice);
 };
 
-module.exports = { getSymbols, updateSymbolInfo, updateSymbolPrice };
+const updateSymbolEps = async (req, res) => {
+    const ticker = req.params.ticker || '';
+    const eps = req.body;
+    await knex('symbol')
+        .where({ symbol: ticker })
+        .update({ eps: JSON.stringify(eps) });
+    return res.status(200).json({});
+};
+
+const updateSymbolTrend = async (req, res) => {
+    const ticker = req.params.ticker || '';
+    const trend = req.body;
+    await knex('symbol')
+        .where({ symbol: ticker })
+        .update({ trend: JSON.stringify(trend) });
+    return res.status(200).json({});
+};
+
+module.exports = {
+    getSymbols,
+    getSymbol,
+    updateSymbolInfo,
+    updateSymbolPrice,
+    updateSymbolEps,
+    updateSymbolTrend,
+};

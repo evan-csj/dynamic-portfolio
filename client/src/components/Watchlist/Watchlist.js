@@ -30,6 +30,7 @@ import {
     deleteWatchItem,
     getCompanyProfile,
     putSymbolPrice,
+    putSymbolInfo,
 } from '../../global/axios';
 import { isMarketOpen, getMarketState } from '../../global/time';
 import CandleStick from './CandleStick';
@@ -56,8 +57,6 @@ const Watchlist = props => {
     const [listLength, setListLength] = useState(0);
     const symbolOptions = useRef([]);
     const [marketState, setMarketState] = useState('');
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const { lastMessage, sendMessage, setSubscribe, unsubscribeAll } = props;
 
     const wsInitial = () => {
@@ -142,8 +141,13 @@ const Watchlist = props => {
             const quote = await getLastPrice(searchTicker);
             const profile = await getCompanyProfile(searchTicker);
             const { c: currentPrice, pc: prevClose } = quote.data;
-            const { logo, name, exchange, finnhubIndustry, currency } =
-                profile.data;
+            const {
+                logo,
+                name,
+                exchange,
+                finnhubIndustry: sector,
+                currency,
+            } = profile.data;
 
             const newWatchItemFE = {
                 logo,
@@ -157,7 +161,7 @@ const Watchlist = props => {
                 userId,
                 name,
                 exchange,
-                sector: finnhubIndustry,
+                sector: sector,
                 logo,
                 ticker: searchTicker,
                 price: currentPrice,
@@ -165,11 +169,21 @@ const Watchlist = props => {
                 currency,
             };
 
+            const updateSymbol = {
+                ticker: searchTicker,
+                name: name,
+                exchange: exchange,
+                sector: sector,
+                logo: logo,
+                currency: currency,
+            };
+
             let newWatchlist = { ...watchlist };
             newWatchlist[searchTicker] = newWatchItemFE;
             setWatchlist(newWatchlist);
             setTicker(searchTicker);
             await addWatchItem(newWatchItemBE);
+            await putSymbolInfo(updateSymbol);
             setSearchTicker('');
             wsChange('subscribe', searchTicker);
             setListLength(Object.keys(newWatchlist).length);
@@ -194,11 +208,6 @@ const Watchlist = props => {
         }
     };
 
-    const handleResize = () => {
-        setWindowWidth(window.innerWidth);
-        setWindowHeight(window.innerHeight);
-    };
-
     useEffect(() => {
         const userIdSession = sessionStorage.getItem('userId');
         const username = userIdSession ?? '';
@@ -209,8 +218,9 @@ const Watchlist = props => {
                 const dataObj = convertArray2Dict(response.data);
                 setWatchlist(dataObj);
                 setIsWatchlistLoaded(true);
-                if (response.data.length > 0)
+                if (response.data.length > 0) {
                     setTicker(response.data[0].ticker);
+                }
             } else {
                 navigate('/');
             }
@@ -295,13 +305,6 @@ const Watchlist = props => {
         });
     }, [ticker, chartScale]);
 
-    useEffect(() => {
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
     return (
         <Flex
             direction="column"
@@ -325,7 +328,7 @@ const Watchlist = props => {
                 px={{ base: '16px', lg: '32px' }}
                 pt={{ base: '16px', lg: '32px' }}
             >
-                <Box w={{ base: '100%', xl: windowWidth - 64 - 350 }}>
+                <Box w={{ base: '100%', xl: props.ww - 64 - 350 }}>
                     <CandleStick
                         data={
                             candlestickData || {
@@ -440,7 +443,12 @@ const Watchlist = props => {
                         key={1}
                     >
                         {ticker ? (
-                            <Statistics key={ticker} ticker={ticker} />
+                            <Statistics
+                                key={ticker}
+                                tickerInfo={watchlist.ticker}
+                                ww={props.ww}
+                                wh={props.wh}
+                            />
                         ) : (
                             <></>
                         )}
@@ -452,7 +460,7 @@ const Watchlist = props => {
                     w="350px"
                     borderLeft="1px"
                     borderLeftColor="light.grey"
-                    minH={windowHeight - 172}
+                    minH={props.wh - 172}
                     pl={4}
                 >
                     <FormControl pb={4}>
@@ -581,7 +589,13 @@ const Watchlist = props => {
                     </TabPanel>
                     <TabPanel key={1} p={0} pt={4}>
                         {ticker ? (
-                            <Statistics key={ticker} ticker={ticker} />
+                            <Statistics
+                                key={ticker}
+                                ticker={ticker}
+                                tickerInfo={watchlist[ticker]}
+                                ww={props.ww}
+                                wh={props.wh}
+                            />
                         ) : (
                             <></>
                         )}

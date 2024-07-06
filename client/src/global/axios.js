@@ -223,6 +223,23 @@ const getSymbols = async () => {
     }
 };
 
+const getSymbol = async ticker => {
+    try {
+        const token = sessionStorage.getItem('JWT');
+        const symbol = await axiosStandard.get(
+            `${API_ADDRESS}/symbols/${ticker}`,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
+        );
+        return symbol;
+    } catch (error) {
+        return error.response;
+    }
+};
+
 const putSymbolInfo = async symbolInfo => {
     try {
         const token = sessionStorage.getItem('JWT');
@@ -245,6 +262,38 @@ const putSymbolPrice = async symbolPrice => {
         const response = await axiosStandard.put(
             `${API_ADDRESS}/symbols/price`,
             symbolPrice,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
+        );
+        return response;
+    } catch (err) {}
+};
+
+const putSymbolEps = async (ticker, eps) => {
+    try {
+        const token = sessionStorage.getItem('JWT');
+        const response = await axiosStandard.put(
+            `${API_ADDRESS}/symbols/eps/${ticker}`,
+            eps,
+            {
+                headers: {
+                    JWT: `Bearer ${token}`,
+                },
+            }
+        );
+        return response;
+    } catch (err) {}
+};
+
+const putSymbolTrend = async (ticker, trend) => {
+    try {
+        const token = sessionStorage.getItem('JWT');
+        const response = await axiosStandard.put(
+            `${API_ADDRESS}/symbols/trend/${ticker}`,
+            trend,
             {
                 headers: {
                     JWT: `Bearer ${token}`,
@@ -461,8 +510,11 @@ export {
     getPriceHistory,
     getLastPrice,
     getSymbols,
+    getSymbol,
     putSymbolInfo,
     putSymbolPrice,
+    putSymbolEps,
+    putSymbolTrend,
     getPortfolio,
     getEps,
     getCompanyProfile,

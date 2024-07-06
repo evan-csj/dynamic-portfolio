@@ -27,6 +27,8 @@ exports.up = function (knex) {
             table.float('price', 12, 2).defaultTo(0);
             table.float('prev_close', 12, 2).defaultTo(0);
             table.string('currency');
+            table.jsonb('eps').defaultTo({ 0: {}, 1: {}, 2: {}, 3: {} });
+            table.jsonb('trend').defaultTo({ 0: {}, 1: {}, 2: {}, 3: {} });
             table.timestamps(true, true);
         })
         .createTable('trade', table => {

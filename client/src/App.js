@@ -45,7 +45,8 @@ function App() {
     const [toggle, setToggle] = useState(false);
     const [subscribe, setSubscribe] = useState([]);
     const [waitForRes, setWaitForRes] = useState(false);
-    const [width, height] = [window.innerWidth, window.innerHeight];
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
         isOpen: isFundingOpen,
@@ -83,6 +84,11 @@ function App() {
 
     const changePage = path => {
         setPage(path);
+    };
+
+    const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+        setWindowHeight(window.innerHeight);
     };
 
     const login = username => {
@@ -156,7 +162,6 @@ function App() {
     };
 
     const addToast = (action, amount, currency, ticker) => {
-        console.log(ticker);
         toast({
             duration: 5000,
             isClosable: true,
@@ -183,8 +188,8 @@ function App() {
                         base: '0',
                         md: '12px',
                     }}
-                    w={{ base: width, md: '300px' }}
-                    h={{ base: height, md: '80px' }}
+                    w={{ base: windowWidth, md: '300px' }}
+                    h={{ base: windowHeight, md: '80px' }}
                 >
                     <CheckCircleIcon boxSize={6} />
                     <Flex
@@ -218,6 +223,13 @@ function App() {
     useEffect(() => {
         console.log('WS Status:', connectionStatus);
     }, [connectionStatus]);
+
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return (
         <>
@@ -289,6 +301,8 @@ function App() {
                             lastMessage={lastMessage}
                             setSubscribe={setSubscribe}
                             unsubscribeAll={unsubscribeAll}
+                            ww={windowWidth}
+                            wh={windowHeight}
                         />
                     }
                 />
@@ -388,7 +402,7 @@ function App() {
             </Drawer>
 
             <Drawer
-                placement={width >= 1280 ? 'right' : 'bottom'}
+                placement={windowWidth >= 1280 ? 'right' : 'bottom'}
                 onClose={fundingClose}
                 isOpen={isFundingOpen}
                 size={{ base: 'full', xl: 'md' }}
@@ -411,7 +425,7 @@ function App() {
             </Drawer>
 
             <Drawer
-                placement={width >= 1280 ? 'right' : 'bottom'}
+                placement={windowWidth >= 1280 ? 'right' : 'bottom'}
                 onClose={tradingClose}
                 isOpen={isTradingOpen}
                 size={{ base: 'full', xl: 'md' }}

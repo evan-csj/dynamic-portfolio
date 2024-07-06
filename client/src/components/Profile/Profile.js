@@ -78,9 +78,7 @@ const Profile = props => {
 
                 if (holdingItem.currency === null) {
                     const profile = await getCompanyProfile(ticker);
-
                     const { currency } = profile.data;
-
                     holdingItem.currency = currency;
                 }
 
