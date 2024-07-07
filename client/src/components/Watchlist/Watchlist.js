@@ -327,6 +327,7 @@ const Watchlist = props => {
                 justifyContent="space-between"
                 px={{ base: '16px', lg: '32px' }}
                 pt={{ base: '16px', lg: '32px' }}
+                pb={{ base: '0', xl: '32px' }}
             >
                 <Box w={{ base: '100%', xl: props.ww - 64 - 350 }}>
                     <CandleStick
@@ -445,6 +446,7 @@ const Watchlist = props => {
                         {ticker ? (
                             <Statistics
                                 key={ticker}
+                                ticker={ticker}
                                 tickerInfo={watchlist.ticker}
                                 ww={props.ww}
                                 wh={props.wh}

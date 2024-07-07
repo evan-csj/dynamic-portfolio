@@ -7,7 +7,7 @@ import {
     putSymbolEps,
     putSymbolTrend,
 } from '../../global/axios';
-import { HStack, Box, Heading, Image } from '@chakra-ui/react';
+import { HStack, Box, Heading, Image, Flex } from '@chakra-ui/react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -68,13 +68,127 @@ const optionsTrends = {
 
 const Statistics = props => {
     const [profile, setProfile] = useState(undefined);
-    const [dataEps, setDataEps] = useState(undefined);
-    const [dataTrends, setDataTrends] = useState(undefined);
+    const [epsChart, setEpsChart] = useState(undefined);
+    const [trendChart, setTrendChart] = useState(undefined);
 
-    useEffect(() => {
-        if (!props.ticker) return;
-        getSymbol(props.ticker).then(response => {
+    const updateEps = async epsInDB => {
+        const lastEpsPeriod = epsInDB[0]?.period || '1970-01-01';
+        const diffEpsPeriod = dayjs().diff(lastEpsPeriod, 'month', true);
+        let labels = [];
+        let actual = [];
+        let estimate = [];
+        let epsUpdate = epsInDB;
+
+        if (diffEpsPeriod > 3.5) {
+            const res = await getEps(props.ticker);
+            epsUpdate = res.data;
+
+            const eps2DB = {
+                0: epsUpdate[0],
+                1: epsUpdate[1],
+                2: epsUpdate[2],
+                3: epsUpdate[3],
+            };
+
+            await putSymbolEps(props.ticker, eps2DB);
+        }
+
+        epsUpdate.forEach(item => {
+            labels.push(item.period);
+            actual.push(item.actual);
+            estimate.push(item.estimate);
+        });
+
+        const chartData = {
+            labels,
+            datasets: [
+                {
+                    label: 'Estimate',
+                    data: estimate,
+                    backgroundColor: '#0b409c',
+                },
+                {
+                    label: 'Actual',
+                    data: actual,
+                    backgroundColor: '#ffce63',
+                },
+            ],
+        };
+
+        setEpsChart(chartData);
+    };
+
+    const updateTrend = async trendInDB => {
+        const lastTrendPeriod = trendInDB[0]?.period || '1970-01-01';
+        const diffTrendPeriod = dayjs().diff(lastTrendPeriod, 'month', true);
+        let labels = [];
+        let strongBuy = [];
+        let buy = [];
+        let hold = [];
+        let sell = [];
+        let strongSell = [];
+        let trendUpdate = trendInDB;
+        if (diffTrendPeriod > 1.5) {
+            const res = await getTrends(props.ticker);
+            trendUpdate = res.data;
+
+            const trend2DB = {
+                0: trendUpdate[0],
+                1: trendUpdate[1],
+                2: trendUpdate[2],
+                3: trendUpdate[3],
+            };
+            await putSymbolTrend(props.ticker, trend2DB);
+        }
+
+        trendUpdate.forEach(item => {
+            labels.push(item.period);
+            strongBuy.push(item.strongBuy);
+            buy.push(item.buy);
+            hold.push(item.hold);
+            sell.push(item.sell);
+            strongSell.push(item.strongSell);
+        });
+
+        const chartData = {
+            labels,
+            datasets: [
+                {
+                    label: 'Strong Sell',
+                    data: strongSell,
+                    backgroundColor: '#850000',
+                },
+                {
+                    label: 'Sell',
+                    data: sell,
+                    backgroundColor: '#FF5F5F',
+                },
+                {
+                    label: 'Hold',
+                    data: hold,
+                    backgroundColor: '#FFCE63',
+                },
+                {
+                    label: 'Buy',
+                    data: buy,
+                    backgroundColor: '#0B8457',
+                },
+                {
+                    label: 'Strong Buy',
+                    data: strongBuy,
+                    backgroundColor: '#183A1D',
+                },
+            ],
+        };
+
+        setTrendChart(chartData);
+    };
+
+    const fetchCompanyData = async () => {
+        try {
+            const response = await getSymbol(props.ticker);
             let { name, exchange, logo, sector, eps, trend } = response.data;
+
             let companyProfile = {
                 name,
                 exchange,
@@ -83,142 +197,70 @@ const Statistics = props => {
             };
 
             if (!name || !exchange || !logo || !sector) {
-                getCompanyProfile(props.ticker).then(response => {
+                const profileResponse = await getCompanyProfile(props.ticker);
+                if (profileResponse.status === 200) {
                     companyProfile = {
-                        name: response.data.name,
-                        exchange: response.data.name,
-                        logo: response.data.logo,
-                        sector: response.data.finnhubIndustry,
+                        name: profileResponse.data.name,
+                        exchange: profileResponse.data.name,
+                        logo: profileResponse.data.logo,
+                        sector: profileResponse.data.finnhubIndustry,
                     };
-                });
+                }
             }
 
+            const epsArray = Object.values(eps);
+            const trendArray = Object.values(trend);
+
             setProfile(companyProfile);
+            await updateEps(epsArray);
+            await updateTrend(trendArray);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
 
-            getEps(props.ticker).then(response => {
-                const epsUpdate = response.data;
-                let labels = [];
-                let actual = [];
-                let estimate = [];
-
-                epsUpdate.forEach(item => {
-                    labels.push(item.period);
-                    actual.push(item.actual);
-                    estimate.push(item.estimate);
-                });
-
-                const dataEps = {
-                    labels,
-                    datasets: [
-                        {
-                            label: 'Estimate',
-                            data: estimate,
-                            backgroundColor: '#0b409c',
-                        },
-                        {
-                            label: 'Actual',
-                            data: actual,
-                            backgroundColor: '#ffce63',
-                        },
-                    ],
-                };
-
-                setDataEps(dataEps);
-                const eps2DB = {
-                    0: epsUpdate[0],
-                    1: epsUpdate[1],
-                    2: epsUpdate[2],
-                    3: epsUpdate[3],
-                };
-                putSymbolEps(props.ticker, eps2DB);
-            });
-
-            getTrends(props.ticker).then(response => {
-                const trendUpdate = response.data;
-                let labels = [];
-                let strongBuy = [];
-                let buy = [];
-                let hold = [];
-                let sell = [];
-                let strongSell = [];
-
-                trendUpdate.forEach(item => {
-                    labels.push(item.period);
-                    strongBuy.push(item.strongBuy);
-                    buy.push(item.buy);
-                    hold.push(item.hold);
-                    sell.push(item.sell);
-                    strongSell.push(item.strongSell);
-                });
-
-                const dataTrends = {
-                    labels,
-                    datasets: [
-                        {
-                            label: 'Strong Sell',
-                            data: strongSell,
-                            backgroundColor: '#850000',
-                        },
-                        {
-                            label: 'Sell',
-                            data: sell,
-                            backgroundColor: '#FF5F5F',
-                        },
-                        {
-                            label: 'Hold',
-                            data: hold,
-                            backgroundColor: '#FFCE63',
-                        },
-                        {
-                            label: 'Buy',
-                            data: buy,
-                            backgroundColor: '#0B8457',
-                        },
-                        {
-                            label: 'Strong Buy',
-                            data: strongBuy,
-                            backgroundColor: '#183A1D',
-                        },
-                    ],
-                };
-
-                setDataTrends(dataTrends);
-                const trend2DB = {
-                    0: trendUpdate[0],
-                    1: trendUpdate[1],
-                    2: trendUpdate[2],
-                    3: trendUpdate[3],
-                };
-                putSymbolTrend(props.ticker, trend2DB);
-            });
-        });
-        // eslint-disable-next-line
+    useEffect(() => {
+        if (!props.ticker) return;
+        fetchCompanyData();
     }, []);
 
-    if (profile && dataEps && dataTrends) {
-        return (
-            <Box p={4}>
-                <HStack>
-                    <Image
-                        borderRadius="full"
-                        boxSize="50px"
-                        src={profile.logo}
-                        alt={props.ticker}
-                    />
-                    <Heading>{profile.name}</Heading>
-                </HStack>
-                <Box color="light.grey" pt={2}>
-                    {profile.exchange}
-                </Box>
-                <Box w="50%" h={props.ww / 3}>
-                    <Bar options={optionsEps} data={dataEps} />
-                </Box>
-                <Box w="50%" h={props.ww / 3}>
-                    <Bar options={optionsTrends} data={dataTrends} />
-                </Box>
-            </Box>
-        );
-    }
+    return (
+        <Box p={4}>
+            {profile && (
+                <>
+                    <HStack>
+                        <Image
+                            borderRadius="full"
+                            boxSize="50px"
+                            src={profile.logo}
+                            alt={props.ticker}
+                        />
+                        <Heading>{profile.name}</Heading>
+                    </HStack>
+                    <Box color="light.grey" pt={2}>
+                        {profile.exchange}
+                    </Box>
+                </>
+            )}
+            <Flex
+                direction={{ base: 'column', lg: 'row' }}
+                justifyContent="center"
+                gap={6}
+            >
+                {epsChart && (
+                    <Box w={{ base: '100%', lg: '45%' }} h={props.ww / 3}>
+                        <Bar options={optionsEps} data={epsChart} />
+                    </Box>
+                )}
+
+                {trendChart && (
+                    <Box w={{ base: '100%', lg: '45%' }} h={props.ww / 3}>
+                        <Bar options={optionsTrends} data={trendChart} />
+                    </Box>
+                )}
+            </Flex>
+        </Box>
+    );
 };
 
 export default Statistics;
