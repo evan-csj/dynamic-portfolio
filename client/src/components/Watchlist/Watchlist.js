@@ -42,6 +42,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
 const Watchlist = props => {
+    const listWidth = 370;
     dayjs.extend(utc);
     dayjs.extend(timezone);
     const navigate = useNavigate();
@@ -329,7 +330,7 @@ const Watchlist = props => {
                 pt={{ base: '16px', lg: '32px' }}
                 pb={{ base: '0', xl: '32px' }}
             >
-                <Box w={{ base: '100%', xl: props.ww - 64 - 350 }}>
+                <Box w={{ base: '100%', xl: props.ww - 64 - listWidth }}>
                     <CandleStick
                         data={
                             candlestickData || {
@@ -459,7 +460,7 @@ const Watchlist = props => {
 
                 <Box
                     display={{ base: 'none', xl: 'block' }}
-                    w="350px"
+                    w={listWidth}
                     borderLeft="1px"
                     borderLeftColor="light.grey"
                     minH={props.wh - 172}

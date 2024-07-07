@@ -222,6 +222,7 @@ const Statistics = props => {
     useEffect(() => {
         if (!props.ticker) return;
         fetchCompanyData();
+        // eslint-disable-next-line
     }, []);
 
     return (

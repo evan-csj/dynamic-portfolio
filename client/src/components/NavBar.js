@@ -51,6 +51,7 @@ const NavBar = props => {
                 display={{ base: 'none', xl: 'flex' }}
                 zIndex={2}
                 fontSize="18px"
+                boxShadow='xl'
             >
                 <Flex gap={4} justifyContent="flex-start">
                     <Box
