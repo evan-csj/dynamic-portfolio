@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
 const isMarketOpen = () => {
-    dayjs.extend(timezone);
-    const currentTime = dayjs().tz('America/Toronto');
-    const currentDay = currentTime.day();
-    const currentHour = currentTime.hour();
+    dayjs.extend(utc);
+    const currentUTC = dayjs().utc();
+    const currentEST = currentUTC.subtract(4, 'hour');
+    const currentDay = currentEST.day();
+    const currentHour = currentEST.hour();
     const result =
         currentDay === 0 ||
         currentDay === 6 ||
@@ -16,11 +16,12 @@ const isMarketOpen = () => {
 };
 
 const getMarketState = () => {
-    dayjs.extend(timezone);
-    const currentTime = dayjs().tz('America/Toronto');
-    const currentDay = currentTime.day();
-    const currentHour = currentTime.hour();
-    const currentMinute = currentTime.minute();
+    dayjs.extend(utc);
+    const currentUTC = dayjs().utc();
+    const currentEST = currentUTC.subtract(4, 'hour');
+    const currentDay = currentEST.day();
+    const currentHour = currentEST.hour();
+    const currentMinute = currentEST.minute();
 
     let result = '';
     if (
