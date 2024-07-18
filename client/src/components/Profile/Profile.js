@@ -29,7 +29,6 @@ import {
     getCurrency,
     getHoldings,
     getCompanyProfile,
-    putSymbolPrice,
 } from '../../global/axios';
 import { isMarketOpen, getMarketState } from '../../global/time';
 import '../../styles/global.scss';
@@ -84,13 +83,8 @@ const Profile = props => {
 
                 if (diff > 60 || holdingItem.price === 0) {
                     const quote = await getLastPrice(ticker);
-                    const { c: currentPrice, pc: previousClose } = quote.data;
+                    const { c: currentPrice } = quote.data;
                     holdingItem.price = currentPrice;
-                    await putSymbolPrice({
-                        symbol: ticker,
-                        price: currentPrice,
-                        prevClose: previousClose,
-                    });
                 }
 
                 newHoldinglist[ticker] = holdingItem;
@@ -470,7 +464,7 @@ const Profile = props => {
                     </Box>
                 </Flex>
                 <Box
-                    w="450px"
+                    w="500px"
                     display={{ base: 'none', xl: 'block' }}
                     borderLeftColor="light.grey"
                     borderLeftWidth="1px"

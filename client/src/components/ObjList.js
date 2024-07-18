@@ -16,33 +16,31 @@ const ObjList = props => {
         return (
             <Flex className="flex-col">
                 {Object.keys(list).map((ticker, index) => {
-                    if (props.type === 'watchlist') {
-                        return (
-                            <WatchItem
-                                key={index}
-                                detail={list[ticker]}
-                                usd2cad={usd2cad}
-                                changeTicker={props.changeTicker}
-                                deleteTicker={props.deleteTicker}
-                            />
-                        );
-                    }
-
-                    if (props.type === 'holding') {
-                        if (
-                            list[ticker].buy_shares -
-                                list[ticker].sell_shares ===
-                            0
-                        ) {
-                            return <Box key={index}></Box>;
-                        }
-                        return (
-                            <Holding
-                                key={index}
-                                detail={list[ticker]}
-                                usd2cad={usd2cad}
-                            />
-                        );
+                    const item = list[ticker];
+                    switch (props.type) {
+                        case 'watchlist':
+                            return (
+                                <WatchItem
+                                    key={index}
+                                    detail={item}
+                                    usd2cad={usd2cad}
+                                    changeTicker={props.changeTicker}
+                                    deleteTicker={props.deleteTicker}
+                                />
+                            );
+                        case 'holding':
+                            if (item.buy_shares - item.sell_shares === 0) {
+                                return <Box key={index}></Box>;
+                            }
+                            return (
+                                <Holding
+                                    key={index}
+                                    detail={item}
+                                    usd2cad={usd2cad}
+                                />
+                            );
+                        default:
+                            return <></>;
                     }
                 })}
             </Flex>

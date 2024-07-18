@@ -61,7 +61,11 @@ const PortfolioItem = props => {
             <GridItem textAlign="right">{pct}%</GridItem>
             <GridItem textAlign="right">
                 <CloseIcon
+                    boxSize={8}
+                    p={2}
+                    borderRadius={4}
                     cursor="pointer"
+                    _hover={{ background: 'light.black', color: 'light.white' }}
                     onClick={() => props.delete(ticker)}
                 />
             </GridItem>

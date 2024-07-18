@@ -11,7 +11,6 @@ import {
     Tab,
     TabPanel,
     Checkbox,
-    Text,
     Tag,
     Radio,
     RadioGroup,

@@ -1,5 +1,6 @@
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
 
 const getSymbols = async (req, res) => {
     if (Object.keys(req.query).length === 0) {
@@ -39,11 +40,12 @@ const updateSymbolInfo = async (req, res) => {
 };
 
 const updateSymbolPrice = async (req, res) => {
+    dayjs.extend(utc);
     const { symbol, price, prevClose } = req.body;
     const updatePrice = {
         price,
         prev_close: prevClose,
-        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        updated_at: dayjs().utc().format('YYYY-MM-DD HH:mm:ss'),
     };
     await knex('symbol').where({ symbol: symbol }).update(updatePrice);
     return res.status(200).json(updatePrice);

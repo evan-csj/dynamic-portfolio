@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { getUser } from '../global/axios';
-import { Flex, Box, Circle, Avatar } from '@chakra-ui/react';
+import { Flex, Box, Avatar } from '@chakra-ui/react';
 import { Profile, CandleStick, History, Logout, Fund } from '../styles/icons';
 import '../styles/global.scss';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
@@ -21,7 +21,7 @@ const NavBar = props => {
 
     useEffect(() => {
         if (pathname[0] === '/') setNavSelect(pathname.split('/')[1]);
-    });
+    },[pathname]);
 
     useEffect(() => {
         const userIdSession = sessionStorage.getItem('userId');

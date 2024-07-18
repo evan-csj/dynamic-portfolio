@@ -1,12 +1,13 @@
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
 const { v1 } = require('uuid');
 
 const getWatchlist = async (req, res) => {
     const userId = req.params.userId || req.user || '';
 
     try {
-        const watchlist = await knex('watchlist')
+        let watchlist = await knex('watchlist')
             .join('symbol', { 'symbol.symbol': 'watchlist.ticker' })
             .select(
                 'watchlist.id',
@@ -36,6 +37,7 @@ const getWatchlist = async (req, res) => {
 };
 
 const addWatchItem = async (req, res) => {
+    dayjs.extend(utc);
     const userId = req.body.userId || req.user || '';
     const { ticker, name, exchange, sector, logo, price, prevClose, currency } =
         req.body;
@@ -54,7 +56,7 @@ const addWatchItem = async (req, res) => {
         price,
         prev_close: prevClose,
         currency,
-        updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        updated_at: dayjs().utc().format('YYYY-MM-DD HH:mm:ss'),
     };
 
     try {

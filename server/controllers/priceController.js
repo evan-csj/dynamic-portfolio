@@ -1,9 +1,9 @@
 const axios = require('axios');
 const knex = require('knex')(require('../knexfile'));
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
 require('dotenv').config();
-const { EX_KEY, FINNHUB_KEY, POLYGON_KEY, ALPACA_KEY, ALPACA_SECRET } =
-    process.env;
+const { FINNHUB_KEY, POLYGON_KEY, ALPACA_KEY, ALPACA_SECRET } = process.env;
 
 const finnHubQuote = symbol => {
     return {
@@ -18,14 +18,15 @@ const finnHubQuote = symbol => {
     };
 };
 
-const polygonAggs = (ticker, multiplier, timespan, from, to) => {
+const polygonForex = convert => {
+    const today = dayjs().format('YYYY-MM-DD');
     return {
         method: 'GET',
-        url: `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${multiplier}/${timespan}/${from}/${to}`,
+        url: `https://api.polygon.io/v2/aggs/ticker/C:${convert}/range/1/minute/${today}/${today}`,
         params: {
             adjusted: 'true',
-            sort: 'asc',
-            limit: '5000',
+            sort: 'desc',
+            limit: '1',
             apikey: POLYGON_KEY,
         },
     };
@@ -68,10 +69,19 @@ const getCandles = async (req, res) => {
 };
 
 const getQuote = async (req, res) => {
+    dayjs.extend(utc);
     const { ticker } = req.query;
     try {
         const response = await axios.request(finnHubQuote(ticker));
-        return res.status(200).json(response.data);
+        const { p: price, pc: prevClose } = response.data;
+        const updatePrice = {
+            price,
+            prev_close: prevClose,
+            updated_at: dayjs().utc().format('YYYY-MM-DD HH:mm:ss'),
+        };
+        res.status(200).json(response.data);
+        await knex('symbol').where({ symbol: ticker }).update(updatePrice);
+        return;
     } catch (error) {
         console.error('Error:', error);
         return res.status(404).json(error);
@@ -79,6 +89,7 @@ const getQuote = async (req, res) => {
 };
 
 const getForex = async (_req, res) => {
+    dayjs.extend(utc);
     try {
         const exchangeRate = await knex('forex')
             .select('updated_at', 'last_price')
@@ -87,19 +98,17 @@ const getForex = async (_req, res) => {
 
         const lastRate = exchangeRate['last_price'];
         const lastUpdateTimestamp = dayjs(exchangeRate['updated_at']);
-        const differece = dayjs().diff(lastUpdateTimestamp, 'hour');
+        const diff = dayjs().diff(lastUpdateTimestamp, 'second');
 
-        if (differece > 24) {
-            const response = await axios.get(
-                `https://v6.exchangerate-api.com/v6/${EX_KEY}/latest/USD`
-            );
-            const rate = response.data['conversion_rates'].CAD;
+        if (diff > 60) {
+            const response = await axios.request(polygonForex('USDCAD'));
+            const rate = response.data.results[0].vw;
             res.status(200).json(rate);
             await knex('forex')
                 .where({ symbol: 'USD/CAD' })
                 .update({
                     last_price: rate,
-                    updated_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+                    updated_at: dayjs().utc().format('YYYY-MM-DD HH:mm:ss'),
                 });
             return;
         } else {

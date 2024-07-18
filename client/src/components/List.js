@@ -3,11 +3,9 @@ import { Flex } from '@chakra-ui/react';
 import '../styles/global.scss';
 import Trading from './Transaction/Trading';
 import Funding from './Transaction/Funding';
-import WatchItem from './Watchlist/WatchItem';
 
 const List = props => {
     const list = props.list;
-    const usd2cad = props.usd2cad || 1;
 
     if (
         props.type !== 'trading' &&
@@ -19,22 +17,16 @@ const List = props => {
 
     if (list.length > 0) {
         return (
-            <Flex className="flex-col">
+            <Flex direction="column">
                 {list.map((item, index) => {
-                    if (props.type === 'trading')
-                        return <Trading key={index} detail={item} />;
-                    if (props.type === 'funding')
-                        return <Funding key={index} detail={item} />;
-                    if (props.type === 'watchlist')
-                        return (
-                            <WatchItem
-                                key={index}
-                                detail={item}
-                                usd2cad={usd2cad}
-                                changeTicker={props.changeTicker}
-                                deleteTicker={props.deleteTicker}
-                            />
-                        );
+                    switch (props.type) {
+                        case 'trading':
+                            return <Trading key={index} detail={item} />;
+                        case 'funding':
+                            return <Funding key={index} detail={item} />;
+                        default:
+                            return <></>;
+                    }
                 })}
             </Flex>
         );

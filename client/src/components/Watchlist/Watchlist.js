@@ -29,7 +29,6 @@ import {
     addWatchItem,
     deleteWatchItem,
     getCompanyProfile,
-    putSymbolPrice,
     putSymbolInfo,
 } from '../../global/axios';
 import { isMarketOpen, getMarketState } from '../../global/time';
@@ -83,18 +82,16 @@ const Watchlist = props => {
             for (let i = 0; i < keyList.length; i++) {
                 const ticker = keyList[i];
                 const watchItem = watchlist[ticker];
-                const diff = dayjs().diff(dayjs(watchItem.updated_at), 's');
+                const diff = dayjs().diff(
+                    dayjs(watchItem.updated_at),
+                    'second'
+                );
 
                 if (diff > 60 || watchItem.price === 0) {
                     const quote = await getLastPrice(ticker);
                     const { c: currentPrice, pc: previousClose } = quote.data;
                     watchItem.price = currentPrice;
                     watchItem.prev_close = previousClose;
-                    await putSymbolPrice({
-                        symbol: ticker,
-                        price: currentPrice,
-                        prevClose: previousClose,
-                    });
                 }
 
                 newWatchlist[ticker] = watchItem;
@@ -305,6 +302,12 @@ const Watchlist = props => {
             });
         });
     }, [ticker, chartScale]);
+
+    useEffect(() => {
+        getCurrency().then(response => {
+            if (response.status === 200) setExRate(response.data);
+        });
+    }, []);
 
     return (
         <Flex
