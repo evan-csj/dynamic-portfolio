@@ -20,9 +20,10 @@ const finnHubQuote = symbol => {
 
 const polygonForex = convert => {
     const today = dayjs().format('YYYY-MM-DD');
+    const lastWeek = dayjs().subtract(7, 'day').format('YYYY-MM-DD');
     return {
         method: 'GET',
-        url: `https://api.polygon.io/v2/aggs/ticker/C:${convert}/range/1/minute/${today}/${today}`,
+        url: `https://api.polygon.io/v2/aggs/ticker/C:${convert}/range/1/minute/${lastWeek}/${today}`,
         params: {
             adjusted: 'true',
             sort: 'desc',

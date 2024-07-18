@@ -184,7 +184,7 @@ const sendInterval = (ws, symbol) => {
             };
             ws.send(JSON.stringify(jsonObj));
         }
-    }, 1000);
+    }, 5000);
 
     const clientSubs = clientSubscriptions.get(ws) || new Set();
     clientSubs.add({ symbol, symbolInterval });
