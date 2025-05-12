@@ -323,11 +323,11 @@ function App() {
 
             {showNavbar && (
                 <>
-                    <ChatBot
+                    {/*<ChatBot
                         messages={messages}
                         addMessage={addMessage}
                         inputStatus={waitForRes}
-                    />
+                    />*/}
                     <NavBar
                         page={page}
                         changePage={changePage}
