@@ -75,11 +75,10 @@ const TradingForm = props => {
                         logo: logo,
                         currency: currency,
                     };
-
                     putSymbolInfo(updateSymbol);
-                    setCurrency(currency);
                 });
             }
+            setCurrency(currency);
         });
 
         setSymbol(selected.value);
@@ -88,10 +87,6 @@ const TradingForm = props => {
         setSubscribe([selected.value]);
     };
 
-    // const handleSymbolChange = event => {
-    //     const input = event.target.value;
-    //     setSymbol(input.replace(/[^A-Za-z]/g, '').toUpperCase());
-    // };
     const handleQuantityChange = event => {
         const input = event.target.value;
         const period = input.split('.', 2);
